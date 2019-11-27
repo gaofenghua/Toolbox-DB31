@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Toolbox_DB31.Classes;
 
 namespace Toolbox_DB31
 {
@@ -24,6 +25,7 @@ namespace Toolbox_DB31
         public MainWindow()
         {
             InitializeComponent();
+            Global.g_Main_ViewModel = (Main_ViewModel) DataContext;
         }
 
         private void btnNew_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
@@ -34,7 +36,10 @@ namespace Toolbox_DB31
         private void myCommandExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             //Actions to perform 
-           
+            Global.g_CameraList.Add(new Camera_Model() { Name = "From command", IsSelected = true });
+            
+            Global.g_Main_ViewModel.BottomLabel = "当前用户：建设单位";
+
         }
         private void myCommandExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -43,6 +48,11 @@ namespace Toolbox_DB31
             {
                 e.CanExecute = true;
             }
+        }
+
+        private void simpleButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

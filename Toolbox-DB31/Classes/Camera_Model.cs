@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Toolbox_DB31.Classes
 {
-    class Camera_Model
+    public class Camera_Model
     {
         public string AgentID { get; set; }
         public int ChannelNumber { get; set; }
