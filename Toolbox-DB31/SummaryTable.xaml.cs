@@ -23,7 +23,10 @@ namespace Toolbox_DB31
         public SummaryTable()
         {
             InitializeComponent();
-            GridControl_Summary.Columns["Status"].Visible = false;
+            GridControl_Summary.Columns["状态"].Visible = true;
+            GridControl_Summary.Columns["IsSelected"].Header = "选择";
+            GridControl_Summary.Columns["IsSelected"].HorizontalHeaderContentAlignment = System.Windows.HorizontalAlignment.Center;
+            
         }
     }
 }

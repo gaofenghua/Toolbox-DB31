@@ -7,6 +7,7 @@
       mc:Ignorable="d" 
       xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
       xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+      xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
       xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
       xmlns:ViewModel="clr-namespace:Toolbox_DB31.Classes" 
       dx:ThemeManager.ThemeName="MetropolisDark"
@@ -20,12 +21,22 @@
     <Grid>
         <dxg:GridControl Name="GridControl_Summary" AutoGenerateColumns="AddNew" EnableSmartColumnsGeneration="True" ItemsSource="{Binding CameraList}">
             <dxg:GridControl.Columns>
-                <dxg:GridColumn Binding="{Binding Name}" FieldName="姓名" HorizontalHeaderContentAlignment="Center" AllowEditing="False"/>
-                <dxg:GridColumn Binding="{Binding Gender}" FieldName="性别" />
-                <dxg:GridColumn Binding="{Binding Department}" FieldName="部门" />
+                <dxg:GridColumn Binding="{Binding AgentID}" FieldName="AgentID" Width="200"  HorizontalHeaderContentAlignment="Center" AllowEditing="true"/>
+                <dxg:GridColumn Binding="{Binding ChannelNumber}" FieldName="通道" Width="50" HorizontalHeaderContentAlignment="Center">
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:TextEditSettings HorizontalContentAlignment="Center" />
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+                <dxg:GridColumn Binding="{Binding Name,Mode=TwoWay}" Header="名称" HorizontalHeaderContentAlignment="Center">
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:TextEditSettings HorizontalContentAlignment="Center" />
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+                <dxg:GridColumn Binding="{Binding Status, Mode=TwoWay}" FieldName="状态" HorizontalHeaderContentAlignment="Center"/>
+
             </dxg:GridControl.Columns>
-            <dxg:GridControl.View>
-                <dxg:TableView ShowTotalSummary="True" />
+            <dxg:GridControl.View >
+                <dxg:TableView ShowTotalSummary="False" ShowGroupPanel="False" AutoWidth="True" />
             </dxg:GridControl.View>
         </dxg:GridControl>
     </Grid>

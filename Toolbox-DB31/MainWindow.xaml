@@ -64,29 +64,26 @@
                 </dxb:BarSubItem>
             </dxb:MainMenuControl>
         </dxb:BarContainerControl>
-        <dxn:NavBarControl
-            Grid.Row="1"
-            Grid.RowSpan="3"
-            Grid.Column="0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top">
-            <dxn:NavBarGroup
-                x:Name="navBarGroup1"
-                FontSettings="{dxn:NavBarFontSettings FontSize=25}"
-                Header="人员管理">
-                <dxn:NavBarItem
-                    x:Name="navBarItem1"
-                    Command="{x:Static local:MainWindow.myCommand}"
-                    Content="  人员信息" />
-                <dxn:NavBarItem x:Name="navBarItem2" Content="  人员分组" />
+        <dxn:NavBarControl Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="AntiqueWhite">
+            <dxn:NavBarGroup x:Name="navBarGroup1" FontSettings="{dxn:NavBarFontSettings FontSize=25}" Header="图像上传">
+                <dxn:NavBarItem x:Name="navBarItem11" Command="{x:Static local:MainWindow.myCommand}" Content="  测试图像上传" />
+                <dxn:NavBarItem x:Name="navBarItem12" Content="  验收图像上传" />
+                <dxn:NavBarItem x:Name="navBarItem13" Content="  维保图像上传" />
+                <dxn:NavBarItem x:Name="navBarItem14" Content="  报警图像上传" />
             </dxn:NavBarGroup>
             <dxn:NavBarGroup
-                x:Name="navBarGroup2"
-                FontSettings="{dxn:NavBarFontSettings FontSize=25}"
-                Header="排班管理">
-                <dxn:NavBarItem x:Name="navBarItem3" Content="日期设置" />
-                <dxn:NavBarItem x:Name="navBarItem4" Content="navBarItem2" />
+                x:Name="navBarGroup2" FontSettings="{dxn:NavBarFontSettings FontSize=25}" Header="操作日志">
+                <dxn:NavBarItem x:Name="navBarItem4" Content="日志设置" />
+                <dxn:NavBarItem x:Name="navBarItem5" Content="操作日志上传" />
             </dxn:NavBarGroup>
+            <dxn:NavBarGroup
+                x:Name="navBarGroup3" FontSettings="{dxn:NavBarFontSettings FontSize=25}" Header="人员管理">
+                <dxn:NavBarItem x:Name="navBarItem31" Content="人员登录" />
+                <dxn:NavBarItem x:Name="navBarItem32" Content="密码管理" />
+            </dxn:NavBarGroup>
+            <dxn:NavBarControl.View>
+                <dxn:SideBarView/>
+            </dxn:NavBarControl.View>
         </dxn:NavBarControl>
         <Grid
             Grid.Row="1"
