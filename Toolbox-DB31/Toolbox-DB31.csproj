@@ -72,7 +72,9 @@
     <Compile Include="Classes\Camera_Model.cs" />
     <Compile Include="Classes\Main_ViewModel.cs" />
     <Compile Include="Classes\Summary_ViewModel.cs" />
+    <Compile Include="DB31-Adapter\DB31_Controller.cs" />
     <Compile Include="DB31-Adapter\DB31_Socket.cs" />
+    <Compile Include="DB31-Adapter\DB31_Xml.cs" />
     <Compile Include="SummaryTable.xaml.cs">
       <DependentUpon>SummaryTable.xaml</DependentUpon>
     </Compile>

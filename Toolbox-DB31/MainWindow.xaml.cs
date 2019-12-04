@@ -28,8 +28,8 @@ namespace Toolbox_DB31
             InitializeComponent();
             Global.g_Main_ViewModel = (Main_ViewModel) DataContext;
 
-            DB31_Socket db_Socket = new DB31_Socket();
-             
+            DB31_Controller controller = new DB31_Controller();
+            controller.StartHeartbeat(); 
         }
 
         private void btnNew_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
