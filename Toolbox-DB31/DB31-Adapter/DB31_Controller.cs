@@ -14,22 +14,18 @@ namespace Toolbox_DB31.DB31_Adapter
         public int DVR_State = 0;
         public int Total_Space = 0;
         public int Free_Space = 0;
-        public string Process_Name = "AI_Main.exe";
+        public string Process_Name = "System,AI_Main.exe";
 
-        public string xml_content { get; set; } = null;
         public DB31_Controller()
         {
             socket = new DB31_Socket();
-            socket.controller = this;
-
             xml = new DB31_Xml();
-            xml.controller = this;
         }
 
         public void StartHeartbeat()
         {
-            xml_content = xml.HeartbeatXml();
-            socket.Send();
+            string xml_content = xml.HeartbeatXml(DVR_State,Total_Space,Free_Space,Process_Name);
+            socket.Send(xml_content);
         }
     }
 }

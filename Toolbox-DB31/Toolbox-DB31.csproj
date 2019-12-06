@@ -46,11 +46,32 @@
       <HintPath>C:\Program Files (x86)\DevExpress 19.1\Components\Bin\Framework\DevExpress.Xpf.NavBar.v19.1.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Xpf.Themes.MetropolisDark.v19.1, Version=19.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="Seer.BaseLibCS, Version=7.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\Seer.BaseLibCS.dll</HintPath>
+    </Reference>
+    <Reference Include="Seer.Common, Version=7.0.0.0, Culture=neutral, PublicKeyToken=6c293b97cf6869d0, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\Seer.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Seer.Connectivity, Version=7.0.0.0, Culture=neutral, PublicKeyToken=6c293b97cf6869d0, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\Seer.Connectivity.dll</HintPath>
+    </Reference>
+    <Reference Include="Seer.Farm, Version=7.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\Seer.Farm.dll</HintPath>
+    </Reference>
+    <Reference Include="Seer.SDK.Core">
+      <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\Seer.SDK.Core.dll</HintPath>
+    </Reference>
     <Reference Include="socket.framework">
       <HintPath>..\..\socket.framework-master\socket.framework\bin\Debug\socket.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -69,6 +90,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AVMS-Adapter\AVMS_Com.cs" />
     <Compile Include="Classes\Camera_Model.cs" />
     <Compile Include="Classes\Main_ViewModel.cs" />
     <Compile Include="Classes\Summary_ViewModel.cs" />

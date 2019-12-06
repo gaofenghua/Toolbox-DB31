@@ -9,11 +9,10 @@ namespace Toolbox_DB31.DB31_Adapter
 {
     class DB31_Xml
     {
-        public DB31_Controller controller { get; set; } = null;
-
         XDeclaration xml_Declaration;
         XElement xml_Agent;
         XElement xml_DVRHeart;
+        XElement xml_GetTicks = new XElement("GetTicks");
 
         //string xmlData = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Agent ID=\"SSJCZHQY0001\" Type=\"SG\" Ver=\"1.3.0.0\"><DVRHeart state=\"1\">System</DVRHeart><GetTicks/><OperationCmd Type=\"1\" Channel=\"0\" TriggerTime=\"2019-12-01 02: 03: 05\" Note=\"XXXXXX\" GUID=\"123456789\">4AAQSkZJRgABAQEASAB2wBDABsSFBcUERsXFhceHBsgKEIrKCUlKFE6PTBCYFVlZF9V</OperationCmd></Agent>";
         public DB31_Xml()
@@ -67,30 +66,17 @@ namespace Toolbox_DB31.DB31_Adapter
             return doc_heartbeat.ToString();
         }
 
-        public string Heart_Signal()
+        public string HeartbeatXml(int state,int total_space,int free_space,string process_name)
         {
-            xml_DVRHeart.SetAttributeValue("state", 5);
-            xml_DVRHeart.SetAttributeValue("TotalSpace", "6");
-            xml_DVRHeart.SetAttributeValue("FreeSpace", "3");
+           
+            xml_DVRHeart.SetAttributeValue("state", state);
+            xml_DVRHeart.SetAttributeValue("TotalSpace", total_space);
+            xml_DVRHeart.SetAttributeValue("FreeSpace", free_space);
+            xml_DVRHeart.Value = process_name;
 
             xml_Agent.ReplaceNodes(xml_DVRHeart);
-            //xml_Agent.Add(xml_DVRHeart);
 
-            return xml_Declaration.ToString() + xml_Agent.ToString();
-        }
-
-        public string HeartbeatXml()
-        {
-            if(controller == null)
-            {
-                return null;
-            }
-
-            xml_DVRHeart.SetAttributeValue("state", controller.DVR_State);
-            xml_DVRHeart.SetAttributeValue("TotalSpace", controller.Total_Space);
-            xml_DVRHeart.SetAttributeValue("FreeSpace", controller.Free_Space);
-
-            xml_Agent.ReplaceNodes(xml_DVRHeart);
+            xml_Agent.Add(xml_GetTicks);
             
             return xml_Declaration.ToString() + xml_Agent.ToString();
         }

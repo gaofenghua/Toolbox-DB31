@@ -10,8 +10,7 @@ namespace Toolbox_DB31.DB31_Adapter
 {
     class DB31_Socket
     {
-        public DB31_Controller controller { get; set; } = null;
-
+        
         public TcpPushClient client;
 
         public DB31_Socket()
@@ -51,13 +50,8 @@ namespace Toolbox_DB31.DB31_Adapter
            
         }
 
-        public void Send()
+        public void Send(string xmlData)
         {
-            if(controller == null)
-            {
-                return;
-            }
-
             //通讯指令
             //分2个部分，消息头 + 消息内容
             //消息头:
@@ -69,12 +63,6 @@ namespace Toolbox_DB31.DB31_Adapter
 
 
             byte[] data_head = new byte[20] { (byte)'Q', (byte)'W', (byte)'C', (byte)'M', (byte)'D', (byte)':', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-
-            //DB31_Xml db_Xml = new DB31_Xml();
-            //string xmlData = db_Xml.Heart_Signal();
-
-            string xmlData = controller.xml_content;
 
             byte[] data_xml = Encoding.UTF8.GetBytes(xmlData);
 

@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Toolbox_DB31.Classes;
 using Toolbox_DB31.DB31_Adapter;
+using Toolbox_DB31.AVMS_Adapter;
 
 namespace Toolbox_DB31
 {
@@ -28,8 +29,10 @@ namespace Toolbox_DB31
             InitializeComponent();
             Global.g_Main_ViewModel = (Main_ViewModel) DataContext;
 
-            DB31_Controller controller = new DB31_Controller();
-            controller.StartHeartbeat(); 
+            //DB31_Controller controller = new DB31_Controller();
+            //controller.StartHeartbeat(); 
+
+            AVMS_Com avms = new AVMS_Com();
         }
 
         private void btnNew_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
