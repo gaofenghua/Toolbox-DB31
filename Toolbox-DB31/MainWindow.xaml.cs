@@ -32,7 +32,16 @@ namespace Toolbox_DB31
             //DB31_Controller controller = new DB31_Controller();
             //controller.StartHeartbeat(); 
 
-            AVMS_Com avms = new AVMS_Com();
+            //AVMS_Com avms = new AVMS_Com();
+            AVMSAdapter adapter = new AVMSAdapter();
+            adapter.Start("127.0.0.1","admin","admin", "0010123033030");
+            adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
+        }
+
+        private void HandleAVMSEvent(object sender, AVMSEventArgs e)
+        {
+            CameraLogStruct evtData = (CameraLogStruct)e.m_eventData;
+            string picData = e.m_pictureData;
         }
 
         private void btnNew_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
