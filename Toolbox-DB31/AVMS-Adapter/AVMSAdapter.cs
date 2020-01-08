@@ -16,6 +16,7 @@ using Seer.SDK.NotificationMonitors;
 using Seer.BaseLibCS;
 using Seer.FarmLib;
 using Toolbox_DB31.Classes;
+using System.Timers;
 
 
 namespace Toolbox_DB31.AVMS_Adapter
@@ -33,6 +34,8 @@ namespace Toolbox_DB31.AVMS_Adapter
         private Dictionary<uint, string> m_serverList = new Dictionary<uint, string>();
         private Dictionary<uint, CCamera> m_cameraList = new Dictionary<uint, CCamera>();
         private AlarmMonitor m_alarmMonitor = null;
+        private Timer m_timer = null;
+        private const int IMPORT_INTERVAL = 65 * 1000;
 
         private SdkFarm m_farm
         {
@@ -76,7 +79,7 @@ namespace Toolbox_DB31.AVMS_Adapter
             {
                 foreach (KeyValuePair<uint, CCamera> item in m_cameraList)
                 {
-                    Global.g_CameraList.Add(new Camera_Model() { AgentID = m_agentId, ChannelNumber = (int)item.Key, Name = item.Value.Name, IsSelected = false });
+                    Global.g_CameraList.Add(new Camera_Model() { AgentID = m_agentId, ChannelNumber = (int)item.Key, Name = item.Value.Name, Status = "在线", IsSelected = false });
                 }
             });
         }
@@ -96,6 +99,10 @@ namespace Toolbox_DB31.AVMS_Adapter
                     }
                     m_avms.Connect();
                 }
+
+                m_timer = new Timer(IMPORT_INTERVAL);
+                m_timer.Enabled = true;
+                m_timer.Elapsed += HeartBeat;
             }
             catch (Exception ex)
             {
@@ -119,10 +126,32 @@ namespace Toolbox_DB31.AVMS_Adapter
                     m_avms.Disconnect();
                     m_avms = null;
                 }
+                if (null != m_timer)
+                {
+                    m_timer.Enabled = false;
+                    m_timer.Elapsed -= HeartBeat;
+                    m_timer = null;
+                }
             }
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        private void HeartBeat(Object obj, ElapsedEventArgs args)
+        {
+            DateTime checkDT = args.SignalTime;
+            foreach (KeyValuePair<uint, CCamera> item in m_cameraList)
+            {
+                CCamera cam = item.Value;
+                bool isTimedOut = cam.TimedOut;
+                int diff = (checkDT - cam.LastStateUpdateTime).Seconds;
+                if (isTimedOut || (diff > 65))
+                {
+                    AVMSEventArgs etArgs = new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_DISCONNECT, checkDT, cam.CameraId, null);
+                    this.OnAVMSTriggered(this, etArgs);
+                }
             }
         }
 
@@ -265,33 +294,32 @@ namespace Toolbox_DB31.AVMS_Adapter
         private void HandleAlarmMessageReceived(object sender, AlarmMessageEventArgs e)
         {
             CameraMessageStruct cameraMessageStruct = e.Message;
-
-            CameraLogStruct cameraLogStruct = new CameraLogStruct();
-            cameraLogStruct.m_iAlarmDbId = cameraMessageStruct.m_iAlarmDbId;
-            cameraLogStruct.m_iCameraId = cameraMessageStruct.m_iCameraId;
-            cameraLogStruct.m_iEvent = cameraMessageStruct.m_iEvent;
-            cameraLogStruct.m_iFarmId = cameraMessageStruct.m_iFarmId;
-            cameraLogStruct.m_iFGCount = cameraMessageStruct.m_iFGCount;
-            cameraLogStruct.m_iNotUsed2 = cameraMessageStruct.m_iNotUsed2;
-            cameraLogStruct.m_iPolicyId = cameraMessageStruct.m_iPolicyId;
-            cameraLogStruct.m_iState = cameraMessageStruct.m_iState;
-            cameraLogStruct.m_iVersion = cameraMessageStruct.m_iVersion;
-            cameraLogStruct.m_milliSinceChangeBegan = cameraMessageStruct.m_milliSinceChangeBegan;
-            cameraLogStruct.m_milliTime = cameraMessageStruct.m_milliTime;
-            cameraLogStruct.m_timezoneTime = cameraMessageStruct.m_timezoneTime;
-            cameraLogStruct.m_utcTime = cameraMessageStruct.m_utcTime;
-            cameraLogStruct.m_strConfirm = "Not Confirmed";
-            cameraLogStruct.m_strComment = string.Empty;
-
-            // snapshot (Base64)
-            if (!m_cameraList.ContainsKey(cameraLogStruct.m_iCameraId))
+            uint camId = cameraMessageStruct.m_iCameraId;
+            if (!m_cameraList.ContainsKey(camId))
             {
                 PrintLog("AVMSAdapter : fail to handle alarm message due to invalid camera.");
                 return;
             }
-            CCamera cam = m_cameraList[cameraLogStruct.m_iCameraId];
+            AVMS_ALARM alarmType = AVMS_ALARM.AVMS_ALARM_UNKNOWN;
+            switch (cameraMessageStruct.m_iEvent)
+            {
+                case 0:
+                case 3:
+                case 7:
+                    alarmType = AVMS_ALARM.AVMS_ALARM_OTHER;
+                    break;
+                case 8:
+                    alarmType = AVMS_ALARM.AVMS_ALARM_DISCONNECT;
+                    break;
+                default:
+                    break;
+            }
+            DateTime clientTime = TimeUtils.DateTimeFromUTC(cameraMessageStruct.m_utcTime);
+            DateTime serverTime = m_cameraList[camId].Server.ToLocalTime(clientTime);
+            CCamera cam = m_cameraList[camId];
             string picData = GetEncodedSnapshot(cam, DateTime.Now, true);
-            AVMSEventArgs args = new AVMSEventArgs(cameraLogStruct, picData);
+
+            AVMSEventArgs args = new AVMSEventArgs(alarmType, serverTime, camId, picData);
             this.OnAVMSTriggered(this, args);
         }
 
@@ -425,34 +453,25 @@ namespace Toolbox_DB31.AVMS_Adapter
         }
     }
 
-    public struct CameraLogStruct
+    public enum AVMS_ALARM
     {
-        public uint m_iAlarmDbId;
-        public uint m_iCameraId;
-        public uint m_iEvent;
-        public uint m_iFarmId;
-        public uint m_iFGCount;
-        public uint m_iNotUsed2;
-        public int m_iPolicyId;
-        public uint m_iState;
-        public uint m_iVersion;
-        public uint m_milliSinceChangeBegan;
-        public ushort m_milliTime;
-        public short m_timezoneTime;
-        public uint m_utcTime;
-        //
-        public string m_strConfirm;
-        public string m_strComment;
+        AVMS_ALARM_UNKNOWN = 0,
+        AVMS_ALARM_DISCONNECT,
+        AVMS_ALARM_OTHER,
     }
 
     public class AVMSEventArgs : EventArgs
     {
-        public object m_eventData { get; }  // CameraLogStruct
+        public AVMS_ALARM m_alarmType { get; }
+        public DateTime m_alarmTime { get; }
+        public uint m_cameraId { get; }
         public string m_pictureData { get; }
 
-        public AVMSEventArgs(object obj, string data)
+        public AVMSEventArgs(AVMS_ALARM type, DateTime time, uint id, string data)
         {
-            this.m_eventData = obj;
+            this.m_alarmType = type;
+            this.m_alarmTime = time;
+            this.m_cameraId = id;
             this.m_pictureData = data;
         }
     }

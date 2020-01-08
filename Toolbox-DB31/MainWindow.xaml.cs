@@ -40,8 +40,12 @@ namespace Toolbox_DB31
 
         private void HandleAVMSEvent(object sender, AVMSEventArgs e)
         {
-            CameraLogStruct evtData = (CameraLogStruct)e.m_eventData;
+            AVMS_ALARM alarmType = e.m_alarmType;
+            DateTime alarmTime = e.m_alarmTime;
+            int channelId = -1;
+            int.TryParse(e.m_cameraId.ToString(), out channelId);
             string picData = e.m_pictureData;
+            
         }
 
         private void btnNew_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
