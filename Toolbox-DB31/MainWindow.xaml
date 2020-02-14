@@ -12,8 +12,8 @@
     xmlns:dxgi="http://schemas.devexpress.com/winfx/2008/xaml/grid/internal"
     xmlns:dxn="http://schemas.devexpress.com/winfx/2008/xaml/navbar"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Width="1250"
-    Height="700"
+    Width="700"
+    Height="500"
     mc:Ignorable="d"
     Title="MainWindow">
 
@@ -65,16 +65,17 @@
             </dxb:MainMenuControl>
         </dxb:BarContainerControl>
         <dxn:NavBarControl Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="AntiqueWhite">
-            <dxn:NavBarGroup x:Name="navBarGroup1" FontSettings="{dxn:NavBarFontSettings FontSize=25}" Header="图像上传">
-                <dxn:NavBarItem x:Name="navBarItem11" Command="{x:Static local:MainWindow.myCommand}" Content="  测试图像上传" />
+            <dxn:NavBarGroup x:Name="navBarGroup1" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="用户管理">
+                <dxn:NavBarItem x:Name="navBarItem11" Command="{x:Static local:MainWindow.myCommand}" Content="  人员登录" />
+                <dxn:NavBarItem x:Name="navBarItem15" Content="  登出" />
+            </dxn:NavBarGroup>
+            <dxn:NavBarGroup
+                x:Name="navBarGroup2" FontSettings="{dxn:NavBarFontSettings FontSize=25}" Header="图像上传">
+                <dxn:NavBarItem x:Name="navBarItem4" Content="日志设置" />
+                <dxn:NavBarItem x:Name="navBarItem5" Content="操作日志上传" />
                 <dxn:NavBarItem x:Name="navBarItem12" Content="  验收图像上传" />
                 <dxn:NavBarItem x:Name="navBarItem13" Content="  维保图像上传" />
                 <dxn:NavBarItem x:Name="navBarItem14" Content="  报警图像上传" />
-            </dxn:NavBarGroup>
-            <dxn:NavBarGroup
-                x:Name="navBarGroup2" FontSettings="{dxn:NavBarFontSettings FontSize=25}" Header="操作日志">
-                <dxn:NavBarItem x:Name="navBarItem4" Content="日志设置" />
-                <dxn:NavBarItem x:Name="navBarItem5" Content="操作日志上传" />
             </dxn:NavBarGroup>
             <dxn:NavBarGroup
                 x:Name="navBarGroup3" FontSettings="{dxn:NavBarFontSettings FontSize=25}" Header="人员管理">
@@ -93,7 +94,7 @@
             <Frame
                 Name="frmMain"
                 NavigationUIVisibility="Hidden"
-                Source="SummaryTable.xaml" />
+                Source="" />
         </Grid>
         <Label Grid.Row="3" Grid.Column="1" Content="{Binding BottomLabel}" Name="myLabel" />
         <Grid Grid.Row="3" Grid.Column="2">

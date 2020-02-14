@@ -29,24 +29,32 @@ namespace Toolbox_DB31
             InitializeComponent();
             Global.g_Main_ViewModel = (Main_ViewModel) DataContext;
 
+            LoginPage theLoginPage = new LoginPage();
+            theLoginPage.Event_Login_Finished += OnEvent_Login_Finished;
+            frmMain.NavigationService.Navigate(theLoginPage);
+
+            //Hide the bottom information
+            Global.g_Main_ViewModel.BottomLabel = "";
+            simpleButton.Visibility = Visibility.Hidden;
+
             //DB31_Controller controller = new DB31_Controller();
             //controller.StartHeartbeat(); 
 
             //AVMS_Com avms = new AVMS_Com();
-            AVMSAdapter adapter = new AVMSAdapter();
-            adapter.Start("127.0.0.1","admin","admin", "0010123033030");
-            adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
+            //AVMSAdapter adapter = new AVMSAdapter();
+            //adapter.Start("127.0.0.1","admin","admin", "0010123033030");
+            //adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
         }
 
-        private void HandleAVMSEvent(object sender, AVMSEventArgs e)
-        {
-            AVMS_ALARM alarmType = e.m_alarmType;
-            DateTime alarmTime = e.m_alarmTime;
-            int channelId = -1;
-            int.TryParse(e.m_cameraId.ToString(), out channelId);
-            string picData = e.m_pictureData;
+        //private void HandleAVMSEvent(object sender, AVMSEventArgs e)
+        //{
+        //    AVMS_ALARM alarmType = e.m_alarmType;
+        //    DateTime alarmTime = e.m_alarmTime;
+        //    int channelId = -1;
+        //    int.TryParse(e.m_cameraId.ToString(), out channelId);
+        //    string picData = e.m_pictureData;
             
-        }
+        //}
 
         private void btnNew_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
         {
@@ -73,6 +81,10 @@ namespace Toolbox_DB31
         private void simpleButton_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+        private void OnEvent_Login_Finished(object sender,string sRet)
+        {
+            frmMain.NavigationService.Navigate(new SummaryTable());
         }
     }
 }
