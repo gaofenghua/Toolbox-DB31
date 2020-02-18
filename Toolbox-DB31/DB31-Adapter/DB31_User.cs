@@ -33,6 +33,8 @@ namespace Toolbox_DB31.DB31_Adapter
                         UserName = Input_UserName;
                         Department = Input_Department;
 
+                        Reset_Input();
+
                         return true;
                     }
                     break;
@@ -44,6 +46,11 @@ namespace Toolbox_DB31.DB31_Adapter
 
            
             return false;
+        }
+
+        void Reset_Input()
+        {
+            Input_UserName = Input_Password = "";
         }
     }
 }

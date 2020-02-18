@@ -51,6 +51,8 @@ namespace Toolbox_DB31
         private void Invoke_PasswordWindow()
         {
             PasswordWindow thePassword = new PasswordWindow();
+            thePassword.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            thePassword.Owner = Window.GetWindow(this);
             bool? bSuccess = thePassword.ShowDialog();
 
             if (bSuccess.GetValueOrDefault())
