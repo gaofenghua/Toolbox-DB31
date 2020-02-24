@@ -27,6 +27,11 @@ namespace Toolbox_DB31
 
         LoginPage theLoginPage;
 
+        enum Menu_Item { User_Login, Inspect_Image_Upload,Test_Image_Upload };
+        Menu_Item Current_Menu_Item;
+
+        DB31_Controller db31;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -35,10 +40,13 @@ namespace Toolbox_DB31
             theLoginPage = new LoginPage();
             theLoginPage.Event_Login_Finished += OnEvent_Login_Finished;
             frmMain.NavigationService.Navigate(theLoginPage);
+            Current_Menu_Item = Menu_Item.User_Login;
 
             //Hide the bottom information
-            Global.g_Main_ViewModel.BottomLabel = "";
-            simpleButton.Visibility = Visibility.Hidden;
+            Global.g_Main_ViewModel.LabelStatus = "";
+            Global.g_Main_ViewModel.LabelMessage = "";
+            Button_Upload.Visibility = Visibility.Hidden;
+            Button_Cancel.Visibility = Visibility.Hidden;
 
             //Go to the default NavBar item
             //myNavBarControl.ActiveGroup = myNavBarControl.Groups[0];
@@ -48,6 +56,8 @@ namespace Toolbox_DB31
            
             //DB31_Controller controller = new DB31_Controller();
             //controller.StartHeartbeat(); 
+            db31 = new DB31_Controller(Global.g_User);
+            db31.Working_Message += OnEvent_Working_Message;
 
             //AVMS_Com avms = new AVMS_Com();
             //AVMSAdapter adapter = new AVMSAdapter();
@@ -70,6 +80,8 @@ namespace Toolbox_DB31
            
 
         }
+
+        //UserLogin command
         private void myCommandExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             //Actions to perform 
@@ -81,8 +93,10 @@ namespace Toolbox_DB31
             myNavBarControl.ActiveGroup = navBarGroup_system;
             myNavBarControl.SelectedItem = navBarGroup_system.Items[0];
 
-            Global.g_Main_ViewModel.BottomLabel = "";
-            simpleButton.Visibility = Visibility.Hidden;
+            Global.g_Main_ViewModel.LabelStatus = "";
+            Global.g_Main_ViewModel.LabelMessage = "";
+            Button_Cancel.Visibility = Visibility.Hidden;
+            Button_Upload.Visibility = Visibility.Hidden;
         }
         private void myCommandExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -93,7 +107,15 @@ namespace Toolbox_DB31
             }
         }
 
-        private void simpleButton_Click(object sender, RoutedEventArgs e)
+        private void Button_Click_Upload(object sender, RoutedEventArgs e)
+        {
+            string sRet = db31.Inspect_Image_Upload();
+            if(""!= sRet)
+            {
+                Global.g_Main_ViewModel.LabelStatus = sRet;
+            }
+        }
+        private void Button_Click_Cancel(object sender, RoutedEventArgs e)
         {
 
         }
@@ -102,9 +124,17 @@ namespace Toolbox_DB31
             frmMain.NavigationService.Navigate(new SummaryTable());
 
             myNavBarControl.SelectedItem = navBarItem_ImageUpload;
-            simpleButton.Visibility = Visibility.Visible;
+            Button_Upload.Visibility = Visibility.Visible;
             //myNavBarControl.ActiveGroup = myNavBarControl.Groups[1];
             //myNavBarControl.SelectedItem = myNavBarControl.Groups[1].Items[0];
+
+            Global.g_Main_ViewModel.LabelStatus = "当前用户：";
+            Global.g_Main_ViewModel.LabelMessage = "";
+        }
+
+        private void OnEvent_Working_Message(object sender, string sMsg)
+        {
+            Global.g_Main_ViewModel.LabelMessage = sMsg;
         }
 
         private void navBarItem41_Click(object sender, EventArgs e)
@@ -114,7 +144,7 @@ namespace Toolbox_DB31
             myNavBarControl.ActiveGroup = myNavBarControl.Groups[3];
             myNavBarControl.SelectedItem = myNavBarControl.Groups[3].Items[0];
 
-            simpleButton.Visibility = Visibility.Visible;
+            Button_Upload.Visibility = Visibility.Visible;
         }
         private void navBarItem_ImageUpload_Click(object sender, EventArgs e)
         {
@@ -122,7 +152,13 @@ namespace Toolbox_DB31
 
             myNavBarControl.SelectedItem = navBarItem_ImageUpload;
 
-            simpleButton.Visibility = Visibility.Visible;
+            Button_Cancel.Visibility = Visibility.Visible;
+            Button_Upload.Visibility = Visibility.Visible;
+            Button_Cancel.IsEnabled = false;
+
+            Current_Menu_Item = Menu_Item.Inspect_Image_Upload;
+
+           
         }
     }
 }

@@ -13,23 +13,23 @@ namespace Toolbox_DB31.DB31_Adapter
         XElement xml_Agent;
         XElement xml_DVRHeart;
         XElement xml_GetTicks = new XElement("GetTicks");
+        XElement xml_OperationCmd;
 
         //string xmlData = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Agent ID=\"SSJCZHQY0001\" Type=\"SG\" Ver=\"1.3.0.0\"><DVRHeart state=\"1\">System</DVRHeart><GetTicks/><OperationCmd Type=\"1\" Channel=\"0\" TriggerTime=\"2019-12-01 02: 03: 05\" Note=\"XXXXXX\" GUID=\"123456789\">4AAQSkZJRgABAQEASAB2wBDABsSFBcUERsXFhceHBsgKEIrKCUlKFE6PTBCYFVlZF9V</OperationCmd></Agent>";
         public DB31_Xml()
         {
             Declaration();
             DVRHeart();
+            OperationCmd();
             Agent();
-
-
         }
-        public string Declaration()
+        private string Declaration()
         {
             xml_Declaration = new XDeclaration("1.0", "UTF-8",null);
 
             return xml_Declaration.ToString();
         }
-        public string DVRHeart()
+        private string DVRHeart()
         {
             int DVRHeart_state = 0;
 
@@ -41,8 +41,11 @@ namespace Toolbox_DB31.DB31_Adapter
 
             return sRet;
         }
-
-        public string Agent()
+        private void OperationCmd()
+        {
+            xml_OperationCmd = new XElement("OperationCmd");
+        }
+        private string Agent()
         {
             xml_Agent = new XElement("Agent",
                 new XAttribute("ID", "SSJCZHQY0001"),
@@ -53,7 +56,7 @@ namespace Toolbox_DB31.DB31_Adapter
             return xml_Agent.ToString();
         }
 
-        public string xmldoc_Heartbeat()
+        private string xmldoc_Heartbeat()
         {
             XDocument doc_heartbeat = new XDocument(
                 
@@ -78,6 +81,19 @@ namespace Toolbox_DB31.DB31_Adapter
 
             xml_Agent.Add(xml_GetTicks);
             
+            return xml_Declaration.ToString() + xml_Agent.ToString();
+        }
+
+        public string OperationCmd_Xml()
+        {
+            xml_OperationCmd.SetAttributeValue("Type", 1);
+            xml_OperationCmd.SetAttributeValue("Channel", 2);
+            xml_OperationCmd.SetAttributeValue("TriggerTime", 3);
+            xml_OperationCmd.SetAttributeValue("Note", 4);
+            xml_OperationCmd.SetAttributeValue("GUID", 5);
+            xml_OperationCmd.Value = "base64";
+
+            xml_Agent.ReplaceNodes(xml_OperationCmd);
             return xml_Declaration.ToString() + xml_Agent.ToString();
         }
     }

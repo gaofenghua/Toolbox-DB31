@@ -54,6 +54,7 @@
             </dxn:NavBarGroup>
             <dxn:NavBarGroup
                 x:Name="navBarGroup4" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="建设使用单位">
+                <dxn:NavBarItem Content="  测试图像上传"/>
                 <dxn:NavBarItem x:Name="navBarItem41" Content="  故障报修" Click="navBarItem41_Click" />
             </dxn:NavBarGroup>
             <dxn:NavBarGroup x:Name="navBarGroup_system" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="系统">
@@ -74,7 +75,8 @@
                 NavigationUIVisibility="Hidden"
                 Source="" />
         </Grid>
-        <Label Grid.Row="3" Grid.Column="1" Content="{Binding BottomLabel}" Name="myLabel" />
+        <Label Grid.Row="3" Grid.Column="1" Content="{Binding LabelStatus}" Name="LabelStatus" Margin="10,0,0,28" />
+        <Label Grid.Row="3" Grid.Column="1" Content="{Binding LabelMessage}" Name="LabelMessage" Margin="10,28,0,0" />
         <Grid Grid.Row="3" Grid.Column="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="30*" />
@@ -89,10 +91,16 @@
                 <RowDefinition Height="30*" />
             </Grid.RowDefinitions>
             <dx:SimpleButton
-                x:Name="simpleButton"
+                x:Name="Button_Cancel"
+                Grid.Row="1"
+                Grid.Column="1"
+                Click="Button_Click_Cancel"
+                Content="取消" />
+            <dx:SimpleButton
+                x:Name="Button_Upload"
                 Grid.Row="1"
                 Grid.Column="3"
-                Click="simpleButton_Click"
+                Click="Button_Click_Upload"
                 Content="上传" />
         </Grid>
     </Grid>
