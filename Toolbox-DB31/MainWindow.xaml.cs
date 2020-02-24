@@ -33,20 +33,21 @@ namespace Toolbox_DB31
             //controller.StartHeartbeat(); 
 
             //AVMS_Com avms = new AVMS_Com();
-            AVMSAdapter adapter = new AVMSAdapter();
-            adapter.Start("127.0.0.1","admin","admin", "0010123033030");
-            adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
+
+            //AVMSAdapter adapter = new AVMSAdapter();
+            //adapter.Start("127.0.0.1","admin","admin", "0010123033030");
+            //adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
         }
 
-        private void HandleAVMSEvent(object sender, AVMSEventArgs e)
-        {
-            AVMS_ALARM alarmType = e.m_alarmType;
-            DateTime alarmTime = e.m_alarmTime;
-            int channelId = -1;
-            int.TryParse(e.m_cameraId.ToString(), out channelId);
-            string picData = e.m_pictureData;
+        //private void HandleAVMSEvent(object sender, AVMSEventArgs e)
+        //{
+        //    AVMS_ALARM alarmType = e.m_alarmType;
+        //    DateTime alarmTime = e.m_alarmTime;
+        //    int channelId = -1;
+        //    int.TryParse(e.m_cameraId.ToString(), out channelId);
+        //    string picData = e.m_pictureData;
             
-        }
+        //}
 
         private void btnNew_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
         {

@@ -27,7 +27,8 @@
     <dx:ThemedWindow.DataContext>
         <ViewModel:Main_ViewModel/>
     </dx:ThemedWindow.DataContext>
-    
+
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="180*" />
@@ -66,7 +67,7 @@
         </dxb:BarContainerControl>
         <dxn:NavBarControl Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="AntiqueWhite">
             <dxn:NavBarGroup x:Name="navBarGroup1" FontSettings="{dxn:NavBarFontSettings FontSize=25}" Header="图像上传">
-                <dxn:NavBarItem x:Name="navBarItem11" Command="{x:Static local:MainWindow.myCommand}" Content="  测试图像上传" />
+                <dxn:NavBarItem x:Name="navBarItem11" Command="{x:Static local:MainWindow.myCommand}"  Content="  测试图像上传" />
                 <dxn:NavBarItem x:Name="navBarItem12" Content="  验收图像上传" />
                 <dxn:NavBarItem x:Name="navBarItem13" Content="  维保图像上传" />
                 <dxn:NavBarItem x:Name="navBarItem14" Content="  报警图像上传" />

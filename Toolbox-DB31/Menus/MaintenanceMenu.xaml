@@ -12,9 +12,12 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              Title="MaintenanceMenu">
+
     <Page.DataContext>
         <ViewModels:MaintenanceMenuViewModel/>
     </Page.DataContext>
+
+
     <Grid>
         <dxlc:LayoutControl Orientation="Vertical" ItemSpace="5" Padding="0">
             <GroupBox Header="保养项目" VerticalAlignment="Top">
