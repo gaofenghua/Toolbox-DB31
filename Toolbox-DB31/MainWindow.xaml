@@ -45,17 +45,17 @@
         <dxn:NavBarControl Name="myNavBarControl" Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="AntiqueWhite">
             <dxn:NavBarGroup
                 x:Name="navBarGroup2" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="管理部门" >
-                <dxn:NavBarItem x:Name="navBarItem_ImageUpload" Content="  验收图像上传" Click="navBarItem_ImageUpload_Click" />
+                <dxn:NavBarItem x:Name="navBarItem_Inspect_ImageUpload" Content="  验收图像上传" Click="navBarItem_Inspect_ImageUpload_Click" />
             </dxn:NavBarGroup>
             <dxn:NavBarGroup
                 x:Name="navBarGroup3" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="工程及维保">
                 <dxn:NavBarItem Content="  维修签到" />
-                <dxn:NavBarItem Content="  维修登记" />
-                <dxn:NavBarItem Content="  保养登记" />
+                <dxn:NavBarItem Content="  维修登记" Click="navBarItem_Maintenance_Report_Click"/>
+                <dxn:NavBarItem Content="  保养登记" Click="navBarItem_Repair_Report_Click"/>
             </dxn:NavBarGroup>
             <dxn:NavBarGroup
                 x:Name="navBarGroup4" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="建设使用单位">
-                <dxn:NavBarItem Content="  测试图像上传"/>
+                <dxn:NavBarItem x:Name="navBarItem_Test_ImageUpload" Content="  测试图像上传" Click="navBarItem_Test_ImageUpload_Click"/>
                 <dxn:NavBarItem x:Name="navBarItem41" Content="  故障报修" Click="navBarItem41_Click" />
             </dxn:NavBarGroup>
             <dxn:NavBarGroup x:Name="navBarGroup_system" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="系统">

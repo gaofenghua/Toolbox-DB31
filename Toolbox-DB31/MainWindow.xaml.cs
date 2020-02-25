@@ -43,10 +43,7 @@ namespace Toolbox_DB31
             Current_Menu_Item = Menu_Item.User_Login;
 
             //Hide the bottom information
-            Global.g_Main_ViewModel.LabelStatus = "";
-            Global.g_Main_ViewModel.LabelMessage = "";
-            Button_Upload.Visibility = Visibility.Hidden;
-            Button_Cancel.Visibility = Visibility.Hidden;
+            Set_Button_Label(false);
 
             //Go to the default NavBar item
             //myNavBarControl.ActiveGroup = myNavBarControl.Groups[0];
@@ -76,12 +73,27 @@ namespace Toolbox_DB31
             
         //}
 
-        private void btnNew_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
+   
+        private void Set_Button_Label(bool bVisible)
         {
-           
+            if (true == bVisible)
+            {
+                Button_Cancel.Visibility = Visibility.Visible;
+                Button_Upload.Visibility = Visibility.Visible;
 
+                Global.g_Main_ViewModel.LabelStatus = "当前用户：";
+                Global.g_Main_ViewModel.LabelStatus += Global.g_User.UserName;
+                Global.g_Main_ViewModel.LabelMessage = "";
+            }
+            else
+            {
+                Button_Cancel.Visibility = Visibility.Hidden;
+                Button_Upload.Visibility = Visibility.Hidden;
+
+                Global.g_Main_ViewModel.LabelStatus = "";
+                Global.g_Main_ViewModel.LabelMessage = "";
+            }
         }
-
         //UserLogin command
         private void myCommandExecuted(object sender, ExecutedRoutedEventArgs e)
         {
@@ -94,10 +106,7 @@ namespace Toolbox_DB31
             myNavBarControl.ActiveGroup = navBarGroup_system;
             myNavBarControl.SelectedItem = navBarGroup_system.Items[0];
 
-            Global.g_Main_ViewModel.LabelStatus = "";
-            Global.g_Main_ViewModel.LabelMessage = "";
-            Button_Cancel.Visibility = Visibility.Hidden;
-            Button_Upload.Visibility = Visibility.Hidden;
+            Set_Button_Label(false);
         }
         private void myCommandExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -122,15 +131,10 @@ namespace Toolbox_DB31
         }
         private void OnEvent_Login_Finished(object sender,string sRet)
         {
-            frmMain.NavigationService.Navigate(new SummaryTable());
-
-            myNavBarControl.SelectedItem = navBarItem_ImageUpload;
-            Button_Upload.Visibility = Visibility.Visible;
             //myNavBarControl.ActiveGroup = myNavBarControl.Groups[1];
             //myNavBarControl.SelectedItem = myNavBarControl.Groups[1].Items[0];
 
-            Global.g_Main_ViewModel.LabelStatus = "当前用户：";
-            Global.g_Main_ViewModel.LabelMessage = "";
+            navBarItem_Test_ImageUpload_Click(null, null);
         }
 
         private void OnEvent_Working_Message(object sender, string sMsg)
@@ -147,19 +151,37 @@ namespace Toolbox_DB31
 
             Button_Upload.Visibility = Visibility.Visible;
         }
-        private void navBarItem_ImageUpload_Click(object sender, EventArgs e)
+        private void navBarItem_Inspect_ImageUpload_Click(object sender, EventArgs e)
         {
             frmMain.NavigationService.Navigate(new SummaryTable());
 
-            myNavBarControl.SelectedItem = navBarItem_ImageUpload;
+            myNavBarControl.SelectedItem = navBarItem_Inspect_ImageUpload;
 
-            Button_Cancel.Visibility = Visibility.Visible;
-            Button_Upload.Visibility = Visibility.Visible;
+            Set_Button_Label(true);
             Button_Cancel.IsEnabled = false;
 
             Current_Menu_Item = Menu_Item.Inspect_Image_Upload;
+        }
+        private void navBarItem_Test_ImageUpload_Click(object sender, EventArgs e)
+        {
+            frmMain.NavigationService.Navigate(new SummaryTable());
 
-           
+            myNavBarControl.SelectedItem = navBarItem_Test_ImageUpload;
+
+            Set_Button_Label(true);
+            Button_Cancel.IsEnabled = false;
+
+            Current_Menu_Item = Menu_Item.Test_Image_Upload;
+        }
+        private void navBarItem_Maintenance_Report_Click(object sender, EventArgs e)
+        {
+            frmMain.NavigationService.Navigate(new MaintenanceMenu());
+            Set_Button_Label(true);
+        }
+        private void navBarItem_Repair_Report_Click(object sender, EventArgs e)
+        {
+            frmMain.NavigationService.Navigate(new RepairMenu());
+            Set_Button_Label(true);
         }
     }
 }
