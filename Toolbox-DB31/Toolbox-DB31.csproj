@@ -132,14 +132,28 @@
     <Compile Include="Classes\Main_ViewModel.cs" />
     <Compile Include="Classes\RepairMenuViewModel.cs" />
     <Compile Include="Classes\Summary_ViewModel.cs" />
+    <Compile Include="Classes\User_ViewModel.cs" />
     <Compile Include="DB31-Adapter\DB31_Controller.cs" />
     <Compile Include="DB31-Adapter\DB31_Socket.cs" />
+    <Compile Include="DB31-Adapter\DB31_User.cs" />
     <Compile Include="DB31-Adapter\DB31_Xml.cs" />
     <Compile Include="Menus\MaintenanceMenu.xaml.cs" />
     <Compile Include="Menus\RepairMenu.xaml.cs" />
+    <Compile Include="LoginPage.xaml.cs">
+      <DependentUpon>LoginPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PasswordWindow.xaml.cs">
+      <DependentUpon>PasswordWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SummaryTable.xaml.cs">
       <DependentUpon>SummaryTable.xaml</DependentUpon>
     </Compile>
+    <Page Include="LoginPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -157,6 +171,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Menus\RepairMenu.xaml">
+    <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PasswordWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
