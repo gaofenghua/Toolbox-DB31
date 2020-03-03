@@ -91,6 +91,8 @@ namespace Toolbox_DB31
                 Global.g_Main_ViewModel.LabelStatus = "";
                 Global.g_Main_ViewModel.LabelMessage = "";
             }
+
+            Button_SignIn.Visibility = Visibility.Hidden;
         }
         //UserLogin command
         private void myCommandExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -127,6 +129,11 @@ namespace Toolbox_DB31
         {
 
         }
+        private void Button_Click_SignIn(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void OnEvent_Login_Finished(object sender,string sRet)
         {
             //myNavBarControl.ActiveGroup = myNavBarControl.Groups[1];
@@ -171,6 +178,15 @@ namespace Toolbox_DB31
 
             Current_Menu_Item = Menu_Item.Test_Image_Upload;
         }
+
+        private void navBarItem_Repair_SignIn_Click(object sender, EventArgs e)
+        {
+            frmMain.NavigationService.Navigate(null);
+            Set_Button_Label(true);
+            Button_Upload.Visibility = Visibility.Hidden;
+            Button_Cancel.Visibility = Visibility.Hidden;
+            Button_SignIn.Visibility = Visibility.Visible;
+        }
         private void navBarItem_Maintenance_Report_Click(object sender, EventArgs e)
         {
             frmMain.NavigationService.Navigate(new MaintenanceMenu());
@@ -181,5 +197,6 @@ namespace Toolbox_DB31
             frmMain.NavigationService.Navigate(new RepairMenu());
             Set_Button_Label(true);
         }
+
     }
 }

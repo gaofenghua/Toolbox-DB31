@@ -49,7 +49,7 @@
             </dxn:NavBarGroup>
             <dxn:NavBarGroup
                 x:Name="navBarGroup3" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="工程及维保">
-                <dxn:NavBarItem Content="  维修签到" />
+                <dxn:NavBarItem Content="  维修签到" Click="navBarItem_Repair_SignIn_Click"/>
                 <dxn:NavBarItem Content="  维修登记" Click="navBarItem_Maintenance_Report_Click"/>
                 <dxn:NavBarItem Content="  保养登记" Click="navBarItem_Repair_Report_Click"/>
             </dxn:NavBarGroup>
@@ -103,6 +103,12 @@
                 Grid.Column="3"
                 Click="Button_Click_Upload"
                 Content="上传" />
+            <dx:SimpleButton
+                x:Name="Button_SignIn"
+                Grid.Row="1"
+                Grid.Column="3"
+                Click="Button_Click_SignIn"
+                Content="签到" />
         </Grid>
     </Grid>
 

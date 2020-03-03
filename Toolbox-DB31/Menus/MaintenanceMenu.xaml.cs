@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Toolbox_DB31.Classes;
 
 namespace Toolbox_DB31
 {
@@ -19,9 +20,11 @@ namespace Toolbox_DB31
 	/// </summary>
 	public partial class MaintenanceMenu : Page
 	{
-		public MaintenanceMenu()
+        public MaintenanceMenu()
 		{
 			InitializeComponent();
+            DataContext = this;
 		}
-	}
+
+    }
 }
