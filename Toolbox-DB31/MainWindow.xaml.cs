@@ -27,7 +27,7 @@ namespace Toolbox_DB31
 
         LoginPage theLoginPage;
 
-        enum Menu_Item { User_Login, Inspect_Image_Upload,Test_Image_Upload };
+        enum Menu_Item { User_Login, Inspect_Image_Upload,Test_Image_Upload, Maintenance_Report, Repair_Report};
         Menu_Item Current_Menu_Item;
 
         DB31_Controller db31;
@@ -134,7 +134,20 @@ namespace Toolbox_DB31
             //myNavBarControl.ActiveGroup = myNavBarControl.Groups[1];
             //myNavBarControl.SelectedItem = myNavBarControl.Groups[1].Items[0];
 
-            navBarItem_Test_ImageUpload_Click(null, null);
+            switch(Global.g_User.Department)
+            {
+                case DB31_User.Enum_Department.Inspector:
+                    navBarItem_Inspect_ImageUpload_Click(null, null);
+                    break;
+                case DB31_User.Enum_Department.Operator:
+                    navBarItem_Test_ImageUpload_Click(null, null);
+                    break;
+                case DB31_User.Enum_Department.Maintainer:
+                    navBarItem_Maintenance_Report_Click(null, null);
+                    break;
+            }
+                
+           
         }
 
         private void OnEvent_Working_Message(object sender, string sMsg)
@@ -175,8 +188,11 @@ namespace Toolbox_DB31
         }
         private void navBarItem_Maintenance_Report_Click(object sender, EventArgs e)
         {
+            myNavBarControl.SelectedItem = navBarItem_Maintenance_Report;
             frmMain.NavigationService.Navigate(new MaintenanceMenu());
             Set_Button_Label(true);
+
+            Current_Menu_Item = Menu_Item.Maintenance_Report;
         }
         private void navBarItem_Repair_Report_Click(object sender, EventArgs e)
         {
