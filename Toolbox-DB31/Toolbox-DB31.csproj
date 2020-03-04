@@ -135,6 +135,7 @@
     <Compile Include="AVMS-Adapter\AVMSAdapter.cs" />
     <Compile Include="AVMS-Adapter\AVMSCom.cs" />
     <Compile Include="Classes\Camera_Model.cs" />
+    <Compile Include="Classes\FaultRepairMenuViewModel.cs" />
     <Compile Include="Classes\MaintenanceMenuViewModel.cs" />
     <Compile Include="Classes\Main_ViewModel.cs" />
     <Compile Include="Classes\RepairMenuViewModel.cs" />
@@ -144,8 +145,17 @@
     <Compile Include="DB31-Adapter\DB31_Socket.cs" />
     <Compile Include="DB31-Adapter\DB31_User.cs" />
     <Compile Include="DB31-Adapter\DB31_Xml.cs" />
-    <Compile Include="Menus\MaintenanceMenu.xaml.cs" />
-    <Compile Include="Menus\RepairMenu.xaml.cs" />
+    <Compile Include="Menus\FaultRepairMenu.xaml.cs">
+      <DependentUpon>FaultRepairMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Menus\MaintenanceMenu.xaml.cs">
+      <DependentUpon>MaintenanceMenu.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Menus\RepairMenu.xaml.cs">
+      <DependentUpon>RepairMenu.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -173,6 +183,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Menus\FaultRepairMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Menus\MaintenanceMenu.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
