@@ -24,38 +24,90 @@ namespace Toolbox_DB31
     public partial class MainWindow : DevExpress.Xpf.Core.ThemedWindow
     {
         public static RoutedCommand myCommand = new RoutedCommand();
+
+        LoginPage theLoginPage;
+
+        enum Menu_Item { User_Login, Inspect_Image_Upload,Test_Image_Upload };
+        Menu_Item Current_Menu_Item;
+
+        DB31_Controller db31;
+
         public MainWindow()
         {
             InitializeComponent();
             Global.g_Main_ViewModel = (Main_ViewModel) DataContext;
 
+            theLoginPage = new LoginPage();
+            theLoginPage.Event_Login_Finished += OnEvent_Login_Finished;
+            frmMain.NavigationService.Navigate(theLoginPage);
+            Current_Menu_Item = Menu_Item.User_Login;
+
+            //Hide the bottom information
+            Set_Button_Label(false);
+
+            //Go to the default NavBar item
+            //myNavBarControl.ActiveGroup = myNavBarControl.Groups[0];
+            //myNavBarControl.SelectedItem = myNavBarControl.Groups[0].Items[0];
+            //myNavBarControl.ActiveGroup = navBarGroup_system;
+            myNavBarControl.SelectedItem = navBarGroup_system.Items[0];
+           
             //DB31_Controller controller = new DB31_Controller();
             //controller.StartHeartbeat(); 
+            db31 = new DB31_Controller(Global.g_User);
+            db31.Working_Message += OnEvent_Working_Message;
 
-            //AVMS_Com avms = new AVMS_Com();
             AVMSAdapter adapter = new AVMSAdapter();
+	
             adapter.Start("192.168.77.211","admin","admin", "0010123033030");
             adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
         }
 
         private void HandleAVMSEvent(object sender, AVMSEventArgs e)
         {
-            CameraLogStruct evtData = (CameraLogStruct)e.m_eventData;
+            AVMS_ALARM alarmType = e.m_alarmType;
+            DateTime alarmTime = e.m_alarmTime;
+            int channelId = -1;
+            int.TryParse(e.m_cameraId.ToString(), out channelId);
             string picData = e.m_pictureData;
+
         }
 
-        private void btnNew_ItemClick(object sender, DevExpress.Xpf.Bars.ItemClickEventArgs e)
+
+        private void Set_Button_Label(bool bVisible)
         {
-           
+            if (true == bVisible)
+            {
+                Button_Cancel.Visibility = Visibility.Visible;
+                Button_Upload.Visibility = Visibility.Visible;
 
+                Global.g_Main_ViewModel.LabelStatus = "当前用户：";
+                Global.g_Main_ViewModel.LabelStatus += Global.g_User.UserName;
+                Global.g_Main_ViewModel.LabelMessage = "";
+            }
+            else
+            {
+                Button_Cancel.Visibility = Visibility.Hidden;
+                Button_Upload.Visibility = Visibility.Hidden;
+
+                Global.g_Main_ViewModel.LabelStatus = "";
+                Global.g_Main_ViewModel.LabelMessage = "";
+            }
+
+            Button_SignIn.Visibility = Visibility.Hidden;
         }
+        //UserLogin command
         private void myCommandExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             //Actions to perform 
-            Global.g_CameraList.Add(new Camera_Model() { Name = "From command", IsSelected = true });
+            //Global.g_CameraList.Add(new Camera_Model() { Name = "From command", IsSelected = true });
             
-            Global.g_Main_ViewModel.BottomLabel = "当前用户：建设单位\r\n当前时间：";
+            //Global.g_Main_ViewModel.BottomLabel = "当前用户：建设单位\r\n当前时间：";
+            frmMain.NavigationService.Navigate(theLoginPage);
 
+            myNavBarControl.ActiveGroup = navBarGroup_system;
+            myNavBarControl.SelectedItem = navBarGroup_system.Items[0];
+
+            Set_Button_Label(false);
         }
         private void myCommandExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -66,9 +118,86 @@ namespace Toolbox_DB31
             }
         }
 
-        private void simpleButton_Click(object sender, RoutedEventArgs e)
+        private void Button_Click_Upload(object sender, RoutedEventArgs e)
+        {
+            string sRet = db31.Inspect_Image_Upload();
+            if(""!= sRet)
+            {
+                Global.g_Main_ViewModel.LabelStatus = sRet;
+            }
+        }
+        private void Button_Click_Cancel(object sender, RoutedEventArgs e)
         {
 
         }
+        private void Button_Click_SignIn(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void OnEvent_Login_Finished(object sender,string sRet)
+        {
+            //myNavBarControl.ActiveGroup = myNavBarControl.Groups[1];
+            //myNavBarControl.SelectedItem = myNavBarControl.Groups[1].Items[0];
+
+            navBarItem_Test_ImageUpload_Click(null, null);
+        }
+
+        private void OnEvent_Working_Message(object sender, string sMsg)
+        {
+            Global.g_Main_ViewModel.LabelMessage = sMsg;
+        }
+
+        private void navBarItem41_Click(object sender, EventArgs e)
+        {
+            frmMain.NavigationService.Navigate(new SummaryTable());
+
+            myNavBarControl.ActiveGroup = myNavBarControl.Groups[3];
+            myNavBarControl.SelectedItem = myNavBarControl.Groups[3].Items[0];
+
+            Button_Upload.Visibility = Visibility.Visible;
+        }
+        private void navBarItem_Inspect_ImageUpload_Click(object sender, EventArgs e)
+        {
+            frmMain.NavigationService.Navigate(new SummaryTable());
+
+            myNavBarControl.SelectedItem = navBarItem_Inspect_ImageUpload;
+
+            Set_Button_Label(true);
+            Button_Cancel.IsEnabled = false;
+
+            Current_Menu_Item = Menu_Item.Inspect_Image_Upload;
+        }
+        private void navBarItem_Test_ImageUpload_Click(object sender, EventArgs e)
+        {
+            frmMain.NavigationService.Navigate(new SummaryTable());
+
+            myNavBarControl.SelectedItem = navBarItem_Test_ImageUpload;
+
+            Set_Button_Label(true);
+            Button_Cancel.IsEnabled = false;
+
+            Current_Menu_Item = Menu_Item.Test_Image_Upload;
+        }
+
+        private void navBarItem_Repair_SignIn_Click(object sender, EventArgs e)
+        {
+            frmMain.NavigationService.Navigate(null);
+            Set_Button_Label(true);
+            Button_Upload.Visibility = Visibility.Hidden;
+            Button_Cancel.Visibility = Visibility.Hidden;
+            Button_SignIn.Visibility = Visibility.Visible;
+        }
+        private void navBarItem_Maintenance_Report_Click(object sender, EventArgs e)
+        {
+            frmMain.NavigationService.Navigate(new MaintenanceMenu());
+            Set_Button_Label(true);
+        }
+        private void navBarItem_Repair_Report_Click(object sender, EventArgs e)
+        {
+            frmMain.NavigationService.Navigate(new RepairMenu());
+            Set_Button_Label(true);
+        }
+
     }
 }

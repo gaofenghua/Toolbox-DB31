@@ -12,10 +12,10 @@
     xmlns:dxgi="http://schemas.devexpress.com/winfx/2008/xaml/grid/internal"
     xmlns:dxn="http://schemas.devexpress.com/winfx/2008/xaml/navbar"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Width="1250"
-    Height="700"
+    Width="700"
+    Height="500"
     mc:Ignorable="d"
-    Title="MainWindow">
+    Title="安迅士-上海地标DB31">
 
     <dx:ThemedWindow.CommandBindings>
         <CommandBinding
@@ -27,7 +27,8 @@
     <dx:ThemedWindow.DataContext>
         <ViewModel:Main_ViewModel/>
     </dx:ThemedWindow.DataContext>
-    
+
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="180*" />
@@ -40,46 +41,26 @@
             <RowDefinition Height="220*" />
             <RowDefinition Height="80*" />
         </Grid.RowDefinitions>
-        <dxb:BarContainerControl
-            Grid.Row="0"
-            Grid.ColumnSpan="3"
-            ContainerType="Top">
-            <dxb:MainMenuControl Caption="Main Menu">
-                <dxb:BarSubItem Content="系统">
-                    <dxb:BarButtonItem
-                        x:Name="btnNew"
-                        Content="更新设备列表"
-                        Glyph="{dx:DXImage Image=New_16x16.png}"
-                        ItemClick="btnNew_ItemClick" />
-                    <dxb:BarButtonItem
-                        x:Name="btnOpen"
-                        Content="搜索"
-                        Glyph="{dx:DXImage Image=Open_16x16.png}" />
-                </dxb:BarSubItem>
-                <dxb:BarSubItem Content="帮助">
-                    <dxb:BarButtonItem
-                        x:Name="btnCut"
-                        Content="关于本系统"
-                        Glyph="{dx:DXImage Image=Cut_16x16.png}" />
-                </dxb:BarSubItem>
-            </dxb:MainMenuControl>
-        </dxb:BarContainerControl>
-        <dxn:NavBarControl Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="AntiqueWhite">
-            <dxn:NavBarGroup x:Name="navBarGroup1" FontSettings="{dxn:NavBarFontSettings FontSize=25}" Header="图像上传">
-                <dxn:NavBarItem x:Name="navBarItem11" Command="{x:Static local:MainWindow.myCommand}" Content="  测试图像上传" />
-                <dxn:NavBarItem x:Name="navBarItem12" Content="  验收图像上传" />
-                <dxn:NavBarItem x:Name="navBarItem13" Content="  维保图像上传" />
-                <dxn:NavBarItem x:Name="navBarItem14" Content="  报警图像上传" />
+
+        <dxn:NavBarControl Name="myNavBarControl" Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="AntiqueWhite">
+            <dxn:NavBarGroup
+                x:Name="navBarGroup2" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="管理部门" >
+                <dxn:NavBarItem x:Name="navBarItem_Inspect_ImageUpload" Content="  验收图像上传" Click="navBarItem_Inspect_ImageUpload_Click" />
             </dxn:NavBarGroup>
             <dxn:NavBarGroup
-                x:Name="navBarGroup2" FontSettings="{dxn:NavBarFontSettings FontSize=25}" Header="操作日志">
-                <dxn:NavBarItem x:Name="navBarItem4" Content="日志设置" />
-                <dxn:NavBarItem x:Name="navBarItem5" Content="操作日志上传" />
+                x:Name="navBarGroup3" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="工程及维保">
+                <dxn:NavBarItem Content="  维修签到" Click="navBarItem_Repair_SignIn_Click"/>
+                <dxn:NavBarItem Content="  维修登记" Click="navBarItem_Maintenance_Report_Click"/>
+                <dxn:NavBarItem Content="  保养登记" Click="navBarItem_Repair_Report_Click"/>
             </dxn:NavBarGroup>
             <dxn:NavBarGroup
-                x:Name="navBarGroup3" FontSettings="{dxn:NavBarFontSettings FontSize=25}" Header="人员管理">
-                <dxn:NavBarItem x:Name="navBarItem31" Content="人员登录" />
-                <dxn:NavBarItem x:Name="navBarItem32" Content="密码管理" />
+                x:Name="navBarGroup4" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="建设使用单位">
+                <dxn:NavBarItem x:Name="navBarItem_Test_ImageUpload" Content="  测试图像上传" Click="navBarItem_Test_ImageUpload_Click"/>
+                <dxn:NavBarItem x:Name="navBarItem41" Content="  故障报修" Click="navBarItem41_Click" />
+            </dxn:NavBarGroup>
+            <dxn:NavBarGroup x:Name="navBarGroup_system" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="系统">
+                <dxn:NavBarItem x:Name="navBarItem11" Command="{x:Static local:MainWindow.myCommand}" Content="  人员登录" />
+                <dxn:NavBarItem x:Name="navBarItem15" Content="  系统设置" />
             </dxn:NavBarGroup>
             <dxn:NavBarControl.View>
                 <dxn:SideBarView/>
@@ -93,9 +74,10 @@
             <Frame
                 Name="frmMain"
                 NavigationUIVisibility="Hidden"
-                Source="SummaryTable.xaml" />
+                Source="" />
         </Grid>
-        <Label Grid.Row="3" Grid.Column="1" Content="{Binding BottomLabel}" Name="myLabel" />
+        <Label Grid.Row="3" Grid.Column="1" Content="{Binding LabelStatus}" Name="LabelStatus" Margin="10,0,0,28" />
+        <Label Grid.Row="3" Grid.Column="1" Content="{Binding LabelMessage}" Name="LabelMessage" Margin="10,28,0,0" />
         <Grid Grid.Row="3" Grid.Column="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="30*" />
@@ -110,11 +92,23 @@
                 <RowDefinition Height="30*" />
             </Grid.RowDefinitions>
             <dx:SimpleButton
-                x:Name="simpleButton"
+                x:Name="Button_Cancel"
+                Grid.Row="1"
+                Grid.Column="1"
+                Click="Button_Click_Cancel"
+                Content="取消" />
+            <dx:SimpleButton
+                x:Name="Button_Upload"
                 Grid.Row="1"
                 Grid.Column="3"
-                Click="simpleButton_Click"
+                Click="Button_Click_Upload"
                 Content="上传" />
+            <dx:SimpleButton
+                x:Name="Button_SignIn"
+                Grid.Row="1"
+                Grid.Column="3"
+                Click="Button_Click_SignIn"
+                Content="签到" />
         </Grid>
     </Grid>
 
