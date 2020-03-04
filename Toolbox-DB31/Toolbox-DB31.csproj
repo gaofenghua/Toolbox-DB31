@@ -46,9 +46,32 @@
       <HintPath>C:\Program Files (x86)\DevExpress 19.1\Components\Bin\Framework\DevExpress.Xpf.NavBar.v19.1.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Xpf.Themes.MetropolisDark.v19.1, Version=19.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DeviceModel">
+      <HintPath>..\input\input\library\dll\x64\DeviceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="DeviceModel.Security, Version=7.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\input\input\library\dll\x64\DeviceModel.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Farm.Security, Version=7.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\input\input\library\dll\x64\Farm.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="SecurityLib, Version=7.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\input\input\library\dll\x64\SecurityLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Seer, Version=7.0.0.0, Culture=neutral, PublicKeyToken=6c293b97cf6869d0, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\input\input\library\dll\x64\Seer.dll</HintPath>
+    </Reference>
     <Reference Include="Seer.BaseLibCS, Version=7.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\Seer.BaseLibCS.dll</HintPath>
+    </Reference>
+    <Reference Include="Seer.BaseLibCS.XmlSerializers, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\input\input\library\dll\x64\Seer.BaseLibCS.XmlSerializers.dll</HintPath>
     </Reference>
     <Reference Include="Seer.Common, Version=7.0.0.0, Culture=neutral, PublicKeyToken=6c293b97cf6869d0, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
@@ -65,6 +88,9 @@
     <Reference Include="Seer.SDK.Core">
       <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\Seer.SDK.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Seer.SDK.NotificationMonitors">
+      <HintPath>..\input\input\library\dll\x64\Seer.SDK.NotificationMonitors.dll</HintPath>
+    </Reference>
     <Reference Include="socket.framework">
       <HintPath>..\..\socket.framework-master\socket.framework\bin\Debug\socket.framework.dll</HintPath>
     </Reference>
@@ -72,6 +98,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -90,6 +117,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AVMS-Adapter\AVMSAdapter.cs" />
+    <Compile Include="AVMS-Adapter\AVMSCom.cs" />
     <Compile Include="AVMS-Adapter\AVMS_Com.cs" />
     <Compile Include="Classes\Camera_Model.cs" />
     <Compile Include="Classes\Main_ViewModel.cs" />

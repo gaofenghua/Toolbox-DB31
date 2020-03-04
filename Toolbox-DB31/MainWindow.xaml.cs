@@ -34,7 +34,7 @@ namespace Toolbox_DB31
 
             //AVMS_Com avms = new AVMS_Com();
             AVMSAdapter adapter = new AVMSAdapter();
-            adapter.Start("127.0.0.1","admin","admin", "0010123033030");
+            adapter.Start("192.168.77.211","admin","admin", "0010123033030");
             adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
         }
 
