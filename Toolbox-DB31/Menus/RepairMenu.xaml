@@ -10,65 +10,74 @@
              xmlns:local="clr-namespace:Toolbox_DB31"
              xmlns:ViewModels="clr-namespace:Toolbox_DB31.Classes"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="400" d:DesignWidth="400"
              Title="RepairMenu">
     <Page.DataContext>
         <ViewModels:RepairMenuViewModel/>
     </Page.DataContext>
-    <Grid>
-        <dxlc:LayoutControl Orientation="Vertical" ItemSpace="5" Padding="0">
-            <GroupBox Header="维修项目" VerticalAlignment="Top">
-                <dxlc:LayoutGroup Orientation="Vertical">
-                    <dxlc:LayoutGroup>
-                        <dxlc:LayoutItem>
-                            <dxe:CheckEdit Content="视频监控" IsChecked="{Binding IsVideoMonitorEnabled, Mode=TwoWay}" IsTabStop="False" IsHitTestVisible="False" />
-                        </dxlc:LayoutItem>
-                        <dxlc:LayoutItem>
-                            <dxe:CheckEdit Content="周界报警" IsChecked="{Binding IsPerimeterAlarmEnabled, Mode=TwoWay}" IsTabStop="False" IsHitTestVisible="False" />
-                        </dxlc:LayoutItem>
-                        <dxlc:LayoutItem>
-                            <dxe:CheckEdit Content="入侵报警" IsChecked="{Binding IsIntruderAlarmEnabled, Mode=TwoWay}" IsTabStop="False" IsHitTestVisible="False" />
-                        </dxlc:LayoutItem>
-                        <dxlc:LayoutItem>
-                            <dxe:CheckEdit Content="楼宇对讲" IsChecked="{Binding IsBuildingIntercomEnabled, Mode=TwoWay}" IsTabStop="False" IsHitTestVisible="False" />
-                        </dxlc:LayoutItem>
-                    </dxlc:LayoutGroup>
-                    <dxlc:LayoutGroup>
-                        <dxlc:LayoutItem>
-                            <dxe:CheckEdit Content="门禁管理" IsChecked="{Binding IsAccessManagementEnabled, Mode=TwoWay}" IsTabStop="False" IsHitTestVisible="False" />
-                        </dxlc:LayoutItem>
-                        <dxlc:LayoutItem>
-                            <dxe:CheckEdit Content="出入口控制" IsChecked="{Binding IsEntranceControlEnabled, Mode=TwoWay}" IsTabStop="False" IsHitTestVisible="False" />
-                        </dxlc:LayoutItem>
-                        <dxlc:LayoutItem>
-                            <dxe:CheckEdit Content="电子巡更" IsChecked="{Binding IsGuardTourEnabled, Mode=TwoWay}" IsTabStop="False" IsHitTestVisible="False" />
-                        </dxlc:LayoutItem>
-                        <dxlc:LayoutItem>
-                            <dxe:CheckEdit Content="其他" IsChecked="{Binding IsOthersEnabled, Mode=TwoWay}" IsTabStop="False" IsHitTestVisible="False" />
-                        </dxlc:LayoutItem>
-                    </dxlc:LayoutGroup>
+    <Grid Grid.Row="3" Grid.Column="3">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20*"/>
+            <RowDefinition Height="360*"/>
+            <RowDefinition Height="20*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20*"/>
+            <ColumnDefinition Width="360*"/>
+            <ColumnDefinition Width="20*"/>
+        </Grid.ColumnDefinitions>
+
+        <GroupBox Grid.Row="1" Grid.Column="1"  Header="维修项目" Height="120" Margin="0,0,0,0" VerticalAlignment="Top" Foreground="#BFFFFFFF">
+            <dxlc:LayoutGroup  Margin="2,10,2,10"  Orientation="Vertical">
+                <dxlc:LayoutGroup>
+                    <dxlc:LayoutItem>
+                        <dxe:CheckEdit Content="视频监控" EditValue="{Binding Path=IsVideoMonitorEnabled, Mode=TwoWay}" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem>
+                        <dxe:CheckEdit Content="周界报警" EditValue="{Binding Path=IsPerimeterAlarmEnabled, Mode=TwoWay}" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem>
+                        <dxe:CheckEdit Content="入侵报警" EditValue="{Binding Path=IsIntruderAlarmEnabled, Mode=TwoWay}" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem>
+                        <dxe:CheckEdit Content="楼宇对讲" EditValue="{Binding Path=IsBuildingIntercomEnabled, Mode=TwoWay}" />
+                    </dxlc:LayoutItem>
                 </dxlc:LayoutGroup>
-            </GroupBox>
-            <GroupBox Header="维修记录" VerticalAlignment="Top">
-                <dxlc:LayoutItem>
-                    <TextBox x:Name="tbRepairRecords" TextWrapping="Wrap" Text="{Binding RepairRecords, Mode=TwoWay}"  MinLines="3" VerticalScrollBarVisibility="Visible" />
-                </dxlc:LayoutItem>
-            </GroupBox>
-            <GroupBox Header="维修情况" VerticalAlignment="Top">
-                <dxe:ListBoxEdit x:Name="statusTypeListBox" Background="{x:Null}" ShowBorder="False" DisplayMember="Name" SelectedIndex="0">
-                    <dxe:ListBoxEditItem Content="未修复" />
-                    <dxe:ListBoxEditItem Content="部分修复" />
-                    <dxe:ListBoxEditItem Content="完全修复" />
-                    <dxe:ListBoxEdit.StyleSettings>
-                        <dxe:RadioListBoxEditStyleSettings />
-                    </dxe:ListBoxEdit.StyleSettings>
-                    <dxe:ListBoxEdit.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </dxe:ListBoxEdit.ItemsPanel>
-                </dxe:ListBoxEdit>
-            </GroupBox>
-        </dxlc:LayoutControl>
+                <dxlc:LayoutGroup>
+                    <dxlc:LayoutItem>
+                        <dxe:CheckEdit Content="门禁管理" EditValue="{Binding Path=IsAccessManagementEnabled, Mode=TwoWay}" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem>
+                        <dxe:CheckEdit Content="出入口控制" EditValue="{Binding Path=IsEntranceControlEnabled, Mode=TwoWay}" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem>
+                        <dxe:CheckEdit Content="电子巡更" EditValue="{Binding Path=IsGuardTourEnabled, Mode=TwoWay}" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem>
+                        <dxe:CheckEdit Content="其他" EditValue="{Binding Path=IsOthersEnabled, Mode=TwoWay}" />
+                    </dxlc:LayoutItem>
+                </dxlc:LayoutGroup>
+            </dxlc:LayoutGroup>
+        </GroupBox>
+        <GroupBox Grid.Row="1" Grid.Column="1"  Header="维修记录"  Height="130" Margin="0,130,0,0"  VerticalAlignment="Top"  Foreground="#BFFFFFFF">
+            <dxlc:LayoutItem Height="80" Margin="2,10,2,10">
+                <TextBox x:Name="tbRepairRecords" TextWrapping="Wrap" Text="{Binding Path=RepairRecords, Mode=TwoWay}"  MinLines="3" VerticalScrollBarVisibility="Visible" />
+            </dxlc:LayoutItem>
+        </GroupBox>
+        <GroupBox Grid.Row="1" Grid.Column="1" Header="维修情况"  Height="60" Margin="0,270,0,0"  VerticalAlignment="Top"  Foreground="#BFFFFFFF">
+            <dxe:ListBoxEdit x:Name="statusTypeListBox" ShowBorder="False" DisplayMember="Name" SelectedIndex="0">
+                <dxe:ListBoxEditItem Name="rdoNotRepaired" Content="未修复" Selected="rdoNotRepired_Selected" />
+                <dxe:ListBoxEditItem Name="rdoPartRepaired"  Content="部分修复" Selected="rdoPartRepired_Selected" />
+                <dxe:ListBoxEditItem Name="rdoTotalRepaired"  Content="完全修复" Selected="rdoTotalRepired_Selected" />
+                <dxe:ListBoxEdit.StyleSettings>
+                    <dxe:RadioListBoxEditStyleSettings />
+                </dxe:ListBoxEdit.StyleSettings>
+                <dxe:ListBoxEdit.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </dxe:ListBoxEdit.ItemsPanel>
+            </dxe:ListBoxEdit>
+        </GroupBox>
     </Grid>
 </Page>
