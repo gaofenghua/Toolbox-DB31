@@ -149,12 +149,8 @@ namespace Toolbox_DB31
 
         private void navBarItem41_Click(object sender, EventArgs e)
         {
-            frmMain.NavigationService.Navigate(new SummaryTable());
-
-            myNavBarControl.ActiveGroup = myNavBarControl.Groups[3];
-            myNavBarControl.SelectedItem = myNavBarControl.Groups[3].Items[0];
-
-            Button_Upload.Visibility = Visibility.Visible;
+            frmMain.NavigationService.Navigate(new FaultRepairMenu());
+            Set_Button_Label(false);
         }
         private void navBarItem_Inspect_ImageUpload_Click(object sender, EventArgs e)
         {

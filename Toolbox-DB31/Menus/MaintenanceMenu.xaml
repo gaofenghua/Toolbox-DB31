@@ -58,7 +58,7 @@
                                 <dxe:CheckEdit Content="入侵报警" EditValue="{Binding Path=IsIntruderAlarmEnabled, Mode=TwoWay}" />
                             </dxlc:LayoutItem>
                             <dxlc:LayoutItem>
-                                <dxe:CheckEdit Content="楼宇对讲" EditValue="{Binding Path=IsVideoMonitorEnabled, Mode=TwoWay}" />
+                                <dxe:CheckEdit Content="楼宇对讲" EditValue="{Binding Path=IsBuildingIntercomEnabled, Mode=TwoWay}" />
                             </dxlc:LayoutItem>
                         </dxlc:LayoutGroup>
                         <dxlc:LayoutGroup>
