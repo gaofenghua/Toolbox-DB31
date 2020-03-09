@@ -56,10 +56,8 @@ namespace Toolbox_DB31
             db31 = new DB31_Controller(Global.g_User);
             db31.Working_Message += OnEvent_Working_Message;
 
-            AVMSAdapter adapter = new AVMSAdapter();
-	
-            adapter.Start("192.168.77.211","admin","admin", "0010123033030");
-            adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
+            Global.g_VMS_Adapter.Start("192.168.77.211","admin","admin", "0010123033030");
+            Global.g_VMS_Adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
         }
 
         private void HandleAVMSEvent(object sender, AVMSEventArgs e)
@@ -128,7 +126,10 @@ namespace Toolbox_DB31
         }
         private void Button_Click_Cancel(object sender, RoutedEventArgs e)
         {
-
+            if(db31.WorkingStatus == DB31_Controller.Working_Status.Working)
+            {
+                db31.Stop_Uploading_Image = true;
+            }
         }
         private void Button_Click_SignIn(object sender, RoutedEventArgs e)
         {
@@ -164,7 +165,7 @@ namespace Toolbox_DB31
             myNavBarControl.SelectedItem = navBarItem_Inspect_ImageUpload;
 
             Set_Button_Label(true);
-            Button_Cancel.IsEnabled = false;
+            //Button_Cancel.IsEnabled = false;
 
             Current_Menu_Item = Menu_Item.Inspect_Image_Upload;
         }
@@ -175,7 +176,7 @@ namespace Toolbox_DB31
             myNavBarControl.SelectedItem = navBarItem_Test_ImageUpload;
 
             Set_Button_Label(true);
-            Button_Cancel.IsEnabled = false;
+            //Button_Cancel.IsEnabled = false;
 
             Current_Menu_Item = Menu_Item.Test_Image_Upload;
         }
