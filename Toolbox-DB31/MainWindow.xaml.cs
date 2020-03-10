@@ -56,24 +56,21 @@ namespace Toolbox_DB31
             db31 = new DB31_Controller(Global.g_User);
             db31.Working_Message += OnEvent_Working_Message;
 
-            //AVMS_Com avms = new AVMS_Com();
-
-            //AVMSAdapter adapter = new AVMSAdapter();
-            //adapter.Start("127.0.0.1","admin","admin", "0010123033030");
-            //adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
+            Global.g_VMS_Adapter.Start("192.168.77.211","admin","admin", "0010123033030");
+            Global.g_VMS_Adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
         }
 
-        //private void HandleAVMSEvent(object sender, AVMSEventArgs e)
-        //{
-        //    AVMS_ALARM alarmType = e.m_alarmType;
-        //    DateTime alarmTime = e.m_alarmTime;
-        //    int channelId = -1;
-        //    int.TryParse(e.m_cameraId.ToString(), out channelId);
-        //    string picData = e.m_pictureData;
-            
-        //}
+        private void HandleAVMSEvent(object sender, AVMSEventArgs e)
+        {
+            AVMS_ALARM alarmType = e.m_alarmType;
+            DateTime alarmTime = e.m_alarmTime;
+            int channelId = -1;
+            int.TryParse(e.m_cameraId.ToString(), out channelId);
+            string picData = e.m_pictureData;
 
-   
+        }
+
+
         private void Set_Button_Label(bool bVisible)
         {
             if (true == bVisible)
@@ -93,6 +90,8 @@ namespace Toolbox_DB31
                 Global.g_Main_ViewModel.LabelStatus = "";
                 Global.g_Main_ViewModel.LabelMessage = "";
             }
+
+            Button_SignIn.Visibility = Visibility.Hidden;
         }
         //UserLogin command
         private void myCommandExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -127,8 +126,16 @@ namespace Toolbox_DB31
         }
         private void Button_Click_Cancel(object sender, RoutedEventArgs e)
         {
+            if(db31.WorkingStatus == DB31_Controller.Working_Status.Working)
+            {
+                db31.Stop_Uploading_Image = true;
+            }
+        }
+        private void Button_Click_SignIn(object sender, RoutedEventArgs e)
+        {
 
         }
+
         private void OnEvent_Login_Finished(object sender,string sRet)
         {
             //myNavBarControl.ActiveGroup = myNavBarControl.Groups[1];
@@ -171,7 +178,7 @@ namespace Toolbox_DB31
             myNavBarControl.SelectedItem = navBarItem_Inspect_ImageUpload;
 
             Set_Button_Label(true);
-            Button_Cancel.IsEnabled = false;
+            //Button_Cancel.IsEnabled = false;
 
             Current_Menu_Item = Menu_Item.Inspect_Image_Upload;
         }
@@ -182,9 +189,18 @@ namespace Toolbox_DB31
             myNavBarControl.SelectedItem = navBarItem_Test_ImageUpload;
 
             Set_Button_Label(true);
-            Button_Cancel.IsEnabled = false;
+            //Button_Cancel.IsEnabled = false;
 
             Current_Menu_Item = Menu_Item.Test_Image_Upload;
+        }
+
+        private void navBarItem_Repair_SignIn_Click(object sender, EventArgs e)
+        {
+            frmMain.NavigationService.Navigate(null);
+            Set_Button_Label(true);
+            Button_Upload.Visibility = Visibility.Hidden;
+            Button_Cancel.Visibility = Visibility.Hidden;
+            Button_SignIn.Visibility = Visibility.Visible;
         }
         private void navBarItem_Maintenance_Report_Click(object sender, EventArgs e)
         {
@@ -199,5 +215,6 @@ namespace Toolbox_DB31
             frmMain.NavigationService.Navigate(new RepairMenu());
             Set_Button_Label(true);
         }
+
     }
 }
