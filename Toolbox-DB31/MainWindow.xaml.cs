@@ -35,8 +35,9 @@ namespace Toolbox_DB31
         public MainWindow()
         {
             InitializeComponent();
-            Global.g_Main_ViewModel = (Main_ViewModel) DataContext;
 
+            Global.g_Main_ViewModel = (Main_ViewModel)DataContext;
+            
             theLoginPage = new LoginPage();
             theLoginPage.Event_Login_Finished += OnEvent_Login_Finished;
             frmMain.NavigationService.Navigate(theLoginPage);
@@ -56,8 +57,8 @@ namespace Toolbox_DB31
             db31 = new DB31_Controller(Global.g_User);
             db31.Working_Message += OnEvent_Working_Message;
 
-            Global.g_VMS_Adapter.Start("192.168.77.211","admin","admin", "0010123033030");
-            Global.g_VMS_Adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
+            //Global.g_VMS_Adapter.Start("192.168.77.211","admin","admin", "0010123033030");
+            //Global.g_VMS_Adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
         }
 
         private void HandleAVMSEvent(object sender, AVMSEventArgs e)
