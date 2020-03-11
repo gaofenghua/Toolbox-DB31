@@ -462,10 +462,10 @@ namespace Toolbox_DB31.AVMS_Adapter
 
     public class AVMSEventArgs : EventArgs
     {
-        public AVMS_ALARM m_alarmType { get; }
-        public DateTime m_alarmTime { get; }
-        public uint m_cameraId { get; }
-        public string m_pictureData { get; }
+        public AVMS_ALARM m_alarmType { get; set; }
+        public DateTime m_alarmTime { get; set; }
+        public uint m_cameraId { get; set; }
+        public string m_pictureData { get; set; }
 
         public AVMSEventArgs(AVMS_ALARM type, DateTime time, uint id, string data)
         {
