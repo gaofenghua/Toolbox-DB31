@@ -27,8 +27,8 @@
             <ColumnDefinition Width="20*"/>
         </Grid.ColumnDefinitions>
 
-        <GroupBox Grid.Row="1" Grid.Column="1"  Header="维修项目" Height="120" Margin="0,0,0,0" VerticalAlignment="Top" Foreground="#BFFFFFFF">
-            <dxlc:LayoutGroup  Margin="2,10,2,10"  Orientation="Vertical">
+        <GroupBox Grid.Row="1" Grid.Column="1" Header="维修项目" Height="120" Margin="0,0,0,0" VerticalAlignment="Top" Foreground="#BFFFFFFF">
+            <dxlc:LayoutGroup  Margin="2,10,2,10" Orientation="Vertical">
                 <dxlc:LayoutGroup>
                     <dxlc:LayoutItem>
                         <dxe:CheckEdit Content="视频监控" EditValue="{Binding Path=IsVideoMonitorEnabled, Mode=TwoWay}" />
@@ -59,16 +59,16 @@
                 </dxlc:LayoutGroup>
             </dxlc:LayoutGroup>
         </GroupBox>
-        <GroupBox Grid.Row="1" Grid.Column="1"  Header="维修记录"  Height="130" Margin="0,130,0,0"  VerticalAlignment="Top"  Foreground="#BFFFFFFF">
+        <GroupBox Grid.Row="1" Grid.Column="1"  Header="维修记录" Height="130" Margin="0,130,0,0"  VerticalAlignment="Top" Foreground="#BFFFFFFF">
             <dxlc:LayoutItem Height="80" Margin="2,10,2,10">
-                <TextBox x:Name="tbRepairRecords" TextWrapping="Wrap" Text="{Binding Path=RepairRecords, Mode=TwoWay}"  MinLines="3" VerticalScrollBarVisibility="Visible" />
+                <TextBox x:Name="tbRepairRecords" TextWrapping="Wrap" Text="{Binding Path=RepairRecords, Mode=TwoWay}" AcceptsReturn="True" MinLines="3" VerticalScrollBarVisibility="Visible" />
             </dxlc:LayoutItem>
         </GroupBox>
-        <GroupBox Grid.Row="1" Grid.Column="1" Header="维修情况"  Height="60" Margin="0,270,0,0"  VerticalAlignment="Top"  Foreground="#BFFFFFFF">
+        <GroupBox Grid.Row="1" Grid.Column="1" Header="维修情况" Height="60" Margin="0,270,0,0"  VerticalAlignment="Top" Foreground="#BFFFFFFF">
             <dxe:ListBoxEdit x:Name="statusTypeListBox" ShowBorder="False" DisplayMember="Name" SelectedIndex="0">
                 <dxe:ListBoxEditItem Name="rdoNotRepaired" Content="未修复" Selected="rdoNotRepired_Selected" />
-                <dxe:ListBoxEditItem Name="rdoPartRepaired"  Content="部分修复" Selected="rdoPartRepired_Selected" />
-                <dxe:ListBoxEditItem Name="rdoTotalRepaired"  Content="完全修复" Selected="rdoTotalRepired_Selected" />
+                <dxe:ListBoxEditItem Name="rdoPartRepaired" Content="部分修复" Selected="rdoPartRepired_Selected" />
+                <dxe:ListBoxEditItem Name="rdoTotalRepaired" Content="完全修复" Selected="rdoTotalRepired_Selected" />
                 <dxe:ListBoxEdit.StyleSettings>
                     <dxe:RadioListBoxEditStyleSettings />
                 </dxe:ListBoxEdit.StyleSettings>

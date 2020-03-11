@@ -151,7 +151,7 @@ namespace Toolbox_DB31
         private void navBarItem41_Click(object sender, EventArgs e)
         {
             frmMain.NavigationService.Navigate(new FaultRepairMenu());
-            Set_Button_Label(false);
+            Set_Button_Label(true);
         }
         private void navBarItem_Inspect_ImageUpload_Click(object sender, EventArgs e)
         {
