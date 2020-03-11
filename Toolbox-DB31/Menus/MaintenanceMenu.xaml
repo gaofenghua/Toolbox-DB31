@@ -33,7 +33,7 @@
             <dxlc:LayoutControl Orientation="Vertical" Padding="0">
                 <dxlc:LayoutItem Margin="2,10,2,2" HorizontalAlignment="Right">
                     <dxe:ListBoxEdit x:Name="statusTypeListBox" ShowBorder="False" DisplayMember="Name" SelectedIndex="0">
-                        <dxe:ListBoxEditItem Name="rdoRegular"  Content="日常保养" Selected="rdoRegular_Selected" />
+                        <dxe:ListBoxEditItem Name="rdoRegular" Content="日常保养" Selected="rdoRegular_Selected" />
                         <dxe:ListBoxEditItem  Name="rdoSpecial" Content="专项保养" Selected="rdoSpecial_Selected" />
                         <dxe:ListBoxEdit.StyleSettings>
                             <dxe:RadioListBoxEditStyleSettings />
@@ -79,9 +79,9 @@
                 </dxlc:LayoutItem>
             </dxlc:LayoutControl>
         </GroupBox>
-        <GroupBox Grid.Row="1" Grid.Column="1"  Header="保养记录" Height="180" Margin="0,160,0,0"  VerticalAlignment="Top" Foreground="#BFFFFFFF">
+        <GroupBox Grid.Row="1" Grid.Column="1" Header="保养记录" Height="180" Margin="0,160,0,0" VerticalAlignment="Top" Foreground="#BFFFFFFF">
             <dxlc:LayoutItem Height="130" Margin="2,10,2,10" >
-                <TextBox x:Name="tbMaintenanceRecords" TextWrapping="Wrap" Text="{Binding Path=MaintenanceRecords, Mode=TwoWay}"  MinLines="6" VerticalScrollBarVisibility="Visible" />
+                <TextBox x:Name="tbMaintenanceRecords" TextWrapping="Wrap" Text="{Binding Path=MaintenanceRecords, Mode=TwoWay}" AcceptsReturn="True" MinLines="6" VerticalScrollBarVisibility="Visible" />
             </dxlc:LayoutItem>
         </GroupBox>
     </Grid>

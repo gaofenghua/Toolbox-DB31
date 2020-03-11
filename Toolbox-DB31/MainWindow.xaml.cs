@@ -59,6 +59,10 @@ namespace Toolbox_DB31
 
             //Global.g_VMS_Adapter.Start("192.168.77.211","admin","admin", "0010123033030");
             //Global.g_VMS_Adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
+            DeviceSummary.CfgFilePath = @".\Configuration.csv";
+            AVMSAdapter adapter = new AVMSAdapter();
+            adapter.Start("127.0.0.1", "admin", "admin", "0010123033030");
+            adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
         }
 
         private void HandleAVMSEvent(object sender, AVMSEventArgs e)
@@ -166,7 +170,7 @@ namespace Toolbox_DB31
         private void navBarItem41_Click(object sender, EventArgs e)
         {
             frmMain.NavigationService.Navigate(new FaultRepairMenu());
-            Set_Button_Label(false);
+            Set_Button_Label(true);
         }
         private void navBarItem_Inspect_ImageUpload_Click(object sender, EventArgs e)
         {

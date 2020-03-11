@@ -24,45 +24,5 @@ namespace Toolbox_DB31
         {
             InitializeComponent();
         }
-
-        private void Button_Click_VideoMonitor(object sender, RoutedEventArgs e)
-        {
-            //
-        }
-
-        private void Button_Click_PerimeterAlarm(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Button_Click_IntruderAlarm(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Button_Click_BuildingIntercom(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Button_Click_AccessManagement(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Button_Click_EntranceControl(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Button_Click_GuardTour(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Button_Click_Others(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

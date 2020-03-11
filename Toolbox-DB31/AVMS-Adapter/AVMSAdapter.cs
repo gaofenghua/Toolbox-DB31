@@ -77,10 +77,7 @@ namespace Toolbox_DB31.AVMS_Adapter
         {
             App.Current.Dispatcher.BeginInvoke((Action)delegate ()
             {
-                foreach (KeyValuePair<uint, CCamera> item in m_cameraList)
-                {
-                    Global.g_CameraList.Add(new Camera_Model() { AgentID = m_agentId, ChannelNumber = (int)item.Key, Name = item.Value.Name, Status = "在线", IsSelected = false });
-                }
+                DeviceSummary.UpdateTable(m_cameraList);
             });
         }
 
@@ -316,16 +313,17 @@ namespace Toolbox_DB31.AVMS_Adapter
             }
             DateTime clientTime = TimeUtils.DateTimeFromUTC(cameraMessageStruct.m_utcTime);
             DateTime serverTime = m_cameraList[camId].Server.ToLocalTime(clientTime);
-            CCamera cam = m_cameraList[camId];
-            string picData = GetEncodedSnapshot(cam, DateTime.Now, true);
+            //CCamera cam = m_cameraList[camId];
+            string picData = GetEncodedSnapshot((int)camId, DateTime.Now, true);
 
             AVMSEventArgs args = new AVMSEventArgs(alarmType, serverTime, camId, picData);
             this.OnAVMSTriggered(this, args);
         }
 
-        public string GetEncodedSnapshot(CCamera cam, DateTime dt, bool bSave)
+        //public string GetEncodedSnapshot(CCamera cam, DateTime dt, bool bSave)
+        public string GetEncodedSnapshot(int camId, DateTime dt, bool bSave)
         {
-            byte[] byteJpg = GetImageStream(cam, dt);
+            byte[] byteJpg = GetImageStream(camId, dt);
             if (null == byteJpg)
             {
                 PrintLog("TakeSnapshot : not available.");
@@ -340,7 +338,8 @@ namespace Toolbox_DB31.AVMS_Adapter
                 {
                     Directory.CreateDirectory("image");
                 }
-                string fileName = string.Format("cam{0}_{1}.jpg", cam.CameraId.ToString(), dt.ToString("yyyyMMddHHmmss"));
+                //string fileName = string.Format("cam{0}_{1}.jpg", cam.CameraId.ToString(), dt.ToString("yyyyMMddHHmmss"));
+                string fileName = string.Format("cam{0}_{1}.jpg", camId.ToString(), dt.ToString("yyyyMMddHHmmss"));
                 string filePath = System.Windows.Forms.Application.StartupPath.ToString() + @"\image\" + fileName;
                 image.Save(filePath, ImageFormat.Jpeg);
             }
@@ -375,7 +374,8 @@ namespace Toolbox_DB31.AVMS_Adapter
             return byteSignals;
         }
 
-        public byte[] GetImageStream(CCamera cam, DateTime dt)
+        //public byte[] GetImageStream(CCamera cam, DateTime dt)
+        public byte[] GetImageStream(int camId, DateTime dt)
         {
             if (null == m_avms)
             {
@@ -383,6 +383,13 @@ namespace Toolbox_DB31.AVMS_Adapter
                 return null;
             }
 
+            if (!m_cameraList.ContainsKey((uint)camId))
+            {
+                PrintLog("Invalid camera number!");
+                return null;
+            }
+
+            CCamera cam = m_cameraList[(uint)camId];
             DateTime jpgTime = cam.Server.ToUtcTime(dt);
             bool bViewPrivateVideo = cam.CanAccess(DeviceRight.ViewPrivateVideo);
             string sFilename = string.Empty;

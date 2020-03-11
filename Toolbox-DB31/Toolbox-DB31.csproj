@@ -152,6 +152,7 @@
     <Compile Include="Classes\Summary_ViewModel.cs" />
     <Compile Include="Classes\User_ViewModel.cs" />
     <Compile Include="DB31-Adapter\DB31_Controller.cs" />
+    <Compile Include="AVMS-Adapter\DeviceSummary.cs" />
     <Compile Include="DB31-Adapter\DB31_Socket.cs" />
     <Compile Include="DB31-Adapter\DB31_User.cs" />
     <Compile Include="DB31-Adapter\DB31_Xml.cs" />
