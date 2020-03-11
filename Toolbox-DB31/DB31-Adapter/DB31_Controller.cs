@@ -16,11 +16,12 @@ namespace Toolbox_DB31.DB31_Adapter
             Inspection_Image_Upload = 33
         };
 
-        enum Working_Status { Available, Working };
-
-        private bool Stop_Uploading_Image = false;
+        public enum Working_Status { Available, Working };
+        public Working_Status WorkingStatus = Working_Status.Available;
+        public bool Stop_Uploading_Image = false;
 
         public event Action<object, string> Working_Message;
+        private string sMsg;
 
         DB31_User user = null;
 
@@ -48,6 +49,7 @@ namespace Toolbox_DB31.DB31_Adapter
 
         private void Upload_Image(OperationCmd_Type OpeType)
         {
+            WorkingStatus = Working_Status.Working;
             // Multithread notes:
             //dispatcher needed
             
@@ -72,16 +74,21 @@ namespace Toolbox_DB31.DB31_Adapter
             {
                 if(true == Stop_Uploading_Image)
                 {
+                    sMsg = "停止上传图像";
+                    Working_Message(this, sMsg);
+
                     Stop_Uploading_Image = false;
+                    WorkingStatus = Working_Status.Available;
                     return;
                 }
 
-                string base64image = cam.Get_Base64_Image();
+                //string base64image = cam.Get_Base64_Image();
+                //string base64image = Global.g_VMS_Adapter.GetEncodedSnapshot();
                 string xml_content = xml.OperationCmd_Xml();
 
                 if(null != Working_Message )
                 {
-                    string sMsg="";
+                    sMsg="";
                     if(OpeType == OperationCmd_Type.Inspection_Image_Upload)
                     {
                         sMsg = "正在上传验收图像：";
@@ -92,7 +99,9 @@ namespace Toolbox_DB31.DB31_Adapter
                     Thread.Sleep(1000);
                 }
             }
-
+            sMsg = "图像上传完毕";
+            Working_Message(this, sMsg);
+            WorkingStatus = Working_Status.Available;
         }
         public string Inspect_Image_Upload()
         {

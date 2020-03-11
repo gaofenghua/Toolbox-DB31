@@ -74,22 +74,32 @@
     <Reference Include="DeviceModel.Dio">
       <HintPath>.\input\library\dll\x64\DeviceModel.Dio.dll</HintPath>
     </Reference>
-    <Reference Include="DeviceModel.Security">
+    <Reference Include="DeviceModel.Security, Version=7.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>.\input\library\dll\x64\DeviceModel.Security.dll</HintPath>
     </Reference>
-    <Reference Include="Farm.Security">
+    <Reference Include="Farm.Security, Version=7.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>.\input\library\dll\x64\Farm.Security.dll</HintPath>
     </Reference>
-    <Reference Include="SecurityLib">
+    <Reference Include="SecurityLib, Version=7.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>.\input\library\dll\x64\SecurityLib.dll</HintPath>
     </Reference>
-    <Reference Include="Seer">
+    <Reference Include="Seer, Version=7.0.0.0, Culture=neutral, PublicKeyToken=6c293b97cf6869d0, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>.\input\library\dll\x64\Seer.dll</HintPath>
     </Reference>
-    <Reference Include="Seer.BaseLibCS">
+    <Reference Include="Seer.BaseLibCS, Version=7.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>.\input\library\dll\x64\Seer.BaseLibCS.dll</HintPath>
     </Reference>
-    <Reference Include="Seer.Common">
+    <Reference Include="Seer.BaseLibCS.XmlSerializers, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\input\library\dll\x64\Seer.BaseLibCS.XmlSerializers.dll</HintPath>
+    </Reference>
+    <Reference Include="Seer.Common, Version=7.0.0.0, Culture=neutral, PublicKeyToken=6c293b97cf6869d0, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>.\input\library\dll\x64\Seer.Common.dll</HintPath>
     </Reference>
     <Reference Include="Seer.Connectivity">

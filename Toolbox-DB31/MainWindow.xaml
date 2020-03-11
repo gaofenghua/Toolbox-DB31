@@ -50,8 +50,8 @@
             <dxn:NavBarGroup
                 x:Name="navBarGroup3" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="工程及维保">
                 <dxn:NavBarItem Content="  维修签到" Click="navBarItem_Repair_SignIn_Click"/>
+                <dxn:NavBarItem x:Name="navBarItem_Maintenance_Report" Content="  保养登记" Click="navBarItem_Maintenance_Report_Click"/>
                 <dxn:NavBarItem Content="  维修登记" Click="navBarItem_Repair_Report_Click"/>
-                <dxn:NavBarItem Content="  保养登记" Click="navBarItem_Maintenance_Report_Click"/>
             </dxn:NavBarGroup>
             <dxn:NavBarGroup
                 x:Name="navBarGroup4" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="建设使用单位">

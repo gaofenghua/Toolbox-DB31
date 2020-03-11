@@ -52,12 +52,28 @@ namespace Toolbox_DB31.DB31_Adapter
                     }
                     break;
                 case Enum_Department.Operator:
+                    if (Input_UserName == "operator" && Input_Password == "operator")
+                    {
+                        UserName = Input_UserName;
+                        Department = Input_Department;
+
+                        Reset_Input();
+
+                        return true;
+                    }
                     break;
                 case Enum_Department.Maintainer:
+                    if (Input_UserName == "maintainer" && Input_Password == "maintainer")
+                    {
+                        UserName = Input_UserName;
+                        Department = Input_Department;
+
+                        Reset_Input();
+
+                        return true;
+                    }
                     break;
             }
-
-           
             return false;
         }
 
