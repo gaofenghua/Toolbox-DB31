@@ -4,20 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using socket.framework.Client;
-
+using System.Threading;
 
 namespace Toolbox_DB31.DB31_Adapter
 {
     class DB31_Socket
     {
-        
+        public enum Status { Initial,Connecting, Connected, Disconnected };
+        public Status status = Status.Initial;
+
+        public event Action<object, string> Working_Message;
+        string sMsg = "";
+
         public TcpPushClient client;
+        string ip_add = "192.168.43.63";
+        int port_num = 5901;
 
         public DB31_Socket()
         {
-            string ip_add="192.168.77.201";
-            int port_num=5901;
-
             client = new TcpPushClient(1024);
             client.OnConnect += Client_OnConnect;
             client.OnReceive += Client_OnReceive;
@@ -26,16 +30,30 @@ namespace Toolbox_DB31.DB31_Adapter
             client.OnDisconnect += Client_OnDisconnect;
 
             client.Connect(ip_add, port_num);
+            status = Status.Connecting;
+        }
+        public void ReConnect()
+        {
+            client.Connect(ip_add, port_num);
+            status = Status.Connecting;
+
+            sMsg = "重新连接服务器: " + ip_add + ":" + port_num;
+            Send_Message_Out(sMsg);
         }
         private void Client_OnConnect(bool obj)
         {
-            bool ret = obj;
+            if(false == obj)
+            {
+                status = Status.Disconnected;
 
-            
-
-           
-
-          
+                Thread.Sleep(2000);
+                sMsg = ip_add + ":" + port_num + " 服务器连接失败。";
+                Send_Message_Out(sMsg);
+            }
+            else
+            {
+                status = Status.Connected;
+            }
         }
         public void Client_OnReceive(byte[] obj)
         { }
@@ -79,5 +97,12 @@ namespace Toolbox_DB31.DB31_Adapter
             string debug_string = Encoding.UTF8.GetString(data_send);
         }
 
+        private void Send_Message_Out(string sMsg)
+        {
+            if(Working_Message != null)
+            {
+                Working_Message(this, sMsg);
+            }
+        }
     }
 }

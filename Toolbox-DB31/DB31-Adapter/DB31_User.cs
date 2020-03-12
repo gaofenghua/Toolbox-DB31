@@ -35,6 +35,7 @@ namespace Toolbox_DB31.DB31_Adapter
             }
 
             PrivilegeMatrix[(int)Enum_Department.Inspector, (int)Enum_Action.Inspect_Image_Upload] = true;
+            PrivilegeMatrix[(int)Enum_Department.Operator, (int)Enum_Action.Test_Image_Upload] = true;
         }
         public bool Verify()
         {

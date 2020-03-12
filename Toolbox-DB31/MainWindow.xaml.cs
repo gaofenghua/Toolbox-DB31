@@ -15,6 +15,8 @@ using System.Windows.Shapes;
 using Toolbox_DB31.Classes;
 using Toolbox_DB31.DB31_Adapter;
 using Toolbox_DB31.AVMS_Adapter;
+using System.Threading;
+using System.Diagnostics;
 
 namespace Toolbox_DB31
 {
@@ -123,7 +125,17 @@ namespace Toolbox_DB31
 
         private void Button_Click_Upload(object sender, RoutedEventArgs e)
         {
-            string sRet = db31.Inspect_Image_Upload();
+            string sRet = "";
+            
+            if(Current_Menu_Item == Menu_Item.Inspect_Image_Upload)
+            {
+                sRet = db31.Inspect_Image_Upload();
+            }
+            else if (Current_Menu_Item == Menu_Item.Test_Image_Upload)
+            {
+                sRet = db31.Test_Image_Upload();
+            }
+           
             if(""!= sRet)
             {
                 Global.g_Main_ViewModel.LabelStatus = sRet;
@@ -165,6 +177,8 @@ namespace Toolbox_DB31
         private void OnEvent_Working_Message(object sender, string sMsg)
         {
             Global.g_Main_ViewModel.LabelMessage = sMsg;
+  
+            Thread.Sleep(2000);
         }
 
         private void navBarItem41_Click(object sender, EventArgs e)

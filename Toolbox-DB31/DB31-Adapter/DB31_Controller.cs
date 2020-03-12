@@ -13,7 +13,9 @@ namespace Toolbox_DB31.DB31_Adapter
     {
         enum OperationCmd_Type
         {
+            Test_Image_Upload = 4,
             Inspection_Image_Upload = 33
+            
         };
 
         public enum Working_Status { Available, Working };
@@ -38,17 +40,39 @@ namespace Toolbox_DB31.DB31_Adapter
             user = db31_user;
 
             socket = new DB31_Socket();
+            socket.Working_Message += OnEvent_Receive_Socket_Message;
             xml = new DB31_Xml();
         }
-
+        private void OnEvent_Receive_Socket_Message(object sender, string sMsg)
+        {
+            Send_Message_Out(sMsg);
+        }
         public void StartHeartbeat()
         {
             string xml_content = xml.HeartbeatXml(DVR_State,Total_Space,Free_Space,Process_Name);
             socket.Send(xml_content);
         }
 
+        private void Send_Message_Out(string sMsg)
+        {
+            if(null!= Working_Message)
+            {
+                Working_Message(this,sMsg);
+            }
+        }
+
         private void Upload_Image(OperationCmd_Type OpeType)
         {
+            if(socket.status != DB31_Socket.Status.Connected)
+            {
+                sMsg = "服务器未联接，请稍后再试。";
+                Send_Message_Out(sMsg);
+
+                socket.ReConnect();
+
+                return;
+            }
+
             WorkingStatus = Working_Status.Working;
             // Multithread notes:
             //dispatcher needed
@@ -75,7 +99,7 @@ namespace Toolbox_DB31.DB31_Adapter
                 if(true == Stop_Uploading_Image)
                 {
                     sMsg = "停止上传图像";
-                    Working_Message(this, sMsg);
+                    Send_Message_Out(sMsg);
 
                     Stop_Uploading_Image = false;
                     WorkingStatus = Working_Status.Available;
@@ -90,7 +114,7 @@ namespace Toolbox_DB31.DB31_Adapter
                 string GUID = Guid.NewGuid().ToString();
 
                 string base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(cam.CameraID,TriggerTime,true);
-                
+                base64image = "xxxxxxxxxxxxxxxxxxxx";
                 string xml_content = xml.OperationCmd_Xml(Type,Channel,TriggerTime.ToString(),Note,GUID,base64image);
                 socket.Send(xml_content);
 
@@ -103,12 +127,12 @@ namespace Toolbox_DB31.DB31_Adapter
                     }
                     sMsg += cam.Name;
 
-                    Working_Message(this, sMsg);
-                    Thread.Sleep(1000);
+                    Send_Message_Out(sMsg);
+                    //Thread.Sleep(1000);
                 }
             }
             sMsg = "图像上传完毕";
-            Working_Message(this, sMsg);
+            Send_Message_Out(sMsg);
             WorkingStatus = Working_Status.Available;
         }
         public string Inspect_Image_Upload()
@@ -118,11 +142,20 @@ namespace Toolbox_DB31.DB31_Adapter
                 new Task(x=>
                 { Upload_Image((OperationCmd_Type)x); },OperationCmd_Type.Inspection_Image_Upload).Start();
 
-                //Stop_Uploading_Image = true;
+                return "";
+            }
+            return "没有操作权限！";
+        }
+
+        public string Test_Image_Upload()
+        {
+            if (true == user.Privilege_Check(DB31_User.Enum_Action.Test_Image_Upload))
+            {
+                new Task(x =>
+                { Upload_Image((OperationCmd_Type)x); }, OperationCmd_Type.Test_Image_Upload).Start();
 
                 return "";
             }
- 
             return "没有操作权限！";
         }
     }
