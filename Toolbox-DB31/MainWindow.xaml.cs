@@ -57,12 +57,12 @@ namespace Toolbox_DB31
             db31 = new DB31_Controller(Global.g_User);
             db31.Working_Message += OnEvent_Working_Message;
 
-            //Global.g_VMS_Adapter.Start("192.168.77.211","admin","admin", "0010123033030");
-            //Global.g_VMS_Adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
             DeviceSummary.CfgFilePath = @".\Configuration.csv";
             AVMSAdapter adapter = new AVMSAdapter();
             adapter.Start("127.0.0.1", "admin", "admin", "0010123033030");
             adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
+
+            Global.g_VMS_Adapter = adapter;
         }
 
         private void HandleAVMSEvent(object sender, AVMSEventArgs e)

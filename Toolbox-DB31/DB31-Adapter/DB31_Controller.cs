@@ -82,13 +82,21 @@ namespace Toolbox_DB31.DB31_Adapter
                     return;
                 }
 
-                //string base64image = cam.Get_Base64_Image();
-                //string base64image = Global.g_VMS_Adapter.GetEncodedSnapshot();
-                string xml_content = xml.OperationCmd_Xml();
+                //start form the information
+                int Type = (int) OpeType;
+                int Channel = cam.ChannelNumber;
+                DateTime TriggerTime = DateTime.Now;
+                string Note = "图像上传";
+                string GUID = Guid.NewGuid().ToString();
 
+                string base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(cam.CameraID,TriggerTime,true);
+                
+                string xml_content = xml.OperationCmd_Xml(Type,Channel,TriggerTime.ToString(),Note,GUID,base64image);
+                socket.Send(xml_content);
+
+                //Message to the main frame
                 if(null != Working_Message )
                 {
-                    sMsg="";
                     if(OpeType == OperationCmd_Type.Inspection_Image_Upload)
                     {
                         sMsg = "正在上传验收图像：";

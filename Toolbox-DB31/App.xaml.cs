@@ -30,7 +30,7 @@ namespace Toolbox_DB31
 
         public static DB31_User g_User = new DB31_User();
 
-        //public static AVMSAdapter g_VMS_Adapter = new AVMSAdapter();
+        public static AVMSAdapter g_VMS_Adapter = null;
     }
         
 }

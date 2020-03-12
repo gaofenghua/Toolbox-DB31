@@ -84,14 +84,14 @@ namespace Toolbox_DB31.DB31_Adapter
             return xml_Declaration.ToString() + xml_Agent.ToString();
         }
 
-        public string OperationCmd_Xml()
+        public string OperationCmd_Xml(int Type, int Channel, string TriggerTime, string Note, string GUID, string Base64Image)
         {
-            xml_OperationCmd.SetAttributeValue("Type", 1);
-            xml_OperationCmd.SetAttributeValue("Channel", 2);
-            xml_OperationCmd.SetAttributeValue("TriggerTime", 3);
-            xml_OperationCmd.SetAttributeValue("Note", 4);
-            xml_OperationCmd.SetAttributeValue("GUID", 5);
-            xml_OperationCmd.Value = "base64";
+            xml_OperationCmd.SetAttributeValue("Type", Type);
+            xml_OperationCmd.SetAttributeValue("Channel", Channel);
+            xml_OperationCmd.SetAttributeValue("TriggerTime", TriggerTime);
+            xml_OperationCmd.SetAttributeValue("Note", Note);
+            xml_OperationCmd.SetAttributeValue("GUID", GUID);
+            xml_OperationCmd.Value = Base64Image==null?"":Base64Image;
 
             xml_Agent.ReplaceNodes(xml_OperationCmd);
             return xml_Declaration.ToString() + xml_Agent.ToString();

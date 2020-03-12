@@ -13,9 +13,12 @@ namespace Toolbox_DB31.AVMS_Adapter
 {
     public class DeviceConfiguration
     {
-        public string AgentId { get; private set; } = string.Empty;
-        public string StartIp { get; private set; } = string.Empty;
-        public string EndIp { get; private set; } = string.Empty;
+        //public string AgentId { get; private set; } = string.Empty;
+        //public string StartIp { get; private set; } = string.Empty;
+        //public string EndIp { get; private set; } = string.Empty;
+        public string AgentId { get; private set; }
+        public string StartIp { get; private set; }
+        public string EndIp { get; private set; } 
 
         public DeviceConfiguration()
         {

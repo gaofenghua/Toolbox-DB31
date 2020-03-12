@@ -456,7 +456,7 @@ namespace Toolbox_DB31.AVMS_Adapter
 
         private void PrintLog(string text)
         {
-            Trace.WriteLine(text);
+  //          Trace.WriteLine(text);
         }
     }
 
