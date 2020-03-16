@@ -112,12 +112,13 @@ namespace Toolbox_DB31.DB31_Adapter
                 DateTime TriggerTime = DateTime.Now;
                 string Note = "图像上传";
                 string GUID = Guid.NewGuid().ToString();
-
-                string base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(cam.CameraID,TriggerTime,true);
-                base64image = "xxxxxxxxxxxxxxxxxxxx";
+                //string GUID = "206c2d13-164e-47b1-887a-cc5cd02c9036";
+                //string base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(cam.CameraID,TriggerTime,true);
+                string base64image = "xxxxxxxxxxxxxxxxxxxx";
                 string xml_content = xml.OperationCmd_Xml(Type,Channel,TriggerTime.ToString(),Note,GUID,base64image);
-                socket.Send(xml_content);
 
+                socket.Send(xml_content);
+                
                 //Message to the main frame
                 if(null != Working_Message )
                 {
@@ -131,6 +132,9 @@ namespace Toolbox_DB31.DB31_Adapter
                     //Thread.Sleep(1000);
                 }
             }
+            
+            //socket.Close();
+
             sMsg = "图像上传完毕";
             Send_Message_Out(sMsg);
             WorkingStatus = Working_Status.Available;

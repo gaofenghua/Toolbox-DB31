@@ -53,19 +53,41 @@ namespace Toolbox_DB31.DB31_Adapter
             else
             {
                 status = Status.Connected;
+
+                Thread.Sleep(2000);
+                sMsg = ip_add + ":" + port_num + " 服务器已连接。";
+                Send_Message_Out(sMsg);
             }
         }
         public void Client_OnReceive(byte[] obj)
-        { }
+        {
+            int length = obj.Length;
+            byte[] data_head = new byte[20] { (byte)'Q', (byte)'W', (byte)'C', (byte)'M', (byte)'D', (byte)':', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            byte[] data_head2 = new byte[20] { (byte)'Q', (byte)'W', (byte)'C', (byte)'M', (byte)'D', (byte)':', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+            //NO
+            if(Array.Equals(data_head2,data_head)==true)
+            {
+                int x = 1;
+            }
+        }
         public void Client_OnSend(int obj)
         { }
         private void Client_OnClose()
         {
-            
+            status = Status.Disconnected;
+
+            Thread.Sleep(2000);
+            sMsg = ip_add + ":" + port_num + " 已断开服务器。";
+            Send_Message_Out(sMsg);
         }
         private void Client_OnDisconnect()
         {
-           
+            status = Status.Disconnected;
+
+            Thread.Sleep(2000);
+            sMsg = ip_add + ":" + port_num + " 服务器连接被断开。";
+            Send_Message_Out(sMsg);
         }
 
         public void Send(string xmlData)
@@ -101,8 +123,15 @@ namespace Toolbox_DB31.DB31_Adapter
         {
             if(Working_Message != null)
             {
+               
                 Working_Message(this, sMsg);
             }
+        }
+
+        public void Close()
+        {
+            client.Close();
+            status = Status.Disconnected;
         }
     }
 }
