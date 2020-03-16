@@ -23,7 +23,6 @@ namespace Toolbox_DB31.AVMS_Adapter
 {
     public class AVMSAdapter
     {
-        private string m_agentId = string.Empty;
         private AVMSCom m_avms = null;
         private bool m_bConnectedToAVMSServer = false;
         private bool m_bDeviceModelEventHandlerAdded = false;
@@ -36,6 +35,7 @@ namespace Toolbox_DB31.AVMS_Adapter
         private AlarmMonitor m_alarmMonitor = null;
         private Timer m_timer = null;
         private const int IMPORT_INTERVAL = 65 * 1000;
+        private bool m_bPrintLogEnabled = true;
 
         private SdkFarm m_farm
         {
@@ -85,7 +85,6 @@ namespace Toolbox_DB31.AVMS_Adapter
         {
             try
             {
-                m_agentId = Id;
                 m_avms = new AVMSCom(Ip, Username, Password);
                 if (null != m_avms)
                 {
@@ -456,7 +455,10 @@ namespace Toolbox_DB31.AVMS_Adapter
 
         private void PrintLog(string text)
         {
-  //          Trace.WriteLine(text);
+            if (m_bPrintLogEnabled)
+            {
+                Trace.WriteLine(text);
+            }
         }
     }
 

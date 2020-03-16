@@ -13,16 +13,15 @@ namespace Toolbox_DB31.AVMS_Adapter
 {
     public class DeviceConfiguration
     {
-        //public string AgentId { get; private set; } = string.Empty;
-        //public string StartIp { get; private set; } = string.Empty;
-        //public string EndIp { get; private set; } = string.Empty;
         public string AgentId { get; private set; }
         public string StartIp { get; private set; }
-        public string EndIp { get; private set; } 
+        public string EndIp { get; private set; }
 
         public DeviceConfiguration()
         {
-            //
+            AgentId = string.Empty;
+            StartIp = string.Empty;
+            EndIp = string.Empty;
         }
 
         public DeviceConfiguration(string agentId, string startIp, string endIp)
@@ -45,6 +44,7 @@ namespace Toolbox_DB31.AVMS_Adapter
         private static List<DeviceConfiguration> devList = new List<DeviceConfiguration>();
         private const string FILE_NAME = "Configuration";
         private const string FILE_FORMAT = ".csv";
+        private static bool m_bPrintLogEnabled = true;
 
         public static string CfgFilePath
         {
@@ -70,7 +70,10 @@ namespace Toolbox_DB31.AVMS_Adapter
 
         private static void PrintLog(string text)
         {
-            Trace.WriteLine(text);
+            if (m_bPrintLogEnabled)
+            {
+                Trace.WriteLine(text);
+            }
         }
 
         public static bool ImportConfiguration()
