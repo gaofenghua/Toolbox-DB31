@@ -16,9 +16,21 @@ namespace Toolbox_DB31.DB31_Adapter
         public event Action<object, string> Working_Message;
         string sMsg = "";
 
+        public event Action<object, string> Data_Received;
+
         public TcpPushClient client;
         string ip_add = "192.168.43.63";
         int port_num = 5901;
+
+        //通讯指令
+        //分2个部分，消息头 + 消息内容
+        //消息头:
+        //固定为20字节
+        //6字节：QWCMD:
+        //4字节：消息内容长度(包含消息头长度)
+        //10字节：保留
+        //消息内容为XML格式文本。
+        byte[] data_head = new byte[20] { (byte)'Q', (byte)'W', (byte)'C', (byte)'M', (byte)'D', (byte)':', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
         public DB31_Socket()
         {
@@ -61,14 +73,28 @@ namespace Toolbox_DB31.DB31_Adapter
         }
         public void Client_OnReceive(byte[] obj)
         {
-            int length = obj.Length;
-            byte[] data_head = new byte[20] { (byte)'Q', (byte)'W', (byte)'C', (byte)'M', (byte)'D', (byte)':', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            byte[] data_head2 = new byte[20] { (byte)'Q', (byte)'W', (byte)'C', (byte)'M', (byte)'D', (byte)':', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-            //NO
-            if(Array.Equals(data_head2,data_head)==true)
+            //Check the data head
+            if(null == obj || obj.Length <= 20)
             {
-                int x = 1;
+                return;
+            }
+            
+            for(int i=0;i<6;i++)
+            {
+                if(obj[i]!=data_head[i])
+                {
+                    return;
+                }
+            }
+
+            int contentLength = BitConverter.ToInt32(obj, 6);
+            //Get the xml data
+            string xmlData = Encoding.UTF8.GetString(obj,20,obj.Length-20);
+
+            //Trigger data received event
+            if(Data_Received!=null)
+            {
+                Data_Received(this, xmlData);
             }
         }
         public void Client_OnSend(int obj)
@@ -100,9 +126,7 @@ namespace Toolbox_DB31.DB31_Adapter
             //4字节：消息内容长度(包含消息头长度)
             //10字节：保留
             //消息内容为XML格式文本。
-
-
-            byte[] data_head = new byte[20] { (byte)'Q', (byte)'W', (byte)'C', (byte)'M', (byte)'D', (byte)':', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            
 
             byte[] data_xml = Encoding.UTF8.GetBytes(xmlData);
 

@@ -65,6 +65,9 @@ namespace Toolbox_DB31
             adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
 
             Global.g_VMS_Adapter = adapter;
+
+            navBarItem_Inspect_ImageUpload_Click(null, null);
+           
         }
 
         private void HandleAVMSEvent(object sender, AVMSEventArgs e)

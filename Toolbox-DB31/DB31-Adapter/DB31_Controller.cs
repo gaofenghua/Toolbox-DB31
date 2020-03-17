@@ -35,24 +35,45 @@ namespace Toolbox_DB31.DB31_Adapter
         public int Free_Space = 0;
         public string Process_Name = "System,AI_Main.exe";
 
+        System.Threading.Timer heartbeat_timer = null;
+        int Time_Interval = 1000 * 5;
+
         public DB31_Controller(DB31_User db31_user)
         {
             user = db31_user;
 
             socket = new DB31_Socket();
             socket.Working_Message += OnEvent_Receive_Socket_Message;
+            socket.Data_Received += OnEvent_Socket_Data_Received;
+
             xml = new DB31_Xml();
+
+            //heartbeat_timer = new Timer(HeartBeat, null, Time_Interval, Timeout.Infinite);
         }
         private void OnEvent_Receive_Socket_Message(object sender, string sMsg)
         {
             Send_Message_Out(sMsg);
         }
+        private void OnEvent_Socket_Data_Received(object sender, string sXml)
+        {
+            Xml_Parse_Output xInfo = xml.ParseXml(sXml);
+
+            if(xInfo.Ticks > 0)
+            {
+
+            }
+        }
         public void StartHeartbeat()
         {
-            string xml_content = xml.HeartbeatXml(DVR_State,Total_Space,Free_Space,Process_Name);
-            socket.Send(xml_content);
+           
         }
-
+        public void HeartBeat(object obj)
+        {
+            string xml_content = xml.HeartbeatXml(DVR_State, Total_Space, Free_Space, Process_Name);
+            socket.Send(xml_content);
+          
+            heartbeat_timer.Change(Time_Interval, Timeout.Infinite);
+        }
         private void Send_Message_Out(string sMsg)
         {
             if(null!= Working_Message)

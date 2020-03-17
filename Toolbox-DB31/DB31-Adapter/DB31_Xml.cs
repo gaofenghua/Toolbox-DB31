@@ -96,5 +96,56 @@ namespace Toolbox_DB31.DB31_Adapter
             xml_Agent.ReplaceNodes(xml_OperationCmd);
             return xml_Declaration.ToString() + xml_Agent.ToString();
         }
+
+        public Xml_Parse_Output ParseXml(string sXml)
+        {
+            Xml_Parse_Output xRet = new Xml_Parse_Output();
+
+
+            XDocument xd = XDocument.Parse(sXml);
+            int nQuery = 0;
+            XElement item;
+
+            //Get the OK server time
+            var query = from s in xd.Descendants()
+                        where s.Name.LocalName == "OK" && s.Parent.Name.LocalName == "Server"
+                        select s;
+
+            nQuery = query.Count();
+
+            if(nQuery == 1)
+            {
+                item = query.First();
+                if (null != item.Attribute("NowTime"))
+                {
+                    xRet.OK_NowTime = item.Attribute("NowTime").Value;
+                }
+            }
+
+            //Get the ticks 
+            query = from s in xd.Descendants()
+                    where s.Name.LocalName == "Ticks" && s.Parent.Name.LocalName == "Server"
+                    select s;
+
+            nQuery = query.Count();
+
+            if (nQuery == 1)
+            {
+                item = query.First();
+                if (null != item.Attribute("Value"))
+                {
+                    string sTicks = item.Attribute("Value").Value;
+                    int.TryParse(sTicks, out xRet.Ticks);
+                }
+            }
+
+            return xRet;
+        }
+    }
+
+    public class Xml_Parse_Output
+    {
+        public string OK_NowTime = null;
+        public int Ticks = 0;
     }
 }
