@@ -56,7 +56,7 @@
                         </Grid.ColumnDefinitions>
                         
                         <TextBlock Grid.Row="0" Grid.Column="1" Text="过去（小时）" VerticalAlignment="Center" Margin="0,0,0,0" />
-                        <dxe:TextEdit Grid.Row="0" Grid.Column="2" MaskType="Numeric" Mask="d" Text="{Binding ElementName=editLogUpdateDuration, Path=EditValue, Mode=TwoWay}" VerticalAlignment="Center" Margin="0,0,0,0" />
+                        <dxe:TextEdit Grid.Row="0" Grid.Column="2" MaskType="Numeric" Mask="d" EditValue="{Binding Path=LogUpdateDuration, Mode=TwoWay}" VerticalAlignment="Center" Margin="0,0,0,0" />
                         <dx:SimpleButton Grid.Row="0" Grid.Column="3" x:Name="btnUploadData" VerticalAlignment="Center" Margin="5,0,5,0" Click="btnUploadData_Click" Content="上传日志、参数信息" />
                         <dx:SimpleButton Grid.Row="0" Grid.Column="4" x:Name="btnUploadAlarm" VerticalAlignment="Center" Margin="5,0,5,0" Click="btnUploadAlarm_Click" Content="上传报警信息" />
                     </Grid>
@@ -71,7 +71,7 @@
                         </dxlc:LayoutItem>
                     </dxlc:LayoutGroup>
                 </GroupBox>
-                <GroupBox Grid.Row="1" Grid.Column="1" Header="报警上传" Margin="0,160,0,0"  VerticalAlignment="Top"  Foreground="#BFFFFFFF">
+                <GroupBox Grid.Row="1" Grid.Column="1" Header="报警上传" Margin="0,160,0,10"  VerticalAlignment="Top"  Foreground="#BFFFFFFF">
                     <dxlc:LayoutGroup Orientation="Vertical">
                         <Grid Grid.Row="2" Grid.Column="8">
                             <Grid.RowDefinitions>
@@ -90,13 +90,13 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Grid.Row="0" Grid.Column="1" Text="报警前（秒）" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,0,0" />
-                            <dxe:TextEdit Grid.Row="0" Grid.Column="2" MaskType="Numeric" Mask="d" Text="{Binding ElementName=editAlarmUpdateBefore, Path=EditValue, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0,0,0,0" />
+                            <dxe:TextEdit Grid.Row="0" Grid.Column="2" MaskType="Numeric" Mask="d" EditValue="{Binding Path=AlarmUpdateBefore, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0,0,0,0" />
                             <TextBlock Grid.Row="0" Grid.Column="3" Text="报警后（秒）" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,0,0" />
-                            <dxe:TextEdit Grid.Row="0" Grid.Column="4" MaskType="Numeric" Mask="d" Text="{Binding ElementName=editAlarmUpdateAfter, Path=EditValue, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0,0,0,0" />
+                            <dxe:TextEdit Grid.Row="0" Grid.Column="4" MaskType="Numeric" Mask="d" EditValue="{Binding Path=AlarmUpdateAfter, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0,0,0,0" />
                             <TextBlock Grid.Row="0" Grid.Column="5" Text="间隔（秒）" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,0,0" />
-                            <dxe:TextEdit Grid.Row="0" Grid.Column="6" MaskType="Numeric" Mask="d" Text="{Binding ElementName=editAlarmUpdateDuration, Path=EditValue, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0,0,0,0" />
+                            <dxe:TextEdit Grid.Row="0" Grid.Column="6" MaskType="Numeric" Mask="d" EditValue="{Binding Path=AlarmUpdateDuration, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0,0,0,0" />
                             <dx:SimpleButton Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" x:Name="btnStartListening" VerticalAlignment="Center" Margin="5,0,5,0" Click="btnStartListening_Click" Content="开启报警监听" />
-                            <dx:SimpleButton Grid.Row="1" Grid.Column="5" x:Name="btnStopListening" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="5,0,5,0" Click="btnStopListening_Click" Content="停止报警监听" />
+                            <dx:SimpleButton Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="2" x:Name="btnStopListening" VerticalAlignment="Center" Margin="5,0,5,0" Click="btnStopListening_Click" Content="停止报警监听" />
                         </Grid>
                     </dxlc:LayoutGroup>
                 </GroupBox>

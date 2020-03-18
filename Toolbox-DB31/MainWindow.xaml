@@ -60,7 +60,7 @@
             </dxn:NavBarGroup>
             <dxn:NavBarGroup x:Name="navBarGroup_system" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="系统">
                 <dxn:NavBarItem x:Name="navBarItem11" Command="{x:Static local:MainWindow.myCommand}" Content="  人员登录" />
-                <dxn:NavBarItem x:Name="navBarItem15" Content="  系统设置" />
+                <dxn:NavBarItem x:Name="navBarItem_Settings_Page" Content="  系统设置" Click="navBarItem_Settings_Page_Click" />
             </dxn:NavBarGroup>
             <dxn:NavBarControl.View>
                 <dxn:SideBarView/>

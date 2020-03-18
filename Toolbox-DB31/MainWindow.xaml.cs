@@ -232,7 +232,14 @@ namespace Toolbox_DB31
         {
             frmMain.NavigationService.Navigate(new RepairMenu());
             Set_Button_Label(true);
+
+            Current_Menu_Item = Menu_Item.Repair_Report;
         }
 
+        private void navBarItem_Settings_Page_Click(object sender, EventArgs e)
+        {
+            frmMain.NavigationService.Navigate(new SettingsMenu());
+            Set_Button_Label(false);
+        }
     }
 }

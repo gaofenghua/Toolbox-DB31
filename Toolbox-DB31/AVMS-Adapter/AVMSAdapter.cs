@@ -27,6 +27,7 @@ namespace Toolbox_DB31.AVMS_Adapter
         private bool m_bConnectedToAVMSServer = false;
         private bool m_bDeviceModelEventHandlerAdded = false;
         private bool m_bAVMSListenerEventHandlerAdded = false;
+        public bool IsAVMSListeningEnabled { get { return m_bAVMSListenerEventHandlerAdded; } }
         public event AVMSTriggeredHandler AVMSTriggered;
         public delegate void AVMSTriggeredHandler(object sender, AVMSEventArgs e);
         private bool m_bAVMSMessageSend = false;
@@ -432,7 +433,6 @@ namespace Toolbox_DB31.AVMS_Adapter
                         PrintLog(string.Format("{0} - AVMSCom_MessageSend : AVMS connection has been established.", time));
                         RefreshServerManager();
                         RefreshDeviceManager();
-                        StartAVMSListener();    //
                     }
 
                     break;
