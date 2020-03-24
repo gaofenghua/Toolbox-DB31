@@ -137,6 +137,28 @@ namespace Toolbox_DB31.DB31_Adapter
                     string sTicks = item.Attribute("Value").Value;
                     int.TryParse(sTicks, out xRet.Ticks);
                 }
+
+                //若收到的心跳包含GetImage字段，DVR将立刻用OperationCmd发送指定各个通道的实时图片；OperationCmd中GUID属性填写服务器回传的GUID编号；Type属性为5(Type=5);需上传通道为“，”隔开的通道编号。
+                //
+                //Get GetImage 
+                query = from s in xd.Descendants()
+                        where s.Name.LocalName == "GetImage" && s.Parent.Name.LocalName == "Server"
+                        select s;
+
+                nQuery = query.Count();
+
+                if(nQuery ==1)
+                {
+                    item = query.First();
+                    if (null != item.Attribute("Channel"))
+                    {
+                        xRet.Channel = item.Attribute("Channel").Value;
+                    }
+                    if (null != item.Attribute("GUID"))
+                    {
+                        xRet.GUID = item.Attribute("GUID").Value;
+                    }
+                }
             }
 
             return xRet;
@@ -147,5 +169,7 @@ namespace Toolbox_DB31.DB31_Adapter
     {
         public string OK_NowTime = null;
         public int Ticks = 0;
+        public string Channel = null;
+        public string GUID = null;
     }
 }

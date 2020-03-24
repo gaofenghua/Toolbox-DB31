@@ -8,13 +8,12 @@ using System.Threading;
 
 namespace Toolbox_DB31.DB31_Adapter
 {
-    class DB31_Socket
+    public class DB31_Socket
     {
-        public enum Status { Initial,Connecting, Connected, Disconnected };
+        public enum Status { Initial,Connecting, Connected, Disconnected,Sending };
         public Status status = Status.Initial;
 
-        public event Action<object, string> Working_Message;
-        string sMsg = "";
+        public event Action<object, SocketWorkingEventArgs> Working_Message;
 
         public event Action<object, string> Data_Received;
 
@@ -46,30 +45,38 @@ namespace Toolbox_DB31.DB31_Adapter
         }
         public void ReConnect()
         {
+            SocketWorkingEventArgs e = new SocketWorkingEventArgs();
+            e.PreviousStatus = status;
+
             client.Connect(ip_add, port_num);
             status = Status.Connecting;
 
-            sMsg = "重新连接服务器: " + ip_add + ":" + port_num;
-            Send_Message_Out(sMsg);
+            e.CurrentStatus = status;
+            e.sMessage = "重新连接服务器: " + ip_add + ":" + port_num;
+            Send_Message_Out(e);
         }
         private void Client_OnConnect(bool obj)
         {
+            SocketWorkingEventArgs e = new SocketWorkingEventArgs();
+            e.PreviousStatus = status;
+
             if(false == obj)
             {
                 status = Status.Disconnected;
 
-                Thread.Sleep(2000);
-                sMsg = ip_add + ":" + port_num + " 服务器连接失败。";
-                Send_Message_Out(sMsg);
+                //Thread.Sleep(2000);
+                e.sMessage = ip_add + ":" + port_num + " 服务器连接失败。";
             }
             else
             {
                 status = Status.Connected;
 
-                Thread.Sleep(2000);
-                sMsg = ip_add + ":" + port_num + " 服务器已连接。";
-                Send_Message_Out(sMsg);
+                //Thread.Sleep(2000);
+                e.sMessage = ip_add + ":" + port_num + " 服务器已连接。";
             }
+
+            e.CurrentStatus = status;
+            Send_Message_Out(e);
         }
         public void Client_OnReceive(byte[] obj)
         {
@@ -98,26 +105,61 @@ namespace Toolbox_DB31.DB31_Adapter
             }
         }
         public void Client_OnSend(int obj)
-        { }
+        {
+            status = Status.Connected;
+        }
         private void Client_OnClose()
         {
+            SocketWorkingEventArgs e = new SocketWorkingEventArgs();
+            e.PreviousStatus = status;
+
             status = Status.Disconnected;
 
-            Thread.Sleep(2000);
-            sMsg = ip_add + ":" + port_num + " 已断开服务器。";
-            Send_Message_Out(sMsg);
+            //Thread.Sleep(2000);
+            e.CurrentStatus = status;
+            e.sMessage = ip_add + ":" + port_num + " 已断开服务器。";
+            Send_Message_Out(e);
         }
         private void Client_OnDisconnect()
         {
+            SocketWorkingEventArgs e = new SocketWorkingEventArgs();
+            e.PreviousStatus = status;
+
             status = Status.Disconnected;
 
-            Thread.Sleep(2000);
-            sMsg = ip_add + ":" + port_num + " 服务器连接被断开。";
-            Send_Message_Out(sMsg);
+            //Thread.Sleep(2000);
+            e.CurrentStatus = status;
+            e.sMessage = ip_add + ":" + port_num + " 服务器连接被断开。";
+            Send_Message_Out(e);
         }
 
         public void Send(string xmlData)
         {
+            SocketWorkingEventArgs e = new SocketWorkingEventArgs();
+            e.PreviousStatus = status;
+
+            for(int i=0;i<5;i++)
+            {
+                if(status != Status.Connected)
+                {
+                    Thread.Sleep(1000);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if(status != Status.Connected)
+            {
+                status = Status.Disconnected;
+
+                e.CurrentStatus = status;
+                e.sMessage = "发送失败：被阻塞。";
+                Send_Message_Out(e);
+                return;
+            }
+
             //通讯指令
             //分2个部分，消息头 + 消息内容
             //消息头:
@@ -138,17 +180,31 @@ namespace Toolbox_DB31.DB31_Adapter
             Buffer.BlockCopy(data_head, 0, data_send, 0, data_head.Length);
             Buffer.BlockCopy(data_xml, 0, data_send, data_head.Length, data_xml.Length);
 
-            client.Send(data_send, 0, data_send.Length);
+            status = Status.Sending;
 
+            client.Send(data_send, 0, data_send.Length);
             string debug_string = Encoding.UTF8.GetString(data_send);
+
+            //Checking send results
+            for(int i=0;i<5;i++)
+            {
+                if(status == Status.Connected)
+                {
+                    return;
+                }
+                Thread.Sleep(1000);
+            }
+            status = Status.Disconnected;
+            e.CurrentStatus = status;
+            e.sMessage = "发送失败：5秒发送超时。";
+            Send_Message_Out(e);
         }
 
-        private void Send_Message_Out(string sMsg)
+        private void Send_Message_Out(SocketWorkingEventArgs e)
         {
             if(Working_Message != null)
             {
-               
-                Working_Message(this, sMsg);
+                Working_Message(this, e);
             }
         }
 
@@ -157,5 +213,12 @@ namespace Toolbox_DB31.DB31_Adapter
             client.Close();
             status = Status.Disconnected;
         }
+    }
+
+    public class SocketWorkingEventArgs:EventArgs
+    {
+        public DB31_Socket.Status PreviousStatus;
+        public DB31_Socket.Status CurrentStatus;
+        public string sMessage;
     }
 }

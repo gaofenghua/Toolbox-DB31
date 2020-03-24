@@ -48,11 +48,16 @@ namespace Toolbox_DB31.DB31_Adapter
 
             xml = new DB31_Xml();
 
-            //heartbeat_timer = new Timer(HeartBeat, null, Time_Interval, Timeout.Infinite);
+            
         }
-        private void OnEvent_Receive_Socket_Message(object sender, string sMsg)
+        private void OnEvent_Receive_Socket_Message(object sender, SocketWorkingEventArgs e)
         {
-            Send_Message_Out(sMsg);
+            if(e.CurrentStatus == DB31_Socket.Status.Connected && e.CurrentStatus != e.PreviousStatus)
+            {
+                StartHeartbeat();
+            }
+
+            Send_Message_Out(e.sMessage);
         }
         private void OnEvent_Socket_Data_Received(object sender, string sXml)
         {
@@ -60,19 +65,33 @@ namespace Toolbox_DB31.DB31_Adapter
 
             if(xInfo.Ticks > 0)
             {
-
+                Time_Interval = xInfo.Ticks * 60000; //Ticks：单位分钟
+                StartHeartbeat();
             }
         }
         public void StartHeartbeat()
         {
-           
+            if(heartbeat_timer == null)
+            {
+                heartbeat_timer = new Timer(HeartBeat, null, Time_Interval, Timeout.Infinite);
+            }
+            else 
+            {
+                heartbeat_timer.Change(Time_Interval, Timeout.Infinite);
+            }
+
+            sMsg = Time_Interval / 1000 + "秒后发送心跳信息。";
+            Send_Message_Out(sMsg);
         }
         public void HeartBeat(object obj)
         {
-            string xml_content = xml.HeartbeatXml(DVR_State, Total_Space, Free_Space, Process_Name);
-            socket.Send(xml_content);
-          
-            heartbeat_timer.Change(Time_Interval, Timeout.Infinite);
+            if(socket.status == DB31_Socket.Status.Connected)
+            {
+                string xml_content = xml.HeartbeatXml(DVR_State, Total_Space, Free_Space, Process_Name);
+                socket.Send(xml_content);
+
+                //heartbeat_timer.Change(Time_Interval, Timeout.Infinite);
+            }
         }
         private void Send_Message_Out(string sMsg)
         {
@@ -127,6 +146,16 @@ namespace Toolbox_DB31.DB31_Adapter
                     return;
                 }
 
+                if (socket.status != DB31_Socket.Status.Connected)
+                {
+                    sMsg = "服务器未联接，请稍后再试。";
+                    Send_Message_Out(sMsg);
+
+                    socket.ReConnect();
+
+                    return;
+                }
+
                 //start form the information
                 int Type = (int) OpeType;
                 int Channel = cam.ChannelNumber;
@@ -138,8 +167,6 @@ namespace Toolbox_DB31.DB31_Adapter
                 string base64image = "xxxxxxxxxxxxxxxxxxxx";
                 string xml_content = xml.OperationCmd_Xml(Type,Channel,TriggerTime.ToString(),Note,GUID,base64image);
 
-                socket.Send(xml_content);
-                
                 //Message to the main frame
                 if(null != Working_Message )
                 {
@@ -152,11 +179,13 @@ namespace Toolbox_DB31.DB31_Adapter
                     Send_Message_Out(sMsg);
                     //Thread.Sleep(1000);
                 }
+
+                socket.Send(xml_content);
             }
             
             //socket.Close();
 
-            sMsg = "图像上传完毕";
+            sMsg = "图像队列发送完毕。";
             Send_Message_Out(sMsg);
             WorkingStatus = Working_Status.Available;
         }
