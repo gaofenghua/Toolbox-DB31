@@ -402,6 +402,17 @@ namespace Toolbox_DB31.AVMS_Adapter
             return byteJpg;
         }
 
+        public string GetStoredPath()
+        {
+            if ((null == m_avms) || 0 == m_cameraList.Count)
+            {
+                PrintLog("Fail to retrieve AVMS data store information!");
+                return null;
+            }
+
+            return m_avms.GetDataPath(m_cameraList.Values.First());
+        }
+
         private void OnAVMSTriggered(object sender, AVMSEventArgs e)
         {
             if (null != AVMSTriggered)
