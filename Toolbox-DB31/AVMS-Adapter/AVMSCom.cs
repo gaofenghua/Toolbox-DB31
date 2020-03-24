@@ -287,7 +287,25 @@ namespace Toolbox_DB31.AVMS_Adapter
                 this.OnMessageSend(this, new MessageEventArgs(DateTime.Now.ToString() + "\tException : Fail to retrieve image stream from server " + cam.Server.Name + ": " + ex.ToString()));
                 return false;
             }
+        }
 
+        public string GetDataPath(CCamera cam)
+        {
+            try
+            {
+                Signals signals = CreateSignals(cam);
+                if (null == signals)
+                {
+                    return null;
+                }
+
+                return signals.GetSettingPair(Username, EncodePassword, "Server", 5000, "path", "Data", string.Empty);
+            }
+            catch (Exception ex)
+            {
+                this.OnMessageSend(this, new MessageEventArgs(DateTime.Now.ToString() + "\tException : Fail to path of stored data from server " + cam.Server.Name + ": " + ex.ToString()));
+                return null;
+            }
         }
 
         public bool AddAlarm(CCamera cam, int alarmTime, int policyID, string alarmText1, string alarmText2)

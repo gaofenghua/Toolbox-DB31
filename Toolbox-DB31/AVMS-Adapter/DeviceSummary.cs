@@ -76,6 +76,22 @@ namespace Toolbox_DB31.AVMS_Adapter
             }
         }
 
+        public static void GetStoredDiskSpace(string path, out long totalSize, out long freeSize)
+        {
+            totalSize = 0;
+            freeSize = 0;
+            string diskName = Path.GetPathRoot(path);
+            foreach (DriveInfo di in DriveInfo.GetDrives())
+            {
+                if (diskName == di.Name)
+                {
+                    totalSize = di.TotalSize / (1024 * 1024 * 1024);
+                    freeSize = di.TotalFreeSpace / (1024 * 1024 * 1024);
+                    break;
+                }
+            }
+        }
+
         public static bool ImportConfiguration()
         {
             if (null == devList)
