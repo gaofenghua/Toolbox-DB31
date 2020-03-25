@@ -14,6 +14,7 @@ namespace Toolbox_DB31.DB31_Adapter
         enum OperationCmd_Type
         {
             Test_Image_Upload = 4,
+            Requested_Image_Upload = 5,
             Inspection_Image_Upload = 33
             
         };
@@ -48,7 +49,7 @@ namespace Toolbox_DB31.DB31_Adapter
 
             xml = new DB31_Xml();
 
-            
+           
         }
         private void OnEvent_Receive_Socket_Message(object sender, SocketWorkingEventArgs e)
         {
@@ -58,6 +59,8 @@ namespace Toolbox_DB31.DB31_Adapter
             }
 
             Send_Message_Out(e.sMessage);
+
+           
         }
         private void OnEvent_Socket_Data_Received(object sender, string sXml)
         {
@@ -67,6 +70,12 @@ namespace Toolbox_DB31.DB31_Adapter
             {
                 Time_Interval = xInfo.Ticks * 60000; //Ticks：单位分钟
                 StartHeartbeat();
+
+                //Receive GetImage command
+                if(xInfo.Channel != null)
+                {
+                    Respond_To_GetImage(xInfo.Channel,xInfo.GUID);
+                }
             }
         }
         public void StartHeartbeat()
@@ -134,59 +143,8 @@ namespace Toolbox_DB31.DB31_Adapter
             Global.g_CameraList_Mutex.ReleaseMutex();
             // Finish copy
 
-            foreach(Camera_Model cam in cameras)
-            {
-                if(true == Stop_Uploading_Image)
-                {
-                    sMsg = "停止上传图像";
-                    Send_Message_Out(sMsg);
+            Send_Image(OpeType, cameras, null);
 
-                    Stop_Uploading_Image = false;
-                    WorkingStatus = Working_Status.Available;
-                    return;
-                }
-
-                if (socket.status != DB31_Socket.Status.Connected)
-                {
-                    sMsg = "服务器未联接，请稍后再试。";
-                    Send_Message_Out(sMsg);
-
-                    socket.ReConnect();
-
-                    return;
-                }
-
-                //start form the information
-                int Type = (int) OpeType;
-                int Channel = cam.ChannelNumber;
-                DateTime TriggerTime = DateTime.Now;
-                string Note = "图像上传";
-                string GUID = Guid.NewGuid().ToString();
-                //string GUID = "206c2d13-164e-47b1-887a-cc5cd02c9036";
-                //string base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(cam.CameraID,TriggerTime,true);
-                string base64image = "xxxxxxxxxxxxxxxxxxxx";
-                string xml_content = xml.OperationCmd_Xml(Type,Channel,TriggerTime.ToString(),Note,GUID,base64image);
-
-                //Message to the main frame
-                if(null != Working_Message )
-                {
-                    if(OpeType == OperationCmd_Type.Inspection_Image_Upload)
-                    {
-                        sMsg = "正在上传验收图像：";
-                    }
-                    sMsg += cam.Name;
-
-                    Send_Message_Out(sMsg);
-                    //Thread.Sleep(1000);
-                }
-
-                socket.Send(xml_content);
-            }
-            
-            //socket.Close();
-
-            sMsg = "图像队列发送完毕。";
-            Send_Message_Out(sMsg);
             WorkingStatus = Working_Status.Available;
         }
         public string Inspect_Image_Upload()
@@ -211,6 +169,109 @@ namespace Toolbox_DB31.DB31_Adapter
                 return "";
             }
             return "没有操作权限！";
+        }
+
+        private void Respond_To_GetImage(string sChannel, string sGUID)
+        {
+            string[] channelArray = sChannel.Split(',');
+            int count = channelArray.Length;
+
+            ArrayList cameras = new ArrayList();
+
+            //Find the camera
+            foreach(string s_channel in channelArray)
+            {
+                int n_channel = -1;
+                int.TryParse(s_channel, out n_channel);
+
+                Global.g_CameraList_Mutex.WaitOne();
+
+                Camera_Model cam = Find_Camera_From_ChannelNumber(n_channel);
+                if(null != cam)
+                {
+                    cameras.Add(cam.Clone());
+                }
+
+                Global.g_CameraList_Mutex.ReleaseMutex();
+            }
+
+            //Send image
+            Send_Image(OperationCmd_Type.Requested_Image_Upload, cameras, sGUID);
+        }
+
+        private Camera_Model Find_Camera_From_ChannelNumber(int nChannelNumber)
+        {
+            foreach (Camera_Model cam in Global.g_CameraList)
+            {
+                if (cam.ChannelNumber == nChannelNumber)
+                {
+                    return cam;
+                }
+            }
+            return null;
+        }
+
+        private void Send_Image(OperationCmd_Type OpType, ArrayList Cameras, string GUID)
+        {
+            string messageHead="",messageContent="";
+            if(OpType == OperationCmd_Type.Inspection_Image_Upload)
+            {
+                messageHead = "验收：";
+            }
+            else if (OpType == OperationCmd_Type.Test_Image_Upload)
+            {
+                messageHead = "测试：";
+            }
+            else if (OpType == OperationCmd_Type.Requested_Image_Upload)
+            {
+                messageHead = "按需上传：";
+            }
+
+            foreach (Camera_Model cam in Cameras)
+            {
+                if (true == Stop_Uploading_Image)
+                {
+                    messageContent = "停止上传图像";
+                    Send_Message_Out(messageHead+messageContent);
+
+                    Stop_Uploading_Image = false;
+                    WorkingStatus = Working_Status.Available;
+                    return;
+                }
+
+                if (socket.status != DB31_Socket.Status.Connected)
+                {
+                    messageContent = "发送失败，服务器未联接。";
+                    Send_Message_Out(messageHead + messageContent);
+
+                    socket.ReConnect();
+
+                    return;
+                }
+
+                //start form the information
+                int Type = (int)OpType;
+                int Channel = cam.ChannelNumber;
+                DateTime TriggerTime = DateTime.Now;
+                string Note = "图像上传";
+                GUID = GUID==null?Guid.NewGuid().ToString():GUID;
+                //string base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(cam.CameraID,TriggerTime,true);
+                string base64image = "xxxxxxxxxxxxxxxxxxxx";
+                string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+
+                //Message to the main frame
+                if (null != Working_Message)
+                {
+                    messageContent = "正在上传图像 ";
+                    messageContent += cam.Name;
+
+                    Send_Message_Out(messageHead+messageContent);
+                }
+
+                socket.Send(xml_content);
+            }
+            messageContent = "图像队列发送完毕。";
+            Send_Message_Out(messageHead+messageContent);
         }
     }
 }

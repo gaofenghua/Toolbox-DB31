@@ -96,7 +96,7 @@
                 Grid.Row="1"
                 Grid.Column="1"
                 Click="Button_Click_Cancel"
-                Content="取消" />
+                Content="取消上传" />
             <dx:SimpleButton
                 x:Name="Button_Upload"
                 Grid.Row="1"
