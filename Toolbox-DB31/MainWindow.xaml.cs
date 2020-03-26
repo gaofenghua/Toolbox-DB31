@@ -15,6 +15,8 @@ using System.Windows.Shapes;
 using Toolbox_DB31.Classes;
 using Toolbox_DB31.DB31_Adapter;
 using Toolbox_DB31.AVMS_Adapter;
+using System.Threading;
+using System.Diagnostics;
 
 namespace Toolbox_DB31
 {
@@ -27,7 +29,7 @@ namespace Toolbox_DB31
 
         LoginPage theLoginPage;
 
-        enum Menu_Item { User_Login, Inspect_Image_Upload,Test_Image_Upload };
+        enum Menu_Item { User_Login, Inspect_Image_Upload,Test_Image_Upload, Maintenance_Report, Repair_Report};
         Menu_Item Current_Menu_Item;
 
         DB31_Controller db31;
@@ -35,8 +37,9 @@ namespace Toolbox_DB31
         public MainWindow()
         {
             InitializeComponent();
-            Global.g_Main_ViewModel = (Main_ViewModel) DataContext;
 
+            Global.g_Main_ViewModel = (Main_ViewModel)DataContext;
+            
             theLoginPage = new LoginPage();
             theLoginPage.Event_Login_Finished += OnEvent_Login_Finished;
             frmMain.NavigationService.Navigate(theLoginPage);
@@ -56,10 +59,15 @@ namespace Toolbox_DB31
             db31 = new DB31_Controller(Global.g_User);
             db31.Working_Message += OnEvent_Working_Message;
 
+            DeviceSummary.CfgFilePath = @".\Configuration.csv";
             AVMSAdapter adapter = new AVMSAdapter();
-	
-            adapter.Start("192.168.77.211","admin","admin", "0010123033030");
+            adapter.Start("127.0.0.1", "admin", "admin", "0010123033030");
             adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
+
+            Global.g_VMS_Adapter = adapter;
+
+            navBarItem_Inspect_ImageUpload_Click(null, null);
+           
         }
 
         private void HandleAVMSEvent(object sender, AVMSEventArgs e)
@@ -120,7 +128,17 @@ namespace Toolbox_DB31
 
         private void Button_Click_Upload(object sender, RoutedEventArgs e)
         {
-            string sRet = db31.Inspect_Image_Upload();
+            string sRet = "";
+            
+            if(Current_Menu_Item == Menu_Item.Inspect_Image_Upload)
+            {
+                sRet = db31.Inspect_Image_Upload();
+            }
+            else if (Current_Menu_Item == Menu_Item.Test_Image_Upload)
+            {
+                sRet = db31.Test_Image_Upload();
+            }
+           
             if(""!= sRet)
             {
                 Global.g_Main_ViewModel.LabelStatus = sRet;
@@ -128,7 +146,10 @@ namespace Toolbox_DB31
         }
         private void Button_Click_Cancel(object sender, RoutedEventArgs e)
         {
-
+            if(db31.WorkingStatus == DB31_Controller.Working_Status.Working)
+            {
+                db31.Stop_Uploading_Image = true;
+            }
         }
         private void Button_Click_SignIn(object sender, RoutedEventArgs e)
         {
@@ -140,22 +161,33 @@ namespace Toolbox_DB31
             //myNavBarControl.ActiveGroup = myNavBarControl.Groups[1];
             //myNavBarControl.SelectedItem = myNavBarControl.Groups[1].Items[0];
 
-            navBarItem_Test_ImageUpload_Click(null, null);
+            switch(Global.g_User.Department)
+            {
+                case DB31_User.Enum_Department.Inspector:
+                    navBarItem_Inspect_ImageUpload_Click(null, null);
+                    break;
+                case DB31_User.Enum_Department.Operator:
+                    navBarItem_Test_ImageUpload_Click(null, null);
+                    break;
+                case DB31_User.Enum_Department.Maintainer:
+                    navBarItem_Maintenance_Report_Click(null, null);
+                    break;
+            }
+                
+           
         }
 
         private void OnEvent_Working_Message(object sender, string sMsg)
         {
             Global.g_Main_ViewModel.LabelMessage = sMsg;
+  
+            Thread.Sleep(2000);
         }
 
         private void navBarItem41_Click(object sender, EventArgs e)
         {
-            frmMain.NavigationService.Navigate(new SummaryTable());
-
-            myNavBarControl.ActiveGroup = myNavBarControl.Groups[3];
-            myNavBarControl.SelectedItem = myNavBarControl.Groups[3].Items[0];
-
-            Button_Upload.Visibility = Visibility.Visible;
+            frmMain.NavigationService.Navigate(new FaultRepairMenu());
+            Set_Button_Label(true);
         }
         private void navBarItem_Inspect_ImageUpload_Click(object sender, EventArgs e)
         {
@@ -164,7 +196,7 @@ namespace Toolbox_DB31
             myNavBarControl.SelectedItem = navBarItem_Inspect_ImageUpload;
 
             Set_Button_Label(true);
-            Button_Cancel.IsEnabled = false;
+            //Button_Cancel.IsEnabled = false;
 
             Current_Menu_Item = Menu_Item.Inspect_Image_Upload;
         }
@@ -175,7 +207,7 @@ namespace Toolbox_DB31
             myNavBarControl.SelectedItem = navBarItem_Test_ImageUpload;
 
             Set_Button_Label(true);
-            Button_Cancel.IsEnabled = false;
+            //Button_Cancel.IsEnabled = false;
 
             Current_Menu_Item = Menu_Item.Test_Image_Upload;
         }
@@ -190,14 +222,24 @@ namespace Toolbox_DB31
         }
         private void navBarItem_Maintenance_Report_Click(object sender, EventArgs e)
         {
+            myNavBarControl.SelectedItem = navBarItem_Maintenance_Report;
             frmMain.NavigationService.Navigate(new MaintenanceMenu());
             Set_Button_Label(true);
+
+            Current_Menu_Item = Menu_Item.Maintenance_Report;
         }
         private void navBarItem_Repair_Report_Click(object sender, EventArgs e)
         {
             frmMain.NavigationService.Navigate(new RepairMenu());
             Set_Button_Label(true);
+
+            Current_Menu_Item = Menu_Item.Repair_Report;
         }
 
+        private void navBarItem_Settings_Page_Click(object sender, EventArgs e)
+        {
+            frmMain.NavigationService.Navigate(new SettingsMenu());
+            Set_Button_Label(false);
+        }
     }
 }

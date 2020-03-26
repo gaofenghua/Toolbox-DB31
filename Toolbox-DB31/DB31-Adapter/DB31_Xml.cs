@@ -84,17 +84,92 @@ namespace Toolbox_DB31.DB31_Adapter
             return xml_Declaration.ToString() + xml_Agent.ToString();
         }
 
-        public string OperationCmd_Xml()
+        public string OperationCmd_Xml(int Type, int Channel, string TriggerTime, string Note, string GUID, string Base64Image)
         {
-            xml_OperationCmd.SetAttributeValue("Type", 1);
-            xml_OperationCmd.SetAttributeValue("Channel", 2);
-            xml_OperationCmd.SetAttributeValue("TriggerTime", 3);
-            xml_OperationCmd.SetAttributeValue("Note", 4);
-            xml_OperationCmd.SetAttributeValue("GUID", 5);
-            xml_OperationCmd.Value = "base64";
+            xml_OperationCmd.SetAttributeValue("Type", Type);
+            xml_OperationCmd.SetAttributeValue("Channel", Channel);
+            xml_OperationCmd.SetAttributeValue("TriggerTime", TriggerTime);
+            xml_OperationCmd.SetAttributeValue("Note", Note);
+            xml_OperationCmd.SetAttributeValue("GUID", GUID);
+            xml_OperationCmd.Value = Base64Image==null?"":Base64Image;
 
             xml_Agent.ReplaceNodes(xml_OperationCmd);
             return xml_Declaration.ToString() + xml_Agent.ToString();
         }
+
+        public Xml_Parse_Output ParseXml(string sXml)
+        {
+            Xml_Parse_Output xRet = new Xml_Parse_Output();
+
+
+            XDocument xd = XDocument.Parse(sXml);
+            int nQuery = 0;
+            XElement item;
+
+            //Get the OK server time
+            var query = from s in xd.Descendants()
+                        where s.Name.LocalName == "OK" && s.Parent.Name.LocalName == "Server"
+                        select s;
+
+            nQuery = query.Count();
+
+            if(nQuery == 1)
+            {
+                item = query.First();
+                if (null != item.Attribute("NowTime"))
+                {
+                    xRet.OK_NowTime = item.Attribute("NowTime").Value;
+                }
+            }
+
+            //Get the ticks 
+            query = from s in xd.Descendants()
+                    where s.Name.LocalName == "Ticks" && s.Parent.Name.LocalName == "Server"
+                    select s;
+
+            nQuery = query.Count();
+
+            if (nQuery == 1)
+            {
+                item = query.First();
+                if (null != item.Attribute("Value"))
+                {
+                    string sTicks = item.Attribute("Value").Value;
+                    int.TryParse(sTicks, out xRet.Ticks);
+                }
+
+                //若收到的心跳包含GetImage字段，DVR将立刻用OperationCmd发送指定各个通道的实时图片；OperationCmd中GUID属性填写服务器回传的GUID编号；Type属性为5(Type=5);需上传通道为“，”隔开的通道编号。
+                //
+                //Get GetImage 
+                query = from s in xd.Descendants()
+                        where s.Name.LocalName == "GetImage" && s.Parent.Name.LocalName == "Server"
+                        select s;
+
+                nQuery = query.Count();
+
+                if(nQuery ==1)
+                {
+                    item = query.First();
+                    if (null != item.Attribute("Channel"))
+                    {
+                        xRet.Channel = item.Attribute("Channel").Value;
+                    }
+                    if (null != item.Attribute("GUID"))
+                    {
+                        xRet.GUID = item.Attribute("GUID").Value;
+                    }
+                }
+            }
+
+            return xRet;
+        }
+    }
+
+    public class Xml_Parse_Output
+    {
+        public string OK_NowTime = null;
+        public int Ticks = 0;
+        public string Channel = null;
+        public string GUID = null;
     }
 }

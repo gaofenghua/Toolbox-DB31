@@ -10,18 +10,17 @@
              xmlns:local="clr-namespace:Toolbox_DB31"
              xmlns:ViewModels="clr-namespace:Toolbox_DB31.Classes"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="400"
+             d:DesignHeight="400" d:DesignWidth="400"
              Title="MaintenanceMenu">
 
     <Page.DataContext>
         <ViewModels:MaintenanceMenuViewModel/>
     </Page.DataContext>
 
-    <Grid Grid.Row="4" Grid.Column="3">
+    <Grid Grid.Row="3" Grid.Column="3">
         <Grid.RowDefinitions>
             <RowDefinition Height="20*"/>
-            <RowDefinition Height="110*"/>
-            <RowDefinition Height="150*"/>
+            <RowDefinition Height="360*"/>
             <RowDefinition Height="20*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -30,12 +29,12 @@
             <ColumnDefinition Width="20*"/>
         </Grid.ColumnDefinitions>
 
-        <GroupBox Grid.Row="1" Grid.Column="1" Header="保养项目" VerticalAlignment="Top" Foreground="#BFFFFFFF">
+        <GroupBox Grid.Row="1" Grid.Column="1" Header="保养项目" Height="150" Margin="0,0,0,0" VerticalAlignment="Top" Foreground="#BFFFFFFF">
             <dxlc:LayoutControl Orientation="Vertical" Padding="0">
-                <dxlc:LayoutItem HorizontalAlignment="Right">
-                    <dxe:ListBoxEdit x:Name="statusTypeListBox" Background="{x:Null}" ShowBorder="False" DisplayMember="Name" SelectedIndex="0">
-                        <dxe:ListBoxEditItem Content="日常保养" />
-                        <dxe:ListBoxEditItem Content="专项保养" />
+                <dxlc:LayoutItem Margin="2,10,2,2" HorizontalAlignment="Right">
+                    <dxe:ListBoxEdit x:Name="statusTypeListBox" ShowBorder="False" DisplayMember="Name" SelectedIndex="0">
+                        <dxe:ListBoxEditItem Name="rdoRegular" Content="日常保养" Selected="rdoRegular_Selected" />
+                        <dxe:ListBoxEditItem  Name="rdoSpecial" Content="专项保养" Selected="rdoSpecial_Selected" />
                         <dxe:ListBoxEdit.StyleSettings>
                             <dxe:RadioListBoxEditStyleSettings />
                         </dxe:ListBoxEdit.StyleSettings>
@@ -46,7 +45,7 @@
                         </dxe:ListBoxEdit.ItemsPanel>
                     </dxe:ListBoxEdit>
                 </dxlc:LayoutItem>
-                <dxlc:LayoutItem>
+                <dxlc:LayoutItem Margin="2,10,2,2" >
                     <dxlc:LayoutGroup Orientation="Vertical">
                         <dxlc:LayoutGroup>
                             <dxlc:LayoutItem>
@@ -59,7 +58,7 @@
                                 <dxe:CheckEdit Content="入侵报警" EditValue="{Binding Path=IsIntruderAlarmEnabled, Mode=TwoWay}" />
                             </dxlc:LayoutItem>
                             <dxlc:LayoutItem>
-                                <dxe:CheckEdit Content="楼宇对讲" EditValue="{Binding Path=IsVideoMonitorEnabled, Mode=TwoWay}" />
+                                <dxe:CheckEdit Content="楼宇对讲" EditValue="{Binding Path=IsBuildingIntercomEnabled, Mode=TwoWay}" />
                             </dxlc:LayoutItem>
                         </dxlc:LayoutGroup>
                         <dxlc:LayoutGroup>
@@ -80,9 +79,9 @@
                 </dxlc:LayoutItem>
             </dxlc:LayoutControl>
         </GroupBox>
-        <GroupBox Grid.Row="2" Grid.Column="1"  Header="保养记录" VerticalAlignment="Top" Foreground="#BFFFFFFF">
-            <dxlc:LayoutItem>
-                <TextBox x:Name="tbMaintenanceRecords" TextWrapping="Wrap" Text="{Binding MaintenanceRecords, Mode=TwoWay}"  MinLines="6" VerticalScrollBarVisibility="Visible" />
+        <GroupBox Grid.Row="1" Grid.Column="1" Header="保养记录" Height="180" Margin="0,160,0,0" VerticalAlignment="Top" Foreground="#BFFFFFFF">
+            <dxlc:LayoutItem Height="130" Margin="2,10,2,10" >
+                <TextBox x:Name="tbMaintenanceRecords" TextWrapping="Wrap" Text="{Binding Path=MaintenanceRecords, Mode=TwoWay}" AcceptsReturn="True" MinLines="6" VerticalScrollBarVisibility="Visible" />
             </dxlc:LayoutItem>
         </GroupBox>
     </Grid>

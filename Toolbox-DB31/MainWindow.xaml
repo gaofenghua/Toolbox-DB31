@@ -50,8 +50,8 @@
             <dxn:NavBarGroup
                 x:Name="navBarGroup3" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="工程及维保">
                 <dxn:NavBarItem Content="  维修签到" Click="navBarItem_Repair_SignIn_Click"/>
-                <dxn:NavBarItem Content="  维修登记" Click="navBarItem_Maintenance_Report_Click"/>
-                <dxn:NavBarItem Content="  保养登记" Click="navBarItem_Repair_Report_Click"/>
+                <dxn:NavBarItem x:Name="navBarItem_Maintenance_Report" Content="  保养登记" Click="navBarItem_Maintenance_Report_Click"/>
+                <dxn:NavBarItem Content="  维修登记" Click="navBarItem_Repair_Report_Click"/>
             </dxn:NavBarGroup>
             <dxn:NavBarGroup
                 x:Name="navBarGroup4" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="建设使用单位">
@@ -60,7 +60,7 @@
             </dxn:NavBarGroup>
             <dxn:NavBarGroup x:Name="navBarGroup_system" FontSettings="{dxn:NavBarFontSettings FontSize=16}" Header="系统">
                 <dxn:NavBarItem x:Name="navBarItem11" Command="{x:Static local:MainWindow.myCommand}" Content="  人员登录" />
-                <dxn:NavBarItem x:Name="navBarItem15" Content="  系统设置" />
+                <dxn:NavBarItem x:Name="navBarItem_Settings_Page" Content="  系统设置" Click="navBarItem_Settings_Page_Click" />
             </dxn:NavBarGroup>
             <dxn:NavBarControl.View>
                 <dxn:SideBarView/>
@@ -96,7 +96,7 @@
                 Grid.Row="1"
                 Grid.Column="1"
                 Click="Button_Click_Cancel"
-                Content="取消" />
+                Content="取消上传" />
             <dx:SimpleButton
                 x:Name="Button_Upload"
                 Grid.Row="1"

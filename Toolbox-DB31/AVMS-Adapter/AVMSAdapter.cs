@@ -23,11 +23,11 @@ namespace Toolbox_DB31.AVMS_Adapter
 {
     public class AVMSAdapter
     {
-        private string m_agentId = string.Empty;
         private AVMSCom m_avms = null;
         private bool m_bConnectedToAVMSServer = false;
         private bool m_bDeviceModelEventHandlerAdded = false;
         private bool m_bAVMSListenerEventHandlerAdded = false;
+        public bool IsAVMSListeningEnabled { get { return m_bAVMSListenerEventHandlerAdded; } }
         public event AVMSTriggeredHandler AVMSTriggered;
         public delegate void AVMSTriggeredHandler(object sender, AVMSEventArgs e);
         private bool m_bAVMSMessageSend = false;
@@ -36,6 +36,7 @@ namespace Toolbox_DB31.AVMS_Adapter
         private AlarmMonitor m_alarmMonitor = null;
         private Timer m_timer = null;
         private const int IMPORT_INTERVAL = 65 * 1000;
+        private bool m_bPrintLogEnabled = true;
 
         private SdkFarm m_farm
         {
@@ -77,10 +78,7 @@ namespace Toolbox_DB31.AVMS_Adapter
         {
             App.Current.Dispatcher.BeginInvoke((Action)delegate ()
             {
-                foreach (KeyValuePair<uint, CCamera> item in m_cameraList)
-                {
-                    Global.g_CameraList.Add(new Camera_Model() { AgentID = m_agentId, ChannelNumber = (int)item.Key, Name = item.Value.Name, Status = "在线", IsSelected = false });
-                }
+                DeviceSummary.UpdateTable(m_cameraList);
             });
         }
 
@@ -88,7 +86,6 @@ namespace Toolbox_DB31.AVMS_Adapter
         {
             try
             {
-                m_agentId = Id;
                 m_avms = new AVMSCom(Ip, Username, Password);
                 if (null != m_avms)
                 {
@@ -316,16 +313,17 @@ namespace Toolbox_DB31.AVMS_Adapter
             }
             DateTime clientTime = TimeUtils.DateTimeFromUTC(cameraMessageStruct.m_utcTime);
             DateTime serverTime = m_cameraList[camId].Server.ToLocalTime(clientTime);
-            CCamera cam = m_cameraList[camId];
-            string picData = GetEncodedSnapshot(cam, DateTime.Now, true);
+            //CCamera cam = m_cameraList[camId];
+            string picData = GetEncodedSnapshot((int)camId, DateTime.Now, true);
 
             AVMSEventArgs args = new AVMSEventArgs(alarmType, serverTime, camId, picData);
             this.OnAVMSTriggered(this, args);
         }
 
-        public string GetEncodedSnapshot(CCamera cam, DateTime dt, bool bSave)
+        //public string GetEncodedSnapshot(CCamera cam, DateTime dt, bool bSave)
+        public string GetEncodedSnapshot(int camId, DateTime dt, bool bSave)
         {
-            byte[] byteJpg = GetImageStream(cam, dt);
+            byte[] byteJpg = GetImageStream(camId, dt);
             if (null == byteJpg)
             {
                 PrintLog("TakeSnapshot : not available.");
@@ -340,7 +338,8 @@ namespace Toolbox_DB31.AVMS_Adapter
                 {
                     Directory.CreateDirectory("image");
                 }
-                string fileName = string.Format("cam{0}_{1}.jpg", cam.CameraId.ToString(), dt.ToString("yyyyMMddHHmmss"));
+                //string fileName = string.Format("cam{0}_{1}.jpg", cam.CameraId.ToString(), dt.ToString("yyyyMMddHHmmss"));
+                string fileName = string.Format("cam{0}_{1}.jpg", camId.ToString(), dt.ToString("yyyyMMddHHmmss"));
                 string filePath = System.Windows.Forms.Application.StartupPath.ToString() + @"\image\" + fileName;
                 image.Save(filePath, ImageFormat.Jpeg);
             }
@@ -375,7 +374,8 @@ namespace Toolbox_DB31.AVMS_Adapter
             return byteSignals;
         }
 
-        public byte[] GetImageStream(CCamera cam, DateTime dt)
+        //public byte[] GetImageStream(CCamera cam, DateTime dt)
+        public byte[] GetImageStream(int camId, DateTime dt)
         {
             if (null == m_avms)
             {
@@ -383,6 +383,13 @@ namespace Toolbox_DB31.AVMS_Adapter
                 return null;
             }
 
+            if (!m_cameraList.ContainsKey((uint)camId))
+            {
+                PrintLog("Invalid camera number!");
+                return null;
+            }
+
+            CCamera cam = m_cameraList[(uint)camId];
             DateTime jpgTime = cam.Server.ToUtcTime(dt);
             bool bViewPrivateVideo = cam.CanAccess(DeviceRight.ViewPrivateVideo);
             string sFilename = string.Empty;
@@ -393,6 +400,17 @@ namespace Toolbox_DB31.AVMS_Adapter
                 return null;
             }
             return byteJpg;
+        }
+
+        public string GetStoredPath()
+        {
+            if ((null == m_avms) || 0 == m_cameraList.Count)
+            {
+                PrintLog("Fail to retrieve AVMS data store information!");
+                return null;
+            }
+
+            return m_avms.GetDataPath(m_cameraList.Values.First());
         }
 
         private void OnAVMSTriggered(object sender, AVMSEventArgs e)
@@ -426,7 +444,6 @@ namespace Toolbox_DB31.AVMS_Adapter
                         PrintLog(string.Format("{0} - AVMSCom_MessageSend : AVMS connection has been established.", time));
                         RefreshServerManager();
                         RefreshDeviceManager();
-                        StartAVMSListener();    //
                     }
 
                     break;
@@ -449,7 +466,10 @@ namespace Toolbox_DB31.AVMS_Adapter
 
         private void PrintLog(string text)
         {
-            Trace.WriteLine(text);
+            if (m_bPrintLogEnabled)
+            {
+                Trace.WriteLine(text);
+            }
         }
     }
 
@@ -462,10 +482,10 @@ namespace Toolbox_DB31.AVMS_Adapter
 
     public class AVMSEventArgs : EventArgs
     {
-        public AVMS_ALARM m_alarmType { get; }
-        public DateTime m_alarmTime { get; }
-        public uint m_cameraId { get; }
-        public string m_pictureData { get; }
+        public AVMS_ALARM m_alarmType { get; set; }
+        public DateTime m_alarmTime { get; set; }
+        public uint m_cameraId { get; set; }
+        public string m_pictureData { get; set; }
 
         public AVMSEventArgs(AVMS_ALARM type, DateTime time, uint id, string data)
         {

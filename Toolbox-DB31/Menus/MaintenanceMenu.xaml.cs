@@ -20,11 +20,22 @@ namespace Toolbox_DB31
 	/// </summary>
 	public partial class MaintenanceMenu : Page
 	{
+        public MaintenanceMenuViewModel m_ViewModel = new MaintenanceMenuViewModel();
+
         public MaintenanceMenu()
 		{
 			InitializeComponent();
-            DataContext = this;
+            m_ViewModel = DataContext as MaintenanceMenuViewModel;
 		}
 
+        private void rdoRegular_Selected(object sender, RoutedEventArgs e)
+        {
+            m_ViewModel.m_Type = MaintenanceType.REGULAR_MAINTENANCE;
+        }
+
+        private void rdoSpecial_Selected(object sender, RoutedEventArgs e)
+        {
+            m_ViewModel.m_Type = MaintenanceType.SPECIAL_MAINTENANCE;
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace Toolbox_DB31.Classes
 {
     public class Camera_Model : System.ICloneable
     {
+        public int CameraID;
         public string AgentID { get; set; }
         public int ChannelNumber { get; set; }
         public string Name { get; set; }

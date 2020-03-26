@@ -35,6 +35,7 @@ namespace Toolbox_DB31.DB31_Adapter
             }
 
             PrivilegeMatrix[(int)Enum_Department.Inspector, (int)Enum_Action.Inspect_Image_Upload] = true;
+            PrivilegeMatrix[(int)Enum_Department.Operator, (int)Enum_Action.Test_Image_Upload] = true;
         }
         public bool Verify()
         {
@@ -52,12 +53,28 @@ namespace Toolbox_DB31.DB31_Adapter
                     }
                     break;
                 case Enum_Department.Operator:
+                    if (Input_UserName == "operator" && Input_Password == "operator")
+                    {
+                        UserName = Input_UserName;
+                        Department = Input_Department;
+
+                        Reset_Input();
+
+                        return true;
+                    }
                     break;
                 case Enum_Department.Maintainer:
+                    if (Input_UserName == "maintainer" && Input_Password == "maintainer")
+                    {
+                        UserName = Input_UserName;
+                        Department = Input_Department;
+
+                        Reset_Input();
+
+                        return true;
+                    }
                     break;
             }
-
-           
             return false;
         }
 

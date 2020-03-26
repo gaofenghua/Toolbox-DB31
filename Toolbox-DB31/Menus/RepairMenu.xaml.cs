@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Toolbox_DB31.Classes;
 
 namespace Toolbox_DB31
 {
@@ -19,9 +20,27 @@ namespace Toolbox_DB31
 	/// </summary>
 	public partial class RepairMenu : Page
 	{
-		public RepairMenu()
+        public RepairMenuViewModel m_ViewModel = new RepairMenuViewModel();
+
+        public RepairMenu()
 		{
 			InitializeComponent();
-		}
-	}
+            m_ViewModel = DataContext as RepairMenuViewModel;
+        }
+
+        private void rdoNotRepired_Selected(object sender, RoutedEventArgs e)
+        {
+            m_ViewModel.m_Status = RepairStatus.NOT_REPAIR;
+        }
+
+        private void rdoPartRepired_Selected(object sender, RoutedEventArgs e)
+        {
+            m_ViewModel.m_Status = RepairStatus.PART_REPAIR;
+        }
+
+        private void rdoTotalRepired_Selected(object sender, RoutedEventArgs e)
+        {
+            m_ViewModel.m_Status = RepairStatus.TOTAL_REPAIR;
+        }
+    }
 }

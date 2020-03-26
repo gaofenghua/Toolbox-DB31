@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Toolbox_DB31</RootNamespace>
     <AssemblyName>Toolbox-DB31</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -69,34 +69,30 @@
     </Reference>
     <Reference Include="DevExpress.Xpf.Themes.MetropolisDark.v19.1, Version=19.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DeviceModel">
-      <HintPath>..\input\input\library\dll\x64\DeviceModel.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\DeviceModel.dll</HintPath>
     </Reference>
-    <Reference Include="DeviceModel.Security, Version=7.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\input\input\library\dll\x64\DeviceModel.Security.dll</HintPath>
+    <Reference Include="DeviceModel.Dio">
+      <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\DeviceModel.Dio.dll</HintPath>
     </Reference>
-    <Reference Include="Farm.Security, Version=7.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\input\input\library\dll\x64\Farm.Security.dll</HintPath>
+    <Reference Include="DeviceModel.Security">
+      <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\DeviceModel.Security.dll</HintPath>
     </Reference>
-    <Reference Include="SecurityLib, Version=7.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\input\input\library\dll\x64\SecurityLib.dll</HintPath>
+    <Reference Include="Farm.Security">
+      <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\Farm.Security.dll</HintPath>
     </Reference>
-    <Reference Include="Seer, Version=7.0.0.0, Culture=neutral, PublicKeyToken=6c293b97cf6869d0, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\input\input\library\dll\x64\Seer.dll</HintPath>
+    <Reference Include="SecurityLib">
+      <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\SecurityLib.dll</HintPath>
     </Reference>
-    <Reference Include="Seer.BaseLibCS, Version=7.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Seer">
+      <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\Seer.dll</HintPath>
+    </Reference>
+    <Reference Include="Seer.BaseLibCS">
       <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\Seer.BaseLibCS.dll</HintPath>
     </Reference>
-    <Reference Include="Seer.BaseLibCS.XmlSerializers, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\input\input\library\dll\x64\Seer.BaseLibCS.XmlSerializers.dll</HintPath>
+    <Reference Include="Seer.BaseLibCS.XmlSerializers">
+      <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\Seer.BaseLibCS.XmlSerializers.dll</HintPath>
     </Reference>
-    <Reference Include="Seer.Common, Version=7.0.0.0, Culture=neutral, PublicKeyToken=6c293b97cf6869d0, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Seer.Common">
       <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\Seer.Common.dll</HintPath>
     </Reference>
     <Reference Include="Seer.Connectivity">
@@ -109,7 +105,7 @@
       <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\Seer.SDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="Seer.SDK.NotificationMonitors">
-      <HintPath>..\input\input\library\dll\x64\Seer.SDK.NotificationMonitors.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\Seer.SDK.NotificationMonitors.dll</HintPath>
     </Reference>
     <Reference Include="socket.framework">
       <HintPath>..\input\input\library\dll\x64\socket.framework.dll</HintPath>
@@ -142,20 +138,35 @@
     <Compile Include="AVMS-Adapter\AVMSAdapter.cs" />
     <Compile Include="AVMS-Adapter\AVMSCom.cs" />
     <Compile Include="Classes\Camera_Model.cs" />
+    <Compile Include="Classes\FaultRepairMenuViewModel.cs" />
     <Compile Include="Classes\MaintenanceMenuViewModel.cs" />
     <Compile Include="Classes\Main_ViewModel.cs" />
     <Compile Include="Classes\RepairMenuViewModel.cs" />
+    <Compile Include="Classes\SettingsMenuViewModel.cs" />
     <Compile Include="Classes\Summary_ViewModel.cs" />
     <Compile Include="Classes\User_ViewModel.cs" />
     <Compile Include="DB31-Adapter\DB31_Controller.cs" />
+    <Compile Include="AVMS-Adapter\DeviceSummary.cs" />
     <Compile Include="DB31-Adapter\DB31_Socket.cs" />
     <Compile Include="DB31-Adapter\DB31_User.cs" />
     <Compile Include="DB31-Adapter\DB31_Xml.cs" />
-    <Compile Include="Menus\MaintenanceMenu.xaml.cs" />
-    <Compile Include="Menus\RepairMenu.xaml.cs" />
+    <Compile Include="Menus\FaultRepairMenu.xaml.cs">
+      <DependentUpon>FaultRepairMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Menus\MaintenanceMenu.xaml.cs">
+      <DependentUpon>MaintenanceMenu.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Menus\RepairMenu.xaml.cs">
+      <DependentUpon>RepairMenu.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Menus\SettingsMenu.xaml.cs">
+      <DependentUpon>SettingsMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="PasswordWindow.xaml.cs">
       <DependentUpon>PasswordWindow.xaml</DependentUpon>
@@ -180,6 +191,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Menus\FaultRepairMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Menus\MaintenanceMenu.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -187,6 +202,10 @@
     <Page Include="Menus\RepairMenu.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Menus\SettingsMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="PasswordWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -226,7 +245,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

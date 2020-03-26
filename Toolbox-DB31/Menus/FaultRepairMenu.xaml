@@ -1,0 +1,114 @@
+﻿<Page x:Class="Toolbox_DB31.FaultRepairMenu"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+      xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+      xmlns:local="clr-namespace:Toolbox_DB31"
+      xmlns:ViewModels="clr-namespace:Toolbox_DB31.Classes"
+      xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+      mc:Ignorable="d" 
+      d:DesignHeight="400" d:DesignWidth="400"
+      Title="FaultRepairMenu">
+
+    <Page.DataContext>
+        <ViewModels:FaultRepairMenuViewModel/>
+    </Page.DataContext>
+
+    <Grid Grid.Row="3" Grid.Column="3">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="380*"/>
+            <RowDefinition Height="10*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="380*"/>
+            <ColumnDefinition Width="10*"/>
+        </Grid.ColumnDefinitions>
+
+        <GroupBox Grid.Row="1" Grid.Column="1" Header="视频监控" Margin="0,0,0,0" VerticalAlignment="Top" Foreground="#BFFFFFFF" FontSize="10">
+            <Grid Grid.Row="3" Grid.Column="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="5*"/>
+                    <RowDefinition Height="370*"/>
+                    <RowDefinition Height="5*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="370*"/>
+                    <ColumnDefinition Width="5*"/>
+                </Grid.ColumnDefinitions>
+
+                <GroupBox Grid.Row="1" Grid.Column="1" Header="前端设备" Height="60" Margin="0,0,0,0" VerticalAlignment="Top" Foreground="#BFFFFFFF">
+                    <dxlc:LayoutGroup Height="22" Margin="15,0,15,0" Orientation="Vertical">
+                        <dxlc:LayoutGroup>
+                            <dxlc:LayoutItem>
+                                <dxe:CheckEdit Content="图像丢失" EditValue="{Binding Path=IsFrontImageLossEnabled, Mode=TwoWay}" />
+                            </dxlc:LayoutItem>
+                            <dxlc:LayoutItem>
+                                <dxe:CheckEdit Content="图像异常" EditValue="{Binding Path=IsFrontImageAbnormalityEnabled, Mode=TwoWay}" />
+                            </dxlc:LayoutItem>
+                            <dxlc:LayoutItem>
+                                <dxe:CheckEdit Content="传输故障" EditValue="{Binding Path=IsFrontTransmissionFailureEnabled, Mode=TwoWay}" />
+                            </dxlc:LayoutItem>
+                            <dxlc:LayoutItem>
+                                <dxe:CheckEdit Content="其他故障" EditValue="{Binding Path=IsFrontOtherFailureEnabled, Mode=TwoWay}" />
+                            </dxlc:LayoutItem>
+                        </dxlc:LayoutGroup>
+                    </dxlc:LayoutGroup>
+                </GroupBox>
+                <GroupBox Grid.Row="1" Grid.Column="1" Header="控制系统" Margin="0,65,0,0" VerticalAlignment="Top" Foreground="#BFFFFFFF">
+                    <dxlc:LayoutGroup Orientation="Vertical">
+                        <dxlc:LayoutGroup>
+                            <GroupBox Header="视频矩阵" Height="50" Margin="2,2,2,2" VerticalAlignment="Top" Foreground="#BFFFFFFF" BorderThickness="0.5">
+                                <dxlc:LayoutGroup Height="20" Margin="2,0,0,0"  Orientation="Vertical">
+                                    <dxlc:LayoutGroup>
+                                        <dxlc:LayoutItem>
+                                            <dxe:CheckEdit Content="视频故障" EditValue="{Binding Path=IsMatrixVideoFailureEnabled, Mode=TwoWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem>
+                                            <dxe:CheckEdit Content="操作故障" EditValue="{Binding Path=IsMatrixOperationFailureEnabled, Mode=TwoWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem>
+                                            <dxe:CheckEdit Content="通讯故障" EditValue="{Binding Path=IsMatrixCommunicationFailureEnabled, Mode=TwoWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem>
+                                            <dxe:CheckEdit Content="其他故障" EditValue="{Binding Path=IsMatrixOtherFailureEnabled, Mode=TwoWay}" />
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+                                </dxlc:LayoutGroup>
+                            </GroupBox>
+                        </dxlc:LayoutGroup>
+                        <dxlc:LayoutGroup>
+                            <GroupBox Header="硬盘录像" Height="50" Margin="2,2,2,2" VerticalAlignment="Top" Foreground="#BFFFFFFF" BorderThickness="0.5">
+                                <dxlc:LayoutGroup Height="20" Margin="2,0,0,0" Orientation="Vertical">
+                                    <dxlc:LayoutGroup>
+                                        <dxlc:LayoutItem>
+                                            <dxe:CheckEdit Content="监看故障" EditValue="{Binding Path=IsRecorderMonitoringFailureEnabled, Mode=TwoWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem>
+                                            <dxe:CheckEdit Content="录像故障" EditValue="{Binding Path=IsRecorderRecordingFailureEnabled, Mode=TwoWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem>
+                                            <dxe:CheckEdit Content="回放故障" EditValue="{Binding Path=IsRecorderPlaybackFailureEnabled, Mode=TwoWay}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem>
+                                            <dxe:CheckEdit Content="其他故障" EditValue="{Binding Path=IsRecorderOtherFailureEnabled, Mode=TwoWay}" />
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+                                </dxlc:LayoutGroup>
+                            </GroupBox>
+                        </dxlc:LayoutGroup>
+                    </dxlc:LayoutGroup>
+                </GroupBox>
+                <GroupBox Grid.Row="1" Grid.Column="1" Header="说明" Margin="0,205,0,10"  VerticalAlignment="Top"  Foreground="#BFFFFFFF">
+                    <dxlc:LayoutItem Height="70" Margin="2,2,2,2">
+                        <TextBox x:Name="tbVideoMonitorRecords" TextWrapping="Wrap" Text="{Binding Path=VideoMonitorRecords, Mode=TwoWay}" AcceptsReturn="True" MinLines="3" VerticalScrollBarVisibility="Visible" />
+                    </dxlc:LayoutItem>
+                </GroupBox>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Page>
