@@ -54,8 +54,6 @@ namespace Toolbox_DB31
             //myNavBarControl.ActiveGroup = navBarGroup_system;
             myNavBarControl.SelectedItem = navBarGroup_system.Items[0];
            
-            //DB31_Controller controller = new DB31_Controller();
-            //controller.StartHeartbeat(); 
             db31 = new DB31_Controller(Global.g_User);
             db31.Working_Message += OnEvent_Working_Message;
 

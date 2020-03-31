@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Toolbox_DB31.Classes;
+using Toolbox_DB31.AVMS_Adapter;
 
 namespace Toolbox_DB31.DB31_Adapter
 {
@@ -32,8 +33,8 @@ namespace Toolbox_DB31.DB31_Adapter
         DB31_Xml xml;
 
         public int DVR_State = 0;
-        public int Total_Space = 0;
-        public int Free_Space = 0;
+        public long Total_Space = 0;
+        public long Free_Space = 0;
         public string Process_Name = "System,AI_Main.exe";
 
         System.Threading.Timer heartbeat_timer = null;
@@ -49,8 +50,9 @@ namespace Toolbox_DB31.DB31_Adapter
 
             xml = new DB31_Xml();
 
-           
+            
         }
+
         private void OnEvent_Receive_Socket_Message(object sender, SocketWorkingEventArgs e)
         {
             if(e.CurrentStatus == DB31_Socket.Status.Connected && e.CurrentStatus != e.PreviousStatus)
@@ -59,9 +61,8 @@ namespace Toolbox_DB31.DB31_Adapter
             }
 
             Send_Message_Out(e.sMessage);
-
-           
         }
+
         private void OnEvent_Socket_Data_Received(object sender, string sXml)
         {
             Xml_Parse_Output xInfo = xml.ParseXml(sXml);
@@ -78,6 +79,7 @@ namespace Toolbox_DB31.DB31_Adapter
                 }
             }
         }
+
         public void StartHeartbeat()
         {
             if(heartbeat_timer == null)
@@ -92,16 +94,20 @@ namespace Toolbox_DB31.DB31_Adapter
             sMsg = Time_Interval / 1000 + "秒后发送心跳信息。";
             Send_Message_Out(sMsg);
         }
+
         public void HeartBeat(object obj)
         {
             if(socket.status == DB31_Socket.Status.Connected)
             {
+                GetStoredDiskSpace();
+
                 string xml_content = xml.HeartbeatXml(DVR_State, Total_Space, Free_Space, Process_Name);
                 socket.Send(xml_content);
-
-                //heartbeat_timer.Change(Time_Interval, Timeout.Infinite);
             }
+
+            heartbeat_timer.Change(Time_Interval, Timeout.Infinite);
         }
+
         private void Send_Message_Out(string sMsg)
         {
             if(null!= Working_Message)
@@ -147,6 +153,7 @@ namespace Toolbox_DB31.DB31_Adapter
 
             WorkingStatus = Working_Status.Available;
         }
+
         public string Inspect_Image_Upload()
         {
             if (true == user.Privilege_Check(DB31_User.Enum_Action.Inspect_Image_Upload))
@@ -272,6 +279,11 @@ namespace Toolbox_DB31.DB31_Adapter
             }
             messageContent = "图像队列发送完毕。";
             Send_Message_Out(messageHead+messageContent);
+        }
+
+        private void GetStoredDiskSpace()
+        {
+            DeviceSummary.GetStoredDiskSpace("C://", out Total_Space, out Free_Space);
         }
     }
 }
