@@ -48,6 +48,12 @@ namespace Toolbox_DB31.DB31_Adapter
             SocketWorkingEventArgs e = new SocketWorkingEventArgs();
             e.PreviousStatus = status;
 
+            if(status != Status.Disconnected)
+            {
+                client.Close();
+                Thread.Sleep(200);
+            }
+
             client.Connect(ip_add, port_num);
             status = Status.Connecting;
 
@@ -188,7 +194,7 @@ namespace Toolbox_DB31.DB31_Adapter
             //Checking send results
             for(int i=0;i<5;i++)
             {
-                if(status == Status.Connected)
+                if(status != Status.Sending)
                 {
                     return;
                 }
