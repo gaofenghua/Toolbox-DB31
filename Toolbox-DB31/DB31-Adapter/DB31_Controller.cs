@@ -16,6 +16,7 @@ namespace Toolbox_DB31.DB31_Adapter
         {
             Test_Image_Upload = 4,
             Requested_Image_Upload = 5,
+            Repair_Upload = 29,
             Inspection_Image_Upload = 33
             
         };
@@ -40,7 +41,7 @@ namespace Toolbox_DB31.DB31_Adapter
         public string Process_Name = "System,AI_Main.exe";
 
         System.Threading.Timer heartbeat_timer = null;
-        int Time_Interval = 1000 * 5;
+        int Time_Interval = 60000 * 5;
 
         public DB31_Controller(DB31_User db31_user)
         {
@@ -52,14 +53,14 @@ namespace Toolbox_DB31.DB31_Adapter
 
             xml = new DB31_Xml();
 
-            
+            StartHeartbeat();
         }
 
         private void OnEvent_Receive_Socket_Message(object sender, SocketWorkingEventArgs e)
         {
             if(e.CurrentStatus == DB31_Socket.Status.Connected && e.CurrentStatus != e.PreviousStatus)
             {
-                StartHeartbeat();
+                //StartHeartbeat();
             }
 
             Send_Message_Out(e.sMessage);
@@ -175,6 +176,24 @@ namespace Toolbox_DB31.DB31_Adapter
                 return "";
             }
             return "没有操作权限！";
+        }
+
+        public string Repair_Upload(string sNote)
+        {
+            //start form the information
+            int Type = (int)OperationCmd_Type.Repair_Upload;
+            int Channel = 0;
+            DateTime TriggerTime = DateTime.Now;
+            byte[] bNote = Encoding.UTF8.GetBytes(sNote);
+            string Note = Convert.ToBase64String(bNote);
+            string GUID = Guid.NewGuid().ToString();
+            string base64image = "";
+            string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+
+            new Task(x =>
+            { Send((string)x); }, xml_content).Start();
+
+            return "";
         }
 
         private void Respond_To_GetImage(string sChannel, string sGUID)

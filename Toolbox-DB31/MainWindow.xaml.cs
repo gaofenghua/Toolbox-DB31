@@ -136,6 +136,33 @@ namespace Toolbox_DB31
             {
                 sRet = db31.Test_Image_Upload();
             }
+            else if (Current_Menu_Item == Menu_Item.Repair_Report)
+            {
+                RepairMenu repairPage = (RepairMenu) frmMain.Content;
+
+                string sNote = "系统维修：";
+                if(repairPage.m_ViewModel.IsVideoMonitorEnabled)
+                {
+                    sNote += "视频：";
+                }
+
+                sNote += repairPage.m_ViewModel.RepairRecords;
+
+                if(repairPage.m_ViewModel.m_Status==RepairStatus.NOT_REPAIR)
+                {
+                    sNote += "--未维修";
+                }
+                else if(repairPage.m_ViewModel.m_Status == RepairStatus.PART_REPAIR)
+                {
+                    sNote += "--部分维修";
+                }
+                else if (repairPage.m_ViewModel.m_Status == RepairStatus.TOTAL_REPAIR)
+                {
+                    sNote += "--完全维修";
+                }
+
+                sRet = db31.Repair_Upload(sNote);
+            }
            
             if(""!= sRet)
             {
