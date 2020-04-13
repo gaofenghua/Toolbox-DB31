@@ -61,7 +61,7 @@ namespace Toolbox_DB31
 
             DeviceSummary.CfgFilePath = @".\Configuration.csv";
             AVMSAdapter adapter = new AVMSAdapter();
-            adapter.Start("127.0.0.1", "admin", "admin", "0010123033030");
+            adapter.Start("192.168.77.211", "admin", "admin", "0010123033030");
             adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
 
             Global.g_VMS_Adapter = adapter;

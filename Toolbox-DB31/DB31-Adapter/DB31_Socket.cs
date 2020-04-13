@@ -18,7 +18,7 @@ namespace Toolbox_DB31.DB31_Adapter
         public event Action<object, string> Data_Received;
 
         public TcpPushClient client;
-        string ip_add = "192.168.43.63";
+        string ip_add = "192.168.77.201";
         int port_num = 5901;
 
         //通讯指令
