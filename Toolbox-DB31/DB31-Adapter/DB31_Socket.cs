@@ -18,8 +18,8 @@ namespace Toolbox_DB31.DB31_Adapter
         public event Action<object, string> Data_Received;
 
         public TcpPushClient client;
-        string ip_add = "192.168.77.201";
-        int port_num = 5901;
+        string ip_add = null;
+        int port_num = 0;
 
         //通讯指令
         //分2个部分，消息头 + 消息内容
@@ -31,8 +31,11 @@ namespace Toolbox_DB31.DB31_Adapter
         //消息内容为XML格式文本。
         byte[] data_head = new byte[20] { (byte)'Q', (byte)'W', (byte)'C', (byte)'M', (byte)'D', (byte)':', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-        public DB31_Socket()
+        public DB31_Socket(string ip, int port)
         {
+            ip_add = ip;
+            port_num = port;
+
             client = new TcpPushClient(1024);
             client.OnConnect += Client_OnConnect;
             client.OnReceive += Client_OnReceive;
@@ -58,7 +61,7 @@ namespace Toolbox_DB31.DB31_Adapter
             status = Status.Connecting;
 
             e.CurrentStatus = status;
-            e.sMessage = "重新连接服务器: " + ip_add + ":" + port_num;
+            e.sMessage = "连接服务器: " + ip_add + ":" + port_num;
             Send_Message_Out(e);
         }
         private void Client_OnConnect(bool obj)
@@ -139,20 +142,20 @@ namespace Toolbox_DB31.DB31_Adapter
             Send_Message_Out(e);
         }
 
-        public void Send(string xmlData)
+        public bool Send(string xmlData)
         {
             SocketWorkingEventArgs e = new SocketWorkingEventArgs();
             e.PreviousStatus = status;
 
-            for(int i=0;i<5;i++)
+            for(int i=0;i<30;i++)
             {
-                if(status != Status.Connected)
+                if(status == Status.Connected || status == Status.Disconnected)
                 {
-                    Thread.Sleep(1000);
+                    break;
                 }
                 else
                 {
-                    break;
+                    Thread.Sleep(1000);
                 }
             }
 
@@ -161,9 +164,9 @@ namespace Toolbox_DB31.DB31_Adapter
                 status = Status.Disconnected;
 
                 e.CurrentStatus = status;
-                e.sMessage = "发送失败：被阻塞。";
+                e.sMessage = "发送失败：地标服务器未连接。";
                 Send_Message_Out(e);
-                return;
+                return false;
             }
 
             //通讯指令
@@ -196,7 +199,7 @@ namespace Toolbox_DB31.DB31_Adapter
             {
                 if(status != Status.Sending)
                 {
-                    return;
+                    return true;
                 }
                 Thread.Sleep(1000);
             }
@@ -204,6 +207,7 @@ namespace Toolbox_DB31.DB31_Adapter
             e.CurrentStatus = status;
             e.sMessage = "发送失败：5秒发送超时。";
             Send_Message_Out(e);
+            return false;
         }
 
         private void Send_Message_Out(SocketWorkingEventArgs e)

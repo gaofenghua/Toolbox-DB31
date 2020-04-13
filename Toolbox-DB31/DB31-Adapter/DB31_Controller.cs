@@ -43,11 +43,11 @@ namespace Toolbox_DB31.DB31_Adapter
         System.Threading.Timer heartbeat_timer = null;
         int Time_Interval = 60000 * 5;
 
-        public DB31_Controller(DB31_User db31_user)
+        public DB31_Controller(DB31_User db31_user, string ip, int port)
         {
             user = db31_user;
 
-            socket = new DB31_Socket();
+            socket = new DB31_Socket(ip, port);
             socket.Working_Message += OnEvent_Receive_Socket_Message;
             socket.Data_Received += OnEvent_Socket_Data_Received;
 
@@ -99,11 +99,11 @@ namespace Toolbox_DB31.DB31_Adapter
         {
             if(heartbeat_timer == null)
             {
-                heartbeat_timer = new Timer(HeartBeat, null, Time_Interval, Timeout.Infinite);
+                heartbeat_timer = new Timer(HeartBeat, null, 0, Timeout.Infinite);
             }
             else 
             {
-                heartbeat_timer.Change(Time_Interval, Timeout.Infinite);
+                heartbeat_timer.Change(0, Timeout.Infinite);
             }
 
             sMsg = Time_Interval / 1000 + "秒后发送心跳信息。";
@@ -286,7 +286,7 @@ namespace Toolbox_DB31.DB31_Adapter
 
                 Send(xml_content);
             }
-            messageContent = "图像队列发送完毕。";
+            messageContent = "操作完成。";
             Send_Message_Out(messageHead+messageContent);
         }
 
@@ -318,25 +318,29 @@ namespace Toolbox_DB31.DB31_Adapter
                 return false;
             }
 
-            socket.ReConnect();
-            socket.Send(xml_content);
-
-            //
             bGetAvailable = false;
-            for (int i = 0; i < 10; i++)
-            {
-                Status_Mutex.WaitOne();
-                if (WorkingStatus == Working_Status.Working)
-                {
-                    Status_Mutex.ReleaseMutex();
-                    Thread.Sleep(1000);
-                }
-                else
-                {
-                    Status_Mutex.ReleaseMutex();
-                    bGetAvailable = true;
 
-                    break;
+            socket.ReConnect();
+            bool bRet = socket.Send(xml_content);
+
+            if (true == bRet)
+            {
+                // Waiting for return message "OK_NowTime"
+                for (int i = 0; i < 10; i++)
+                {
+                    Status_Mutex.WaitOne();
+                    if (WorkingStatus == Working_Status.Working)
+                    {
+                        Status_Mutex.ReleaseMutex();
+                        Thread.Sleep(1000);
+                    }
+                    else
+                    {
+                        Status_Mutex.ReleaseMutex();
+                        bGetAvailable = true;
+
+                        break;
+                    }
                 }
             }
 

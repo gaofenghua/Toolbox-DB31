@@ -17,6 +17,8 @@ using Toolbox_DB31.DB31_Adapter;
 using Toolbox_DB31.AVMS_Adapter;
 using System.Threading;
 using System.Diagnostics;
+using System.IO;
+using System.Xml.Linq;
 
 namespace Toolbox_DB31
 {
@@ -33,10 +35,14 @@ namespace Toolbox_DB31
         Menu_Item Current_Menu_Item;
 
         DB31_Controller db31;
+        string DB31_IP = null;
+        int DB31_Port = 0;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            ReadUserConfigurationFile();
 
             Global.g_Main_ViewModel = (Main_ViewModel)DataContext;
             
@@ -54,7 +60,7 @@ namespace Toolbox_DB31
             //myNavBarControl.ActiveGroup = navBarGroup_system;
             myNavBarControl.SelectedItem = navBarGroup_system.Items[0];
            
-            db31 = new DB31_Controller(Global.g_User);
+            db31 = new DB31_Controller(Global.g_User, DB31_IP,DB31_Port);
             db31.Working_Message += OnEvent_Working_Message;
 
             DeviceSummary.CfgFilePath = @".\Configuration.csv";
@@ -68,6 +74,50 @@ namespace Toolbox_DB31
            
         }
 
+        private void ReadUserConfigurationFile()
+        {
+            string file = System.Windows.Forms.Application.StartupPath.ToString() + @"\" + "toolbox.conf";
+            if (File.Exists(file) == false)
+            {
+                return;
+            }
+
+            XDocument xd;
+            int nQuery = 0;
+            XElement item;
+
+            try
+            {
+                xd = XDocument.Load(file);
+            }
+            catch (Exception e)
+            {
+                return;
+            }
+
+            var query = from s in xd.Descendants()
+                        where s.Name.LocalName == "ip" && s.Parent.Name.LocalName == "DB31"
+                        select s;
+
+            nQuery = query.Count();
+            if (nQuery == 1)
+            {
+                item = query.First();
+                DB31_IP = item.Value;
+            }
+
+            query = from s in xd.Descendants()
+                        where s.Name.LocalName == "port" && s.Parent.Name.LocalName == "DB31"
+                        select s;
+
+            nQuery = query.Count();
+            if (nQuery == 1)
+            {
+                item = query.First();
+                string sPort = item.Value;
+                int.TryParse(sPort, out DB31_Port);
+            }
+        }
         private void HandleAVMSEvent(object sender, AVMSEventArgs e)
         {
             AVMS_ALARM alarmType = e.m_alarmType;
