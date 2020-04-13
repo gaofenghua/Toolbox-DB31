@@ -54,8 +54,6 @@ namespace Toolbox_DB31
             //myNavBarControl.ActiveGroup = navBarGroup_system;
             myNavBarControl.SelectedItem = navBarGroup_system.Items[0];
            
-            //DB31_Controller controller = new DB31_Controller();
-            //controller.StartHeartbeat(); 
             db31 = new DB31_Controller(Global.g_User);
             db31.Working_Message += OnEvent_Working_Message;
 
@@ -137,6 +135,33 @@ namespace Toolbox_DB31
             else if (Current_Menu_Item == Menu_Item.Test_Image_Upload)
             {
                 sRet = db31.Test_Image_Upload();
+            }
+            else if (Current_Menu_Item == Menu_Item.Repair_Report)
+            {
+                RepairMenu repairPage = (RepairMenu) frmMain.Content;
+
+                string sNote = "系统维修：";
+                if(repairPage.m_ViewModel.IsVideoMonitorEnabled)
+                {
+                    sNote += "视频：";
+                }
+
+                sNote += repairPage.m_ViewModel.RepairRecords;
+
+                if(repairPage.m_ViewModel.m_Status==RepairStatus.NOT_REPAIR)
+                {
+                    sNote += "--未维修";
+                }
+                else if(repairPage.m_ViewModel.m_Status == RepairStatus.PART_REPAIR)
+                {
+                    sNote += "--部分维修";
+                }
+                else if (repairPage.m_ViewModel.m_Status == RepairStatus.TOTAL_REPAIR)
+                {
+                    sNote += "--完全维修";
+                }
+
+                sRet = db31.Repair_Upload(sNote);
             }
            
             if(""!= sRet)

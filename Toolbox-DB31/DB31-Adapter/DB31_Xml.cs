@@ -69,7 +69,7 @@ namespace Toolbox_DB31.DB31_Adapter
             return doc_heartbeat.ToString();
         }
 
-        public string HeartbeatXml(int state,int total_space,int free_space,string process_name)
+        public string HeartbeatXml(int state,long total_space,long free_space,string process_name)
         {
            
             xml_DVRHeart.SetAttributeValue("state", state);

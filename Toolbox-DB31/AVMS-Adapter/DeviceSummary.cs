@@ -85,8 +85,8 @@ namespace Toolbox_DB31.AVMS_Adapter
             {
                 if (diskName == di.Name)
                 {
-                    totalSize = di.TotalSize / (1024 * 1024 * 1024);
-                    freeSize = di.TotalFreeSpace / (1024 * 1024 * 1024);
+                    totalSize = di.TotalSize;
+                    freeSize = di.TotalFreeSpace;
                     break;
                 }
             }

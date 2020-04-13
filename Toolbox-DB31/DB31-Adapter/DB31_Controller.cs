@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Toolbox_DB31.Classes;
+using Toolbox_DB31.AVMS_Adapter;
 
 namespace Toolbox_DB31.DB31_Adapter
 {
@@ -15,11 +16,14 @@ namespace Toolbox_DB31.DB31_Adapter
         {
             Test_Image_Upload = 4,
             Requested_Image_Upload = 5,
+            Repair_Upload = 29,
             Inspection_Image_Upload = 33
             
         };
 
         public enum Working_Status { Available, Working };
+
+        public Mutex Status_Mutex = new Mutex();
         public Working_Status WorkingStatus = Working_Status.Available;
         public bool Stop_Uploading_Image = false;
 
@@ -32,12 +36,12 @@ namespace Toolbox_DB31.DB31_Adapter
         DB31_Xml xml;
 
         public int DVR_State = 0;
-        public int Total_Space = 0;
-        public int Free_Space = 0;
+        public long Total_Space = 0;
+        public long Free_Space = 0;
         public string Process_Name = "System,AI_Main.exe";
 
         System.Threading.Timer heartbeat_timer = null;
-        int Time_Interval = 1000 * 5;
+        int Time_Interval = 60000 * 5;
 
         public DB31_Controller(DB31_User db31_user)
         {
@@ -49,27 +53,27 @@ namespace Toolbox_DB31.DB31_Adapter
 
             xml = new DB31_Xml();
 
-           
+            StartHeartbeat();
         }
+
         private void OnEvent_Receive_Socket_Message(object sender, SocketWorkingEventArgs e)
         {
             if(e.CurrentStatus == DB31_Socket.Status.Connected && e.CurrentStatus != e.PreviousStatus)
             {
-                StartHeartbeat();
+                //StartHeartbeat();
             }
 
             Send_Message_Out(e.sMessage);
-
-           
         }
+
         private void OnEvent_Socket_Data_Received(object sender, string sXml)
         {
             Xml_Parse_Output xInfo = xml.ParseXml(sXml);
 
             if(xInfo.Ticks > 0)
             {
-                Time_Interval = xInfo.Ticks * 60000; //Ticks：单位分钟
-                StartHeartbeat();
+                //Time_Interval = xInfo.Ticks * 60000; //Ticks：单位分钟
+                //StartHeartbeat();
 
                 //Receive GetImage command
                 if(xInfo.Channel != null)
@@ -77,7 +81,20 @@ namespace Toolbox_DB31.DB31_Adapter
                     Respond_To_GetImage(xInfo.Channel,xInfo.GUID);
                 }
             }
+
+            if(xInfo.OK_NowTime != null)
+            {
+                socket.Close();
+
+                Status_Mutex.WaitOne();
+
+                WorkingStatus = Working_Status.Available;
+
+                Status_Mutex.ReleaseMutex();
+            }
+
         }
+
         public void StartHeartbeat()
         {
             if(heartbeat_timer == null)
@@ -92,16 +109,17 @@ namespace Toolbox_DB31.DB31_Adapter
             sMsg = Time_Interval / 1000 + "秒后发送心跳信息。";
             Send_Message_Out(sMsg);
         }
+
         public void HeartBeat(object obj)
         {
-            if(socket.status == DB31_Socket.Status.Connected)
-            {
-                string xml_content = xml.HeartbeatXml(DVR_State, Total_Space, Free_Space, Process_Name);
-                socket.Send(xml_content);
+            GetStoredDiskSpace();
 
-                //heartbeat_timer.Change(Time_Interval, Timeout.Infinite);
-            }
+            string xml_content = xml.HeartbeatXml(DVR_State, Total_Space, Free_Space, Process_Name);
+            Send(xml_content);
+          
+            heartbeat_timer.Change(Time_Interval, Timeout.Infinite);
         }
+
         private void Send_Message_Out(string sMsg)
         {
             if(null!= Working_Message)
@@ -112,17 +130,6 @@ namespace Toolbox_DB31.DB31_Adapter
 
         private void Upload_Image(OperationCmd_Type OpeType)
         {
-            if(socket.status != DB31_Socket.Status.Connected)
-            {
-                sMsg = "服务器未联接，请稍后再试。";
-                Send_Message_Out(sMsg);
-
-                socket.ReConnect();
-
-                return;
-            }
-
-            WorkingStatus = Working_Status.Working;
             // Multithread notes:
             //dispatcher needed
             
@@ -145,8 +152,8 @@ namespace Toolbox_DB31.DB31_Adapter
 
             Send_Image(OpeType, cameras, null);
 
-            WorkingStatus = Working_Status.Available;
         }
+
         public string Inspect_Image_Upload()
         {
             if (true == user.Privilege_Check(DB31_User.Enum_Action.Inspect_Image_Upload))
@@ -169,6 +176,24 @@ namespace Toolbox_DB31.DB31_Adapter
                 return "";
             }
             return "没有操作权限！";
+        }
+
+        public string Repair_Upload(string sNote)
+        {
+            //start form the information
+            int Type = (int)OperationCmd_Type.Repair_Upload;
+            int Channel = 0;
+            DateTime TriggerTime = DateTime.Now;
+            byte[] bNote = Encoding.UTF8.GetBytes(sNote);
+            string Note = Convert.ToBase64String(bNote);
+            string GUID = Guid.NewGuid().ToString();
+            string base64image = "";
+            string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+
+            new Task(x =>
+            { Send((string)x); }, xml_content).Start();
+
+            return "";
         }
 
         private void Respond_To_GetImage(string sChannel, string sGUID)
@@ -235,17 +260,7 @@ namespace Toolbox_DB31.DB31_Adapter
                     Send_Message_Out(messageHead+messageContent);
 
                     Stop_Uploading_Image = false;
-                    WorkingStatus = Working_Status.Available;
-                    return;
-                }
-
-                if (socket.status != DB31_Socket.Status.Connected)
-                {
-                    messageContent = "发送失败，服务器未联接。";
-                    Send_Message_Out(messageHead + messageContent);
-
-                    socket.ReConnect();
-
+                    
                     return;
                 }
 
@@ -253,7 +268,8 @@ namespace Toolbox_DB31.DB31_Adapter
                 int Type = (int)OpType;
                 int Channel = cam.ChannelNumber;
                 DateTime TriggerTime = DateTime.Now;
-                string Note = "图像上传";
+                byte[] bNote = Encoding.UTF8.GetBytes("图像上传");
+                string Note = Convert.ToBase64String(bNote);
                 GUID = GUID==null?Guid.NewGuid().ToString():GUID;
                 //string base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(cam.CameraID,TriggerTime,true);
                 string base64image = "xxxxxxxxxxxxxxxxxxxx";
@@ -268,10 +284,79 @@ namespace Toolbox_DB31.DB31_Adapter
                     Send_Message_Out(messageHead+messageContent);
                 }
 
-                socket.Send(xml_content);
+                Send(xml_content);
             }
             messageContent = "图像队列发送完毕。";
             Send_Message_Out(messageHead+messageContent);
+        }
+
+        private bool Send(string xml_content)
+        {
+            bool bGetAvailable = false;
+            for (int i = 0; i < 10;i++ )
+            {
+                Status_Mutex.WaitOne();
+                if(WorkingStatus == Working_Status.Working)
+                {
+                    Status_Mutex.ReleaseMutex();   
+                    Thread.Sleep(1000);
+                }
+                else
+                {
+                    WorkingStatus = Working_Status.Working;
+                    Status_Mutex.ReleaseMutex();   
+                    bGetAvailable = true;
+
+                    break;
+                }
+            }
+
+            if(bGetAvailable == false)
+            {
+                string messageContent = "发送超时。";
+                Send_Message_Out(messageContent);
+                return false;
+            }
+
+            socket.ReConnect();
+            socket.Send(xml_content);
+
+            //
+            bGetAvailable = false;
+            for (int i = 0; i < 10; i++)
+            {
+                Status_Mutex.WaitOne();
+                if (WorkingStatus == Working_Status.Working)
+                {
+                    Status_Mutex.ReleaseMutex();
+                    Thread.Sleep(1000);
+                }
+                else
+                {
+                    Status_Mutex.ReleaseMutex();
+                    bGetAvailable = true;
+
+                    break;
+                }
+            }
+
+            if(bGetAvailable == false)
+            {
+                socket.Close();
+
+                Status_Mutex.WaitOne();
+
+                WorkingStatus = Working_Status.Available;
+                
+                Status_Mutex.ReleaseMutex();
+            }
+
+            return true;
+        }
+
+        private void GetStoredDiskSpace()
+        {
+            DeviceSummary.GetStoredDiskSpace("C://", out Total_Space, out Free_Space);
         }
     }
 }
