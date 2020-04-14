@@ -1,6 +1,7 @@
 ﻿using System;
 using DevExpress.Mvvm;
 using Toolbox_DB31.AVMS_Adapter;
+using System.Linq;
 
 namespace Toolbox_DB31.Classes
 {
@@ -38,6 +39,26 @@ namespace Toolbox_DB31.Classes
         public void StopAlarmListening()
         {
             Global.g_VMS_Adapter.StopAVMSListener();
+        }
+
+        public void UploadAlarmLog()
+        {
+            if (null == Global.g_VMS_Adapter)
+            {
+                return;
+            }
+
+            DateTime dtStop = DateTime.Now;
+            DateTime dtStart = dtStop.AddHours(0 - LogUpdateDuration);
+            foreach (Camera_Model cam in Global.g_CameraList)
+            {
+                if (true == cam.IsSelected)
+                {
+                    string log = string.Empty;
+                    int camID = cam.CameraID;
+                    log += Global.g_VMS_Adapter.GetAlarm(camID, dtStart, dtStop);
+                }
+            }
         }
     }
 }

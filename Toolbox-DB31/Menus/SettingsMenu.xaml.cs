@@ -28,6 +28,7 @@ namespace Toolbox_DB31
             InitializeComponent();
             editDailyUpdateDateTime.Text = DateTime.Now.ToString();
             SetButton(m_ViewModel.IsAlarmListeningEnabled());
+            m_ViewModel = DataContext as SettingsMenuViewModel;
         }
 
         private void btnUploadData_Click(object sender, RoutedEventArgs e)
@@ -37,7 +38,7 @@ namespace Toolbox_DB31
 
         private void btnUploadAlarm_Click(object sender, RoutedEventArgs e)
         {
-
+            m_ViewModel.UploadAlarmLog();
         }
 
         private void btnStartListening_Click(object sender, RoutedEventArgs e)
