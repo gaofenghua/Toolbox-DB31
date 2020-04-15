@@ -20,6 +20,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Xml.Linq;
 
+using System.IO;
+using System.Drawing;
+using System.Drawing.Imaging;
+
 namespace Toolbox_DB31
 {
     /// <summary>
@@ -59,13 +63,13 @@ namespace Toolbox_DB31
             //myNavBarControl.SelectedItem = myNavBarControl.Groups[0].Items[0];
             //myNavBarControl.ActiveGroup = navBarGroup_system;
             myNavBarControl.SelectedItem = navBarGroup_system.Items[0];
-           
+
             db31 = new DB31_Controller(Global.g_User, DB31_IP,DB31_Port);
             db31.Working_Message += OnEvent_Working_Message;
 
             DeviceSummary.CfgFilePath = @".\Configuration.csv";
             AVMSAdapter adapter = new AVMSAdapter();
-            adapter.Start("192.168.77.211", "admin", "admin", "0010123033030");
+            adapter.Start("127.0.0.1", "admin", "admin");
             adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
 
             Global.g_VMS_Adapter = adapter;
@@ -177,7 +181,6 @@ namespace Toolbox_DB31
         private void Button_Click_Upload(object sender, RoutedEventArgs e)
         {
             string sRet = "";
-            
             if(Current_Menu_Item == Menu_Item.Inspect_Image_Upload)
             {
                 sRet = db31.Inspect_Image_Upload();
@@ -228,7 +231,6 @@ namespace Toolbox_DB31
         }
         private void Button_Click_SignIn(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void OnEvent_Login_Finished(object sender,string sRet)

@@ -84,7 +84,7 @@ namespace Toolbox_DB31.AVMS_Adapter
             });
         }
 
-        public void Start(string Ip, string Username, string Password, string Id)
+        public void Start(string Ip, string Username, string Password)
         {
             try
             {
