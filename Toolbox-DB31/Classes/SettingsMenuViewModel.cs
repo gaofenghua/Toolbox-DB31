@@ -9,6 +9,7 @@ namespace Toolbox_DB31.Classes
     {
         public long LogUpdateDuration { get; set; }
         public bool IsDailyTimerEnabled { get; set; }
+        public DateTime DailyUpdateDateTime { get; set; }
         public long AlarmUpdateBefore { get; set; }
         public long AlarmUpdateAfter { get; set; }
         public long AlarmUpdateDuration { get; set; }
@@ -17,6 +18,7 @@ namespace Toolbox_DB31.Classes
         {
             LogUpdateDuration = 0;
             IsDailyTimerEnabled = false;
+            DailyUpdateDateTime = DateTime.Now;
             AlarmUpdateBefore = 0;
             AlarmUpdateAfter = 0;
             AlarmUpdateDuration = 0;
@@ -41,24 +43,28 @@ namespace Toolbox_DB31.Classes
             Global.g_VMS_Adapter.StopAVMSListener();
         }
 
-        public void UploadAlarmLog()
+        public string GetEventLog(int camId)
         {
             if (null == Global.g_VMS_Adapter)
             {
-                return;
+                return null;
             }
 
             DateTime dtStop = DateTime.Now;
             DateTime dtStart = dtStop.AddHours(0 - LogUpdateDuration);
-            foreach (Camera_Model cam in Global.g_CameraList)
+            return Global.g_VMS_Adapter.GetEvent(camId, dtStart, dtStop);
+        }
+
+        public string GetAlarmLog(int camId)
+        {
+            if (null == Global.g_VMS_Adapter)
             {
-                if (true == cam.IsSelected)
-                {
-                    string log = string.Empty;
-                    int camID = cam.CameraID;
-                    log += Global.g_VMS_Adapter.GetAlarm(camID, dtStart, dtStop);
-                }
+                return null;
             }
+
+            DateTime dtStop = DateTime.Now;
+            DateTime dtStart = dtStop.AddHours(0 - LogUpdateDuration);
+            return Global.g_VMS_Adapter.GetAlarm(camId, dtStart, dtStop);
         }
     }
 }

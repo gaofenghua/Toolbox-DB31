@@ -22,23 +22,40 @@ namespace Toolbox_DB31
     public partial class SettingsMenu : Page
     {
         public SettingsMenuViewModel m_ViewModel = new SettingsMenuViewModel();
+        private MainWindow m_parent = null;
 
-        public SettingsMenu()
+        public SettingsMenu(object parent)
         {
             InitializeComponent();
-            editDailyUpdateDateTime.Text = DateTime.Now.ToString();
             SetButton(m_ViewModel.IsAlarmListeningEnabled());
             m_ViewModel = DataContext as SettingsMenuViewModel;
+            m_parent = parent as MainWindow;
         }
 
         private void btnUploadData_Click(object sender, RoutedEventArgs e)
         {
-
+            foreach (Camera_Model cam in Global.g_CameraList)
+            {
+                if (true == cam.IsSelected)
+                {
+                    int camId = cam.CameraID;
+                    string log = m_ViewModel.GetEventLog(camId);
+                    m_parent.UploadEventLog(camId, log);
+                }
+            }
         }
 
         private void btnUploadAlarm_Click(object sender, RoutedEventArgs e)
         {
-            m_ViewModel.UploadAlarmLog();
+            foreach (Camera_Model cam in Global.g_CameraList)
+            {
+                if (true == cam.IsSelected)
+                {
+                    int camId = cam.CameraID;
+                    string log = m_ViewModel.GetAlarmLog(camId);
+                    m_parent.UploadAlarmLog(camId, log);
+                }
+            }
         }
 
         private void btnStartListening_Click(object sender, RoutedEventArgs e)
@@ -59,6 +76,12 @@ namespace Toolbox_DB31
             btnUploadAlarm.IsEnabled = true;
             btnStartListening.IsEnabled = !isAlarmListeningEnabled;
             btnStopListening.IsEnabled = isAlarmListeningEnabled;
+        }
+
+        private void CheckEdit_EditValueChanged(object sender, EditValueChangedEventArgs e)
+        {
+            editDailyUpdateDateTime.IsEnabled = !m_ViewModel.IsDailyTimerEnabled;
+            m_parent.SetDailyTimer(m_ViewModel.IsDailyTimerEnabled);
         }
     }
 }
