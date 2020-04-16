@@ -225,7 +225,7 @@ namespace Toolbox_DB31.AVMS_Adapter
             }
         }
 
-        public bool ExportSignalsStream(CCamera cam, DateTime dtStart, DateTime dtEnd, ref byte[] result)
+        public bool ExportAlarmsStream(CCamera cam, DateTime dtStart, DateTime dtEnd, ref byte[] result)
         {
             try
             {
@@ -236,7 +236,7 @@ namespace Toolbox_DB31.AVMS_Adapter
                 }
 
                 signals.Timeout = 1000 * 60;
-                result = signals.GetAlarms(Username, Password,  // EncodePassord is also OK
+                result = signals.GetAlarms(Username, Password,
                     FixDateTimeForWebService(dtStart),
                     FixDateTimeForWebService(dtEnd),
                     string.Empty,
@@ -254,7 +254,6 @@ namespace Toolbox_DB31.AVMS_Adapter
                 this.OnMessageSend(this, new MessageEventArgs(DateTime.Now.ToString() + "\tException : Fail to retrieve alarm list from server " + cam.Server.Name + ": " + ex.ToString()));
                 return false;
             }
-
         }
 
         public bool ExportImageStream(CCamera cam, DateTime dtJpgTime, bool bViewPrivateVideo, ref string strFilename, ref byte[] result)
@@ -305,6 +304,35 @@ namespace Toolbox_DB31.AVMS_Adapter
             {
                 this.OnMessageSend(this, new MessageEventArgs(DateTime.Now.ToString() + "\tException : Fail to path of stored data from server " + cam.Server.Name + ": " + ex.ToString()));
                 return null;
+            }
+        }
+
+        public bool ExportEventsStream(CCamera cam, DateTime dtStart, DateTime dtEnd, ref DataSet result)
+        {
+            try
+            {
+                Signals signals = CreateSignals(cam);
+                if (null == signals)
+                {
+                    return false;
+                }
+
+                signals.Timeout = 1000 * 60;
+                result = signals.LoadTableEvents(Username, Password,
+                    FixDateTimeForWebService(dtStart),
+                    FixDateTimeForWebService(dtEnd));
+
+                if ((null == result) || (0 == result.Tables.Count))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                this.OnMessageSend(this, new MessageEventArgs(DateTime.Now.ToString() + "\tException : Fail to retrieve event list from server " + cam.Server.Name + ": " + ex.ToString()));
+                return false;
             }
         }
 
