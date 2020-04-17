@@ -31,7 +31,7 @@ namespace Toolbox_DB31
 
         LoginPage theLoginPage;
 
-        enum Menu_Item { User_Login, Inspect_Image_Upload,Test_Image_Upload, Maintenance_Report, Repair_Report};
+        enum Menu_Item { User_Login, Inspect_Image_Upload, Maintenance_Image_Upload, Test_Image_Upload, Maintenance_Report, Repair_Report};
         Menu_Item Current_Menu_Item;
 
         DB31_Controller db31;
@@ -186,6 +186,10 @@ namespace Toolbox_DB31
             {
                 sRet = db31.Test_Image_Upload();
             }
+            else if (Current_Menu_Item == Menu_Item.Maintenance_Image_Upload)
+            {
+                sRet = db31.Maintenance_Image_Upload();
+            }
             else if (Current_Menu_Item == Menu_Item.Repair_Report)
             {
                 RepairMenu repairPage = (RepairMenu) frmMain.Content;
@@ -274,6 +278,17 @@ namespace Toolbox_DB31
             //Button_Cancel.IsEnabled = false;
 
             Current_Menu_Item = Menu_Item.Inspect_Image_Upload;
+        }
+
+        private void navBarItem_Maintenance_ImageUpload_Click(object sender, EventArgs e)
+        {
+            frmMain.NavigationService.Navigate(new SummaryTable());
+
+            myNavBarControl.SelectedItem = navBarItem_Maintenance_ImageUpload;
+
+            Set_Button_Label(true);
+           
+            Current_Menu_Item = Menu_Item.Maintenance_Image_Upload;
         }
         private void navBarItem_Test_ImageUpload_Click(object sender, EventArgs e)
         {

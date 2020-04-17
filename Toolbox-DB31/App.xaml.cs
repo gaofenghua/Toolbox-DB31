@@ -10,6 +10,7 @@ using System.Threading;
 using Toolbox_DB31.Classes;
 using Toolbox_DB31.DB31_Adapter;
 using Toolbox_DB31.AVMS_Adapter;
+using System.IO;
 
 namespace Toolbox_DB31
 {
@@ -31,6 +32,24 @@ namespace Toolbox_DB31
         public static DB31_User g_User = new DB31_User();
 
         public static AVMSAdapter g_VMS_Adapter = null;
+
+        public static readonly object LogFile_Lock = new object();
+        public static void WriteLog(string cont)
+        {
+            string path = System.Windows.Forms.Application.StartupPath.ToString() + @"\" + "toolbox.log";
+            bool isAppend = true;
+
+            lock (LogFile_Lock)
+            {
+                using (StreamWriter sw = new StreamWriter(path, isAppend, System.Text.Encoding.UTF8))
+                {
+                    //sw.WriteLine(DateTime.Now);
+                    cont = DateTime.Now + "---" + cont;
+                    sw.WriteLine(cont);
+                    sw.Close();
+                }
+            }
+        }
     }
         
 }

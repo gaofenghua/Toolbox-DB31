@@ -9,7 +9,7 @@ namespace Toolbox_DB31.DB31_Adapter
     public class DB31_User
     {
         public enum Enum_Department { Nobody,Inspector, Operator, Maintainer,Max_Num };
-        public enum Enum_Action { Inspect_Image_Upload, Test_Image_Upload,Max_Num };
+        public enum Enum_Action { Inspect_Image_Upload, Maintenance_Image_Upload, Test_Image_Upload,Max_Num };
 
         bool[,] PrivilegeMatrix = new bool[(int)Enum_Department.Max_Num,(int)Enum_Action.Max_Num];
 
@@ -35,6 +35,7 @@ namespace Toolbox_DB31.DB31_Adapter
             }
 
             PrivilegeMatrix[(int)Enum_Department.Inspector, (int)Enum_Action.Inspect_Image_Upload] = true;
+            PrivilegeMatrix[(int)Enum_Department.Maintainer, (int)Enum_Action.Maintenance_Image_Upload] = true;
             PrivilegeMatrix[(int)Enum_Department.Operator, (int)Enum_Action.Test_Image_Upload] = true;
         }
         public bool Verify()

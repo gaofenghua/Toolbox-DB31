@@ -14,6 +14,7 @@ namespace Toolbox_DB31.DB31_Adapter
     {
         enum OperationCmd_Type
         {
+            Maintenance_Image_Upload = 2,
             Test_Image_Upload = 4,
             Requested_Image_Upload = 5,
             Repair_Upload = 29,
@@ -165,7 +166,17 @@ namespace Toolbox_DB31.DB31_Adapter
             }
             return "没有操作权限！";
         }
+        public string Maintenance_Image_Upload()
+        {
+            if (true == user.Privilege_Check(DB31_User.Enum_Action.Maintenance_Image_Upload))
+            {
+                new Task(x =>
+                { Upload_Image((OperationCmd_Type)x); }, OperationCmd_Type.Maintenance_Image_Upload).Start();
 
+                return "";
+            }
+            return "没有操作权限！";
+        }
         public string Test_Image_Upload()
         {
             if (true == user.Privilege_Check(DB31_User.Enum_Action.Test_Image_Upload))
@@ -242,6 +253,10 @@ namespace Toolbox_DB31.DB31_Adapter
             if(OpType == OperationCmd_Type.Inspection_Image_Upload)
             {
                 messageHead = "验收：";
+            }
+            else if (OpType == OperationCmd_Type.Maintenance_Image_Upload)
+            {
+                messageHead = "维保：";
             }
             else if (OpType == OperationCmd_Type.Test_Image_Upload)
             {

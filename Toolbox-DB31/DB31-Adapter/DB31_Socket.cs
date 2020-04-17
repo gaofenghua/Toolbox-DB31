@@ -43,15 +43,15 @@ namespace Toolbox_DB31.DB31_Adapter
             client.OnClose += Client_OnClose;
             client.OnDisconnect += Client_OnDisconnect;
 
-            client.Connect(ip_add, port_num);
-            status = Status.Connecting;
+            //client.Connect(ip_add, port_num);
+            //status = Status.Connecting;
         }
         public void ReConnect()
         {
             SocketWorkingEventArgs e = new SocketWorkingEventArgs();
             e.PreviousStatus = status;
 
-            if(status != Status.Disconnected)
+            if(status != Status.Disconnected && status != Status.Initial)
             {
                 client.Close();
                 Thread.Sleep(200);
@@ -86,6 +86,8 @@ namespace Toolbox_DB31.DB31_Adapter
 
             e.CurrentStatus = status;
             Send_Message_Out(e);
+
+            Global.WriteLog(e.sMessage);
         }
         public void Client_OnReceive(byte[] obj)
         {
