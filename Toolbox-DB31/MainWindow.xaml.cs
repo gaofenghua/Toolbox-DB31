@@ -19,6 +19,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.IO;
 using System.Xml.Linq;
+using System.Timers;
 
 namespace Toolbox_DB31
 {
@@ -37,6 +38,10 @@ namespace Toolbox_DB31
         DB31_Controller db31;
         string DB31_IP = null;
         int DB31_Port = 0;
+
+        private System.Timers.Timer m_timer = null;
+        private SettingsMenu settings = null;
+        private DateTime m_LastUploadDT = new DateTime();
 
         public MainWindow()
         {
@@ -59,19 +64,59 @@ namespace Toolbox_DB31
             //myNavBarControl.SelectedItem = myNavBarControl.Groups[0].Items[0];
             //myNavBarControl.ActiveGroup = navBarGroup_system;
             myNavBarControl.SelectedItem = navBarGroup_system.Items[0];
-           
+
             db31 = new DB31_Controller(Global.g_User, DB31_IP,DB31_Port);
             db31.Working_Message += OnEvent_Working_Message;
 
+            settings = new SettingsMenu(this);
+            m_timer = new System.Timers.Timer(50 * 1000);
+            m_timer.Elapsed += DailyUpload;
+            SetDailyTimer(settings.m_ViewModel.IsDailyTimerEnabled);
+
             DeviceSummary.CfgFilePath = @".\Configuration.csv";
             AVMSAdapter adapter = new AVMSAdapter();
-            adapter.Start("192.168.77.211", "admin", "admin", "0010123033030");
+            adapter.Start("127.0.0.1", "admin", "admin");
             adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
 
             Global.g_VMS_Adapter = adapter;
 
             navBarItem_Inspect_ImageUpload_Click(null, null);
            
+        }
+
+        public void SetDailyTimer(bool isEnabled)
+        {
+            m_timer.Enabled = isEnabled;
+        }
+
+        private void DailyUpload(object sender, ElapsedEventArgs e)
+        {
+            if (null == settings)
+            {
+                return;
+            }
+
+            DateTime checkDT = e.SignalTime;
+            DateTime updateDT = settings.m_ViewModel.DailyUpdateDateTime;
+            if (!IsEqualDT(m_LastUploadDT, checkDT) && IsEqualDT(updateDT, checkDT))
+            {
+                UploadInstantImage();
+                m_LastUploadDT = checkDT;
+            }
+        }
+
+        private bool IsEqualDT(DateTime cVal, DateTime bVal)
+        {
+            return (bVal.Hour == cVal.Hour) && (bVal.Minute == cVal.Minute);
+        }
+
+        private void UploadInstantImage()
+        {
+            string status = db31.Inspect_Image_Upload();
+            if (string.Empty != status)
+            {
+                //
+            }
         }
 
         private void ReadUserConfigurationFile()
@@ -177,7 +222,6 @@ namespace Toolbox_DB31
         private void Button_Click_Upload(object sender, RoutedEventArgs e)
         {
             string sRet = "";
-            
             if(Current_Menu_Item == Menu_Item.Inspect_Image_Upload)
             {
                 sRet = db31.Inspect_Image_Upload();
@@ -232,7 +276,6 @@ namespace Toolbox_DB31
         }
         private void Button_Click_SignIn(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void OnEvent_Login_Finished(object sender,string sRet)
@@ -328,8 +371,18 @@ namespace Toolbox_DB31
 
         private void navBarItem_Settings_Page_Click(object sender, EventArgs e)
         {
-            frmMain.NavigationService.Navigate(new SettingsMenu());
+            frmMain.NavigationService.Navigate(settings);
             Set_Button_Label(false);
+        }
+
+        public void UploadAlarmLog(int camId, string log)
+        {
+            // db31 method
+        }
+
+        public void UploadEventLog(int camId, string log)
+        {
+            // db31 method
         }
     }
 }

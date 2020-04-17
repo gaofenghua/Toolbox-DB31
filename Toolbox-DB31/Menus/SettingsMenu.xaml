@@ -64,10 +64,10 @@
                 <GroupBox Grid.Row="1" Grid.Column="1" Header="每日定时上传" Height="70" Margin="0,80,0,0" VerticalAlignment="Top" Foreground="#BFFFFFFF">
                     <dxlc:LayoutGroup Orientation="Horizontal" Margin="10,10,10,0">
                         <dxlc:LayoutItem>
-                            <dxe:TextEdit x:Name="editDailyUpdateDateTime" VerticalAlignment="Center" MaskType="DateTime" Mask="f" MaskUseAsDisplayFormat="True" EditValue="{Binding Path=EditValue, Mode=TwoWay}" />
+                            <dxe:TextEdit x:Name="editDailyUpdateDateTime" VerticalAlignment="Center" MaskType="DateTime" Mask="f" MaskUseAsDisplayFormat="True" EditValue="{Binding Path=DailyUpdateDateTime, Mode=TwoWay}" />
                         </dxlc:LayoutItem>
                         <dxlc:LayoutItem>
-                            <dxe:CheckEdit Content="开启" EditValue="{Binding Path=IsDailyTimerEnabled, Mode=TwoWay}" />
+                            <dxe:CheckEdit Content="开启" EditValue="{Binding Path=IsDailyTimerEnabled, Mode=TwoWay}" EditValueChanged="CheckEdit_EditValueChanged" />
                         </dxlc:LayoutItem>
                     </dxlc:LayoutGroup>
                 </GroupBox>

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
+using ICSharpCode.SharpZipLib.GZip;
 //using System.Threading;
 using System.Linq;
 using System.Text;
@@ -82,7 +84,7 @@ namespace Toolbox_DB31.AVMS_Adapter
             });
         }
 
-        public void Start(string Ip, string Username, string Password, string Id)
+        public void Start(string Ip, string Username, string Password)
         {
             try
             {
@@ -320,13 +322,12 @@ namespace Toolbox_DB31.AVMS_Adapter
             this.OnAVMSTriggered(this, args);
         }
 
-        //public string GetEncodedSnapshot(CCamera cam, DateTime dt, bool bSave)
         public string GetEncodedSnapshot(int camId, DateTime dt, bool bSave)
         {
             byte[] byteJpg = GetImageStream(camId, dt);
             if (null == byteJpg)
             {
-                PrintLog("TakeSnapshot : not available.");
+                PrintLog("GetEncodedSnapshot : stream is not available.");
                 return null;
             }
 
@@ -346,12 +347,44 @@ namespace Toolbox_DB31.AVMS_Adapter
             return Convert.ToBase64String(byteJpg);
         }
 
-        public bool InsertAlarm(CCamera cam, int alarmTime, int policyID, string alarmText1, string alarmText2)
+        public string GetAlarm(int camId, DateTime dtStartGMT, DateTime dtEndGMT)
         {
-            return m_avms.AddAlarm(cam, alarmTime, policyID, alarmText1, alarmText2);
+            byte[] byteAlarms = GetAlarmsStream(camId, dtStartGMT, dtEndGMT);
+            if (null == byteAlarms)
+            {
+                PrintLog("GetAlarm : signal is not available.");
+                return null;
+            }
+
+            switch (byteAlarms[0])
+            {
+                case 1:
+                    MemoryStream compStream = new MemoryStream(byteAlarms, 1, byteAlarms.Length - 1, false);
+                    GZipInputStream uncompStream = new GZipInputStream(compStream);
+
+                    DataSet ret = new DataSet();
+                    ret.ReadXml(uncompStream);
+
+                    string log = string.Empty;
+                    if ((null != ret) && (ret.Tables.Count > 0))
+                    {
+                        DataTable dt = ret.Tables[0];
+                        int iRows = dt.Rows.Count;
+                        for (int i = 0; i < iRows; i++)
+                        {
+                            DataRow dr = dt.Rows[i];
+                            log += string.Join(",", dr.ItemArray) + ((i == iRows - 1) ? string.Empty : "\r\n");
+                        }
+                    }
+                    return log;
+
+                default:
+                    PrintLog("GetAlarmLog : could not retreive alarm list from server.");
+                    return null;
+            }
         }
 
-        public byte[] GetSignalsStream(CCamera cam, DateTime dtStartGMT, DateTime dtEndGMT)
+        public string GetEvent(int camId, DateTime dtStartGMT, DateTime dtEndGMT)
         {
             if (null == m_avms)
             {
@@ -365,8 +398,59 @@ namespace Toolbox_DB31.AVMS_Adapter
                 return null;
             }
 
+            if (!m_cameraList.ContainsKey((uint)camId))
+            {
+                PrintLog("Invalid camera number!");
+                return null;
+            }
+
+            CCamera cam = m_cameraList[(uint)camId];
+            DataSet dsEvents = null;
+            bool isExported = m_avms.ExportEventsStream(cam, dtStartGMT, dtEndGMT, ref dsEvents);
+            if (!isExported)
+            {
+                return null;
+            }
+
+            string log = string.Empty;
+            DataTable dt = dsEvents.Tables[0];
+            int iRows = dt.Rows.Count;
+            for (int i = 0; i < iRows; i++)
+            {
+                DataRow dr = dt.Rows[i];
+                log += string.Join(",", dr.ItemArray) + ((i == iRows - 1) ? string.Empty : "\r\n");
+            }
+            return log;
+        }
+
+        public bool InsertAlarm(CCamera cam, int alarmTime, int policyID, string alarmText1, string alarmText2)
+        {
+            return m_avms.AddAlarm(cam, alarmTime, policyID, alarmText1, alarmText2);
+        }
+
+        public byte[] GetAlarmsStream(int camId, DateTime dtStartGMT, DateTime dtEndGMT)
+        {
+            if (null == m_avms)
+            {
+                PrintLog("Fail to connect to AVMS!");
+                return null;
+            }
+
+            if (!m_farm.CanAccess(FarmRight.ViewAlarm) || dtStartGMT >= dtEndGMT)
+            {
+                PrintLog("Fail to get alarms!");
+                return null;
+            }
+
+            if (!m_cameraList.ContainsKey((uint)camId))
+            {
+                PrintLog("Invalid camera number!");
+                return null;
+            }
+
+            CCamera cam = m_cameraList[(uint)camId];
             byte[] byteSignals = null;
-            bool isExported = m_avms.ExportSignalsStream(cam, dtStartGMT, dtEndGMT, ref byteSignals);
+            bool isExported = m_avms.ExportAlarmsStream(cam, dtStartGMT, dtEndGMT, ref byteSignals);
             if (!isExported)
             {
                 return null;
@@ -374,7 +458,6 @@ namespace Toolbox_DB31.AVMS_Adapter
             return byteSignals;
         }
 
-        //public byte[] GetImageStream(CCamera cam, DateTime dt)
         public byte[] GetImageStream(int camId, DateTime dt)
         {
             if (null == m_avms)
@@ -462,6 +545,8 @@ namespace Toolbox_DB31.AVMS_Adapter
                     PrintLog(string.Format("{0} - AVMSCom_MessageSend : [{1}]", time, message.Split('\t')[1]));
                     break;
             }
+
+            Global.g_VMS_Adapter = this;
         }
 
         private void PrintLog(string text)
