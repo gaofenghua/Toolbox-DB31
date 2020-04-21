@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Toolbox_DB31.Classes;
 using Toolbox_DB31.AVMS_Adapter;
+using System.IO;
+using System.Diagnostics;
 
 namespace Toolbox_DB31.DB31_Adapter
 {
@@ -14,6 +16,7 @@ namespace Toolbox_DB31.DB31_Adapter
     {
         enum OperationCmd_Type
         {
+            Alarm_Image_Upload = 1,
             Maintenance_Image_Upload = 2,
             Test_Image_Upload = 4,
             Requested_Image_Upload = 5,
@@ -41,8 +44,14 @@ namespace Toolbox_DB31.DB31_Adapter
         public long Free_Space = 0;
         public string Process_Name = "System,AI_Main.exe";
 
+        public int Seconds_Before_Alarm = 5;
+        public int Seconds_After_Alarm = 50;
+        public int Alarm_Interval = 20;
+
         System.Threading.Timer heartbeat_timer = null;
         int Time_Interval = 60000 * 5;
+
+        private string Temp_File = System.Windows.Forms.Application.StartupPath.ToString() + @"\" + "toolbox.tmp";
 
         public DB31_Controller(DB31_User db31_user, string ip, int port)
         {
@@ -54,9 +63,21 @@ namespace Toolbox_DB31.DB31_Adapter
 
             xml = new DB31_Xml();
 
+            if (true == Crash_Last_Time())
+            {
+                //report crash event
+            }
+
             StartHeartbeat();
+
+            //test code
+            Alarm_Image_Upload(1,DateTime.Now);
         }
 
+        ~DB31_Controller()
+        {
+            File.Delete(Temp_File);
+        }
         private void OnEvent_Receive_Socket_Message(object sender, SocketWorkingEventArgs e)
         {
             if(e.CurrentStatus == DB31_Socket.Status.Connected && e.CurrentStatus != e.PreviousStatus)
@@ -113,6 +134,8 @@ namespace Toolbox_DB31.DB31_Adapter
 
         public void HeartBeat(object obj)
         {
+            Write_Temp_File();
+
             GetStoredDiskSpace();
 
             string xml_content = xml.HeartbeatXml(DVR_State, Total_Space, Free_Space, Process_Name);
@@ -373,9 +396,85 @@ namespace Toolbox_DB31.DB31_Adapter
             return true;
         }
 
+        public void Alarm_Image_Upload(int ChannelID,DateTime AlarmTime)
+        {
+            //start form the information
+            int Type = (int)OperationCmd_Type.Alarm_Image_Upload;
+            int Channel = ChannelID;
+            DateTime TriggerTime = AlarmTime;
+            byte[] bNote = Encoding.UTF8.GetBytes("报警图像上传");
+            string Note = Convert.ToBase64String(bNote);
+            string GUID = Guid.NewGuid().ToString();
+            string base64image = "";
+            string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+
+            string sMessage = "通道" + Channel +":报警图像上传";
+            //Message to the main frame
+            if (null != Working_Message)
+            {
+                Send_Message_Out(sMessage);
+            }
+            Global.WriteLog(sMessage);
+
+            Send(xml_content);
+
+            int nCount = (Seconds_After_Alarm + Seconds_Before_Alarm) / Alarm_Interval + 1;
+            DateTime ImageTime; 
+            for(int i=0;i<nCount;i++)
+            {
+                ImageTime = TriggerTime.AddSeconds(-Seconds_Before_Alarm + (Alarm_Interval*i));
+
+                TimeSpan span = ImageTime.Subtract(DateTime.Now);
+                int Seconds_to_Future = span.Seconds;
+                //Trace.WriteLine("\r\n=================================" + Seconds_to_Future.ToString());
+                if(Seconds_to_Future > 0)
+                {
+                    Thread.Sleep((Seconds_to_Future + 1) * 1000);
+                }
+
+                //base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(Channel, ImageTime, true);
+                xml_content = xml.OperationCmd_Xml(Type, Channel, ImageTime.ToString(), Note, GUID, base64image);
+                Send(xml_content);
+
+                //Message to the main frame
+                if (null != Working_Message)
+                {
+                    Send_Message_Out(sMessage + (i + 1) + "/" + nCount);
+                }
+                Global.WriteLog(sMessage + (i + 1) + "/" + nCount);
+            }
+        }
         private void GetStoredDiskSpace()
         {
             DeviceSummary.GetStoredDiskSpace("C://", out Total_Space, out Free_Space);
+        }
+
+        private bool Crash_Last_Time()
+        {
+            string sFileName = Temp_File;
+
+            if (File.Exists(sFileName))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void Write_Temp_File()
+        {
+            string path = Temp_File;
+            bool isAppend = true;
+
+            using (StreamWriter sw = new StreamWriter(path, isAppend, System.Text.Encoding.UTF8))
+            {
+                string cont = DateTime.Now + "Controller heartbeat.";
+                sw.WriteLine(cont);
+                sw.Flush();
+                sw.Close();
+            }
         }
     }
 }
