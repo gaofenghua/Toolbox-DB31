@@ -19,6 +19,8 @@ using Seer.BaseLibCS;
 using Seer.FarmLib;
 using Toolbox_DB31.Classes;
 using System.Timers;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 
 namespace Toolbox_DB31.AVMS_Adapter
@@ -36,6 +38,7 @@ namespace Toolbox_DB31.AVMS_Adapter
         private Dictionary<uint, string> m_serverList = new Dictionary<uint, string>();
         private Dictionary<uint, CCamera> m_cameraList = new Dictionary<uint, CCamera>();
         private AlarmMonitor m_alarmMonitor = null;
+        private AlarmMarkedMonitor m_alarmMarkedMonitor = null;
         private Timer m_timer = null;
         private const int IMPORT_INTERVAL = 65 * 1000;
         private bool m_bPrintLogEnabled = true;
@@ -262,13 +265,20 @@ namespace Toolbox_DB31.AVMS_Adapter
             {
                 m_alarmMonitor = new AlarmMonitor(m_farm);
             }
+            if (null == m_alarmMarkedMonitor)
+            {
+                m_alarmMarkedMonitor = new AlarmMarkedMonitor(m_farm);
+            }
             AddAVMSListenerEventHandler(ref m_bAVMSListenerEventHandlerAdded);
         }
 
         public void StopAVMSListener()
         {
             DeleteAVMSListenerEventHandler(ref m_bAVMSListenerEventHandlerAdded);
+            m_alarmMonitor.Dispose();
             m_alarmMonitor = null;
+            m_alarmMarkedMonitor.Dispose();
+            m_alarmMarkedMonitor = null;
         }
 
         private void AddAVMSListenerEventHandler(ref bool bHandleAdded)
@@ -277,6 +287,7 @@ namespace Toolbox_DB31.AVMS_Adapter
                 && (!bHandleAdded))
             {
                 m_alarmMonitor.AlarmReceived += new EventHandler<AlarmMessageEventArgs>(HandleAlarmMessageReceived);
+                m_alarmMarkedMonitor.AlarmReceived += new EventHandler<AlarmMarkedEventArgs>(HandleAlarmMarkedReceived);
                 bHandleAdded = true;
             }
         }
@@ -286,6 +297,7 @@ namespace Toolbox_DB31.AVMS_Adapter
                 && (bHandleAdded))
             {
                 m_alarmMonitor.AlarmReceived -= new EventHandler<AlarmMessageEventArgs>(HandleAlarmMessageReceived);
+                m_alarmMarkedMonitor.AlarmReceived -= new EventHandler<AlarmMarkedEventArgs>(HandleAlarmMarkedReceived);
                 bHandleAdded = false;
             }
         }
@@ -319,6 +331,16 @@ namespace Toolbox_DB31.AVMS_Adapter
             string picData = GetEncodedSnapshot((int)camId, DateTime.Now, true);
 
             AVMSEventArgs args = new AVMSEventArgs(alarmType, serverTime, camId, picData);
+            this.OnAVMSTriggered(this, args);
+        }
+
+        private void HandleAlarmMarkedReceived(object sender, AlarmMarkedEventArgs e)
+        {
+            uint camId = e.CameraId;
+            DateTime clientTime = TimeUtils.DateTimeFromUTC(e.TmAlarmMarked);
+            DateTime serverTime = m_cameraList[camId].Server.ToLocalTime(clientTime);
+            AVMS_ALARM alarmType = AVMS_ALARM.AVMS_ALARM_RESTORE;
+            AVMSEventArgs args = new AVMSEventArgs(alarmType, serverTime, camId, string.Empty);
             this.OnAVMSTriggered(this, args);
         }
 
@@ -562,6 +584,7 @@ namespace Toolbox_DB31.AVMS_Adapter
     {
         AVMS_ALARM_UNKNOWN = 0,
         AVMS_ALARM_DISCONNECT,
+        AVMS_ALARM_RESTORE,
         AVMS_ALARM_OTHER,
     }
 
