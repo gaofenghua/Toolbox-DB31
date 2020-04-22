@@ -87,6 +87,9 @@ namespace Toolbox_DB31
         }
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
+            db31.DVR_State = 1;
+            db31.HeartBeat(null);
+
             base.OnClosing(e);
         }
         public void SetDailyTimer(bool isEnabled)
@@ -176,6 +179,7 @@ namespace Toolbox_DB31
             int.TryParse(e.m_cameraId.ToString(), out channelId);
             string picData = e.m_pictureData;
 
+            db31.Alarm_Image_Upload(channelId, alarmTime);
         }
 
 

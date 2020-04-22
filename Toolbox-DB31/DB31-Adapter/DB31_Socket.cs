@@ -168,6 +168,8 @@ namespace Toolbox_DB31.DB31_Adapter
                 e.CurrentStatus = status;
                 e.sMessage = "发送失败：地标服务器未连接。";
                 Send_Message_Out(e);
+
+                Global.WriteLog("Socket Send Failed: " + e.sMessage);
                 return false;
             }
 
@@ -201,6 +203,7 @@ namespace Toolbox_DB31.DB31_Adapter
             {
                 if(status != Status.Sending)
                 {
+                    Global.WriteLog("Socket Send Success: " + dataLength);
                     return true;
                 }
                 Thread.Sleep(1000);
@@ -209,6 +212,8 @@ namespace Toolbox_DB31.DB31_Adapter
             e.CurrentStatus = status;
             e.sMessage = "发送失败：5秒发送超时。";
             Send_Message_Out(e);
+
+            Global.WriteLog("Socket Send Failed at 5 seconds overtime: " + dataLength);
             return false;
         }
 

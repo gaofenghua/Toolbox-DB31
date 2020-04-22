@@ -9,6 +9,7 @@ using Toolbox_DB31.Classes;
 using Toolbox_DB31.AVMS_Adapter;
 using System.IO;
 using System.Diagnostics;
+using System.ServiceProcess;
 
 namespace Toolbox_DB31.DB31_Adapter
 {
@@ -42,7 +43,8 @@ namespace Toolbox_DB31.DB31_Adapter
         public int DVR_State = 0;
         public long Total_Space = 0;
         public long Free_Space = 0;
-        public string Process_Name = "System,AI_Main.exe";
+        public string Process_Name = "w3logsvc";
+        public ServiceControllerStatus Current_Process_Status = ServiceControllerStatus.Stopped;
 
         public int Seconds_Before_Alarm = 5;
         public int Seconds_After_Alarm = 50;
@@ -50,6 +52,9 @@ namespace Toolbox_DB31.DB31_Adapter
 
         System.Threading.Timer heartbeat_timer = null;
         int Time_Interval = 60000 * 5;
+
+        System.Threading.Timer self_check_timer = null;
+        int Self_Check_Interval = 1000 * 5;
 
         private string Temp_File = System.Windows.Forms.Application.StartupPath.ToString() + @"\" + "toolbox.tmp";
 
@@ -70,8 +75,9 @@ namespace Toolbox_DB31.DB31_Adapter
 
             StartHeartbeat();
 
+            StartSelfCheck();
             //test code
-            Alarm_Image_Upload(1,DateTime.Now);
+            //Alarm_Image_Upload(1,DateTime.Now);
         }
 
         ~DB31_Controller()
@@ -140,7 +146,10 @@ namespace Toolbox_DB31.DB31_Adapter
 
             string xml_content = xml.HeartbeatXml(DVR_State, Total_Space, Free_Space, Process_Name);
             Send(xml_content);
-          
+
+            string sMsg = "Heartbeat: DVR_State = " + DVR_State;
+            Global.WriteLog(sMsg);
+
             heartbeat_timer.Change(Time_Interval, Timeout.Infinite);
         }
 
@@ -152,6 +161,33 @@ namespace Toolbox_DB31.DB31_Adapter
             }
         }
 
+        private void StartSelfCheck()
+        {
+            if (self_check_timer == null)
+            {
+                self_check_timer = new Timer(SelfCheck, null, 0, Timeout.Infinite);
+            }
+            else
+            {
+                self_check_timer.Change(0, Timeout.Infinite);
+            }
+        }
+
+        private void SelfCheck(object obj)
+        {
+            var serviceControllers = ServiceController.GetServices();
+            var server = serviceControllers.FirstOrDefault(service => service.ServiceName == Process_Name);
+            if (server != null && server.Status != Current_Process_Status)
+            {
+                string sMsg = "Process status changed, " + Current_Process_Status.ToString() + " -> " + server.Status.ToString();
+                Global.WriteLog(sMsg);
+
+                Current_Process_Status = server.Status;
+            }
+
+            //start next time
+            self_check_timer.Change(Self_Check_Interval, Timeout.Infinite);
+        }
         private void Upload_Image(OperationCmd_Type OpeType)
         {
             // Multithread notes:
