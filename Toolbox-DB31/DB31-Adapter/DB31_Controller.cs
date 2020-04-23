@@ -21,6 +21,9 @@ namespace Toolbox_DB31.DB31_Adapter
             Maintenance_Image_Upload = 2,
             Test_Image_Upload = 4,
             Requested_Image_Upload = 5,
+            DVR_Start = 19,
+            DVR_Exit = 20,
+            DVR_Abnormal_Quit = 21,
             Repair_Upload = 29,
             Inspection_Image_Upload = 33
             
@@ -71,6 +74,7 @@ namespace Toolbox_DB31.DB31_Adapter
             if (true == Crash_Last_Time())
             {
                 //report crash event
+                DVRAbnormalQuit();
             }
 
             StartHeartbeat();
@@ -181,6 +185,15 @@ namespace Toolbox_DB31.DB31_Adapter
             {
                 string sMsg = "Process status changed, " + Current_Process_Status.ToString() + " -> " + server.Status.ToString();
                 Global.WriteLog(sMsg);
+
+                if(server.Status == ServiceControllerStatus.Running)
+                {
+                    DVRStarted();
+                }
+                else if(server.Status == ServiceControllerStatus.Stopped)
+                {
+                    DVRExit();
+                }
 
                 Current_Process_Status = server.Status;
             }
@@ -479,6 +492,51 @@ namespace Toolbox_DB31.DB31_Adapter
                 }
                 Global.WriteLog(sMessage + (i + 1) + "/" + nCount);
             }
+        }
+
+        private void DVRStarted()
+        {
+            //start form the information
+            int Type = (int)OperationCmd_Type.DVR_Start;
+            int Channel = 0;
+            DateTime TriggerTime = DateTime.Now;
+            byte[] bNote = Encoding.UTF8.GetBytes("DVR系统启动");
+            string Note = Convert.ToBase64String(bNote);
+            string GUID = Guid.NewGuid().ToString();
+            string base64image = "";
+            string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+
+            Send(xml_content);
+        }
+
+        private void DVRExit()
+        {
+            //start form the information
+            int Type = (int)OperationCmd_Type.DVR_Exit;
+            int Channel = 0;
+            DateTime TriggerTime = DateTime.Now;
+            byte[] bNote = Encoding.UTF8.GetBytes("DVR系统退出");
+            string Note = Convert.ToBase64String(bNote);
+            string GUID = Guid.NewGuid().ToString();
+            string base64image = "";
+            string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+
+            Send(xml_content);
+        }
+
+        private void DVRAbnormalQuit()
+        {
+            //start form the information
+            int Type = (int)OperationCmd_Type.DVR_Abnormal_Quit;
+            int Channel = 0;
+            DateTime TriggerTime = DateTime.Now;
+            byte[] bNote = Encoding.UTF8.GetBytes("DVR异常退出");
+            string Note = Convert.ToBase64String(bNote);
+            string GUID = Guid.NewGuid().ToString();
+            string base64image = "";
+            string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+
+            Send(xml_content);
         }
         private void GetStoredDiskSpace()
         {
