@@ -243,6 +243,10 @@ namespace Toolbox_DB31
             {
                 sRet = db31.Maintenance_Image_Upload();
             }
+            else if (Current_Menu_Item == Menu_Item.Maintenance_Report)
+            {
+                sRet = db31.Maintenance_Upload("");
+            }
             else if (Current_Menu_Item == Menu_Item.Repair_Report)
             {
                 RepairMenu repairPage = (RepairMenu) frmMain.Content;
@@ -392,8 +396,12 @@ namespace Toolbox_DB31
         public void UploadEventLog(int camId, string log)
         {
             // db31 method
+            
+            //参数设置：ConfigurationChange
+            //录像回放：CameraHistoryConnect、CameraHistoryDisconnect
+
         }
 
- 
+
     }
 }

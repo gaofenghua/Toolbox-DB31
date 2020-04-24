@@ -24,7 +24,8 @@ namespace Toolbox_DB31.DB31_Adapter
             DVR_Start = 19,
             DVR_Exit = 20,
             DVR_Abnormal_Quit = 21,
-            Repair_Upload = 29,
+            Repair_Report = 29,
+            Maintenance_Report = 30,
             Inspection_Image_Upload = 33
             
         };
@@ -261,10 +262,27 @@ namespace Toolbox_DB31.DB31_Adapter
             return "没有操作权限！";
         }
 
+        public string Maintenance_Upload(string sNote)
+        {
+            //start form the information
+            int Type = (int)OperationCmd_Type.Maintenance_Report;
+            int Channel = 0;
+            DateTime TriggerTime = DateTime.Now;
+            byte[] bNote = Encoding.UTF8.GetBytes(sNote);
+            string Note = Convert.ToBase64String(bNote);
+            string GUID = Guid.NewGuid().ToString();
+            string base64image = "";
+            string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+
+            new Task(x =>
+            { Send((string)x); }, xml_content).Start();
+
+            return "";
+        }
         public string Repair_Upload(string sNote)
         {
             //start form the information
-            int Type = (int)OperationCmd_Type.Repair_Upload;
+            int Type = (int)OperationCmd_Type.Repair_Report;
             int Channel = 0;
             DateTime TriggerTime = DateTime.Now;
             byte[] bNote = Encoding.UTF8.GetBytes(sNote);
