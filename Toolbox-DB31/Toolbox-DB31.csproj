@@ -150,6 +150,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AVMS-Adapter\AlarmMarkedMonitor.cs" />
+    <Compile Include="AVMS-Adapter\AlarmMarkedStruct.cs" />
     <Compile Include="AVMS-Adapter\AVMSAdapter.cs" />
     <Compile Include="AVMS-Adapter\AVMSCom.cs" />
     <Compile Include="Classes\Camera_Model.cs" />
