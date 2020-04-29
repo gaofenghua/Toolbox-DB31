@@ -121,6 +121,9 @@
     <Reference Include="Seer.SDK.NotificationMonitors">
       <HintPath>C:\Program Files (x86)\Axis\VMS China SDK\bin\Seer.SDK.NotificationMonitors.dll</HintPath>
     </Reference>
+    <Reference Include="SnmpSharpNet">
+      <HintPath>input\library\dll\x64\SnmpSharpNet.dll</HintPath>
+    </Reference>
     <Reference Include="socket.framework">
       <HintPath>.\socket.framework.dll</HintPath>
     </Reference>
@@ -189,6 +192,10 @@
       <DependentUpon>PasswordWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="StorageManager\GeneralStorageManager.cs" />
+    <Compile Include="StorageManager\StorageManager.cs" />
+    <Compile Include="StorageManager\IStorageManager.cs" />
+    <Compile Include="StorageManager\StorageProperties.cs" />
     <Compile Include="SummaryTable.xaml.cs">
       <DependentUpon>SummaryTable.xaml</DependentUpon>
     </Compile>
