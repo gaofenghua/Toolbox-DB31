@@ -40,7 +40,7 @@ namespace Toolbox_DB31
         int DB31_Port = 0;
 
         private System.Timers.Timer m_timer = null;
-        private SettingsMenu settings = null;
+        private SettingsMenu m_settings = null;
         private DateTime m_LastUploadDT = new DateTime();
 
         public MainWindow()
@@ -68,17 +68,23 @@ namespace Toolbox_DB31
             db31 = new DB31_Controller(Global.g_User, DB31_IP,DB31_Port);
             db31.Working_Message += OnEvent_Working_Message;
 
-            settings = new SettingsMenu(this);
+            m_settings = new SettingsMenu(this);
             m_timer = new System.Timers.Timer(50 * 1000);
             m_timer.Elapsed += DailyUpload;
-            SetDailyTimer(settings.m_ViewModel.IsDailyTimerEnabled);
+            SetDailyTimer(m_settings.m_ViewModel.IsDailyTimerEnabled);
 
             DeviceSummary.CfgFilePath = @".\Configuration.csv";
             AVMSAdapter adapter = new AVMSAdapter();
             adapter.Start("192.168.77.211", "admin", "admin");
             adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
 
+            GeneralStorageManager generalStorage = new GeneralStorageManager();
+            generalStorage.Load();
+            generalStorage.NotificationReceived += new EventHandler<StorageEventArgs>(HandleStorageEvent);
+
             Global.g_VMS_Adapter = adapter;
+            Global.g_Storage_List = new List<StorageManager>();
+            Global.g_Storage_List.Add(generalStorage);
 
             navBarItem_Inspect_ImageUpload_Click(null, null);
            
@@ -90,6 +96,20 @@ namespace Toolbox_DB31
             db31.DVR_State = 1;
             db31.HeartBeat(null);
 
+            if (0 != Global.g_Storage_List.Count)
+            {
+                foreach (StorageManager storage in Global.g_Storage_List)
+                {
+                    storage.NotificationReceived -= new EventHandler<StorageEventArgs>(HandleStorageEvent);
+                    storage.Dispose();
+                }
+            }
+            Global.g_Storage_List = null;
+
+            Global.g_VMS_Adapter.AVMSTriggered -= new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
+            Global.g_VMS_Adapter.Stop();
+            Global.g_VMS_Adapter = null;
+
             base.OnClosing(e);
         }
         public void SetDailyTimer(bool isEnabled)
@@ -99,13 +119,13 @@ namespace Toolbox_DB31
 
         private void DailyUpload(object sender, ElapsedEventArgs e)
         {
-            if (null == settings)
+            if (null == m_settings)
             {
                 return;
             }
 
             DateTime checkDT = e.SignalTime;
-            DateTime updateDT = settings.m_ViewModel.DailyUpdateDateTime;
+            DateTime updateDT = m_settings.m_ViewModel.DailyUpdateDateTime;
             if (!IsEqualDT(m_LastUploadDT, checkDT) && IsEqualDT(updateDT, checkDT))
             {
                 UploadInstantImage();
@@ -171,6 +191,7 @@ namespace Toolbox_DB31
                 int.TryParse(sPort, out DB31_Port);
             }
         }
+
         private void HandleAVMSEvent(object sender, AVMSEventArgs e)
         {
             AVMS_ALARM alarmType = e.m_alarmType;
@@ -182,6 +203,12 @@ namespace Toolbox_DB31
             db31.Alarm_Image_Upload(channelId, alarmTime);
         }
 
+        private void HandleStorageEvent(object sender, StorageEventArgs e)
+        {
+            STORAGE_MANUFACTURER storageOwner = e.StorageOwner;
+            STORAGE_EVENT storageEvent = e.StorageEvent;
+            StoragePropertyStruct storageProperties = e.StorageProperties;
+        }
 
         private void Set_Button_Label(bool bVisible)
         {
@@ -289,6 +316,8 @@ namespace Toolbox_DB31
         }
         private void Button_Click_SignIn(object sender, RoutedEventArgs e)
         {
+            long total, free;
+            DeviceSummary.GetStoredDiskSpace("G://", out total, out free);
         }
 
         private void OnEvent_Login_Finished(object sender,string sRet)
@@ -384,7 +413,7 @@ namespace Toolbox_DB31
 
         private void navBarItem_Settings_Page_Click(object sender, EventArgs e)
         {
-            frmMain.NavigationService.Navigate(settings);
+            frmMain.NavigationService.Navigate(m_settings);
             Set_Button_Label(false);
         }
 

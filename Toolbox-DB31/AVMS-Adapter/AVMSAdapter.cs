@@ -17,7 +17,6 @@ using Seer.SDK;
 using Seer.SDK.NotificationMonitors;
 using Seer.BaseLibCS;
 using Seer.FarmLib;
-using Toolbox_DB31.Classes;
 using System.Timers;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -275,9 +274,7 @@ namespace Toolbox_DB31.AVMS_Adapter
         public void StopAVMSListener()
         {
             DeleteAVMSListenerEventHandler(ref m_bAVMSListenerEventHandlerAdded);
-            m_alarmMonitor.Dispose();
             m_alarmMonitor = null;
-            m_alarmMarkedMonitor.Dispose();
             m_alarmMarkedMonitor = null;
         }
 
@@ -298,6 +295,8 @@ namespace Toolbox_DB31.AVMS_Adapter
             {
                 m_alarmMonitor.AlarmReceived -= new EventHandler<AlarmMessageEventArgs>(HandleAlarmMessageReceived);
                 m_alarmMarkedMonitor.AlarmReceived -= new EventHandler<AlarmMarkedEventArgs>(HandleAlarmMarkedReceived);
+                m_alarmMonitor.Dispose();
+                m_alarmMarkedMonitor.Dispose();
                 bHandleAdded = false;
             }
         }

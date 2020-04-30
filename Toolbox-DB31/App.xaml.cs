@@ -32,6 +32,7 @@ namespace Toolbox_DB31
         public static DB31_User g_User = new DB31_User();
 
         public static AVMSAdapter g_VMS_Adapter = null;
+        public static List<StorageManager> g_Storage_List = null;
 
         public static readonly object LogFile_Lock = new object();
         public static void WriteLog(string cont)
