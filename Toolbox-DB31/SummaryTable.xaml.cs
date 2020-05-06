@@ -24,9 +24,11 @@ namespace Toolbox_DB31
         {
             InitializeComponent();
             GridControl_Summary.Columns["状态"].Visible = true;
-            GridControl_Summary.Columns["IsSelected"].Header = "选择";
+            GridControl_Summary.Columns["IsSelected"].Header = "图像上传";
             GridControl_Summary.Columns["IsSelected"].HorizontalHeaderContentAlignment = System.Windows.HorizontalAlignment.Center;
-            
+
+            GridControl_Summary.Columns["AlarmEnable"].Header = "报警激活";
+            GridControl_Summary.Columns["AlarmEnable"].HorizontalHeaderContentAlignment = System.Windows.HorizontalAlignment.Center;
         }
     }
 }

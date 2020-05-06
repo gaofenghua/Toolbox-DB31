@@ -35,6 +35,10 @@ namespace Toolbox_DB31.Classes
 
         public void StartAlarmListening()
         {
+            Global.g_DB31_Adapter.Seconds_Before_Alarm = (int)AlarmUpdateBefore;
+            Global.g_DB31_Adapter.Seconds_After_Alarm = (int)AlarmUpdateAfter;
+            Global.g_DB31_Adapter.Alarm_Interval = (int)AlarmUpdateDuration;
+
             Global.g_VMS_Adapter.StartAVMSListener();
         }
 

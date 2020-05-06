@@ -29,6 +29,8 @@ namespace Toolbox_DB31
 
         public static Main_ViewModel g_Main_ViewModel = null;
 
+        public static DB31_Controller g_DB31_Adapter = null;
+
         public static DB31_User g_User = new DB31_User();
 
         public static AVMSAdapter g_VMS_Adapter = null;

@@ -13,7 +13,7 @@ using System.ServiceProcess;
 
 namespace Toolbox_DB31.DB31_Adapter
 {
-    class DB31_Controller
+    public class DB31_Controller
     {
         enum OperationCmd_Type
         {
@@ -465,6 +465,14 @@ namespace Toolbox_DB31.DB31_Adapter
 
         public void Alarm_Image_Upload(int ChannelID,DateTime AlarmTime)
         {
+            //Check the alarm enable flag
+            Camera_Model cam = Find_Camera_From_ChannelNumber(ChannelID);
+            if (null == cam || cam.AlarmEnable == false)
+            {
+                return;
+            }
+          
+
             //start form the information
             int Type = (int)OperationCmd_Type.Alarm_Image_Upload;
             int Channel = ChannelID;

@@ -67,6 +67,7 @@ namespace Toolbox_DB31
 
             db31 = new DB31_Controller(Global.g_User, DB31_IP,DB31_Port);
             db31.Working_Message += OnEvent_Working_Message;
+            Global.g_DB31_Adapter = db31;
 
             m_settings = new SettingsMenu(this);
             m_timer = new System.Timers.Timer(50 * 1000);

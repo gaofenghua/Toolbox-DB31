@@ -14,6 +14,7 @@ namespace Toolbox_DB31.Classes
         public string Name { get; set; }
         public string Status { get; set; }
         public bool IsSelected { get; set; }
+        public bool AlarmEnable { get; set; }
 
         public object Clone()
         {
