@@ -80,7 +80,6 @@ namespace Toolbox_DB31
             adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
 
             GeneralStorageManager generalStorage = new GeneralStorageManager();
-            generalStorage.Load();
             generalStorage.NotificationReceived += new EventHandler<StorageEventArgs>(HandleStorageEvent);
 
             Global.g_VMS_Adapter = adapter;
