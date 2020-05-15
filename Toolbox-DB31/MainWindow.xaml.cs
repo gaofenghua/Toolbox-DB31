@@ -201,6 +201,26 @@ namespace Toolbox_DB31
             int.TryParse(e.m_cameraId.ToString(), out channelId);
             string picData = e.m_pictureData;
 
+            //Handle disconnect event
+            if(alarmType == AVMS_ALARM.AVMS_ALARM_DISCONNECT)
+            {
+                foreach (Camera_Model cam in Global.g_CameraList)
+                {
+                    if (cam.CameraID == e.m_cameraId)
+                    {
+                        cam.Status = "离线";
+                    }
+                }
+
+                if(Current_Menu_Item == Menu_Item.Inspect_Image_Upload || Current_Menu_Item == Menu_Item.Maintenance_Image_Upload || Current_Menu_Item == Menu_Item.Test_Image_Upload)
+                {
+                    SummaryTable summaryTable = (SummaryTable)frmMain.Content;
+                    summaryTable.GridControl_Summary.RefreshData();
+                }
+                
+                return;
+            }
+
             db31.Alarm_Image_Upload(channelId, alarmTime);
         }
 
@@ -314,6 +334,13 @@ namespace Toolbox_DB31
             {
                 db31.Stop_Uploading_Image = true;
             }
+
+            //some manual test
+            AVMSEventArgs EV = new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_DISCONNECT, DateTime.Now, 0, null);
+            HandleAVMSEvent(null,EV);
+
+            
+            //finished manual test
         }
         private void Button_Click_SignIn(object sender, RoutedEventArgs e)
         {

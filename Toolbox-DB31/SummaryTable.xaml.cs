@@ -29,6 +29,8 @@ namespace Toolbox_DB31
 
             GridControl_Summary.Columns["AlarmEnable"].Header = "报警激活";
             GridControl_Summary.Columns["AlarmEnable"].HorizontalHeaderContentAlignment = System.Windows.HorizontalAlignment.Center;
+
+            //GridControl_Summary.PopulateColumns();
         }
     }
 }
