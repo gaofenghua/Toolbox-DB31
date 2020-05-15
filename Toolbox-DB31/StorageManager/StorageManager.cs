@@ -28,36 +28,34 @@ namespace Toolbox_DB31
             NotificationReceived(this, new StorageEventArgs(m_storageOwner, evt, volumeProperties));
         }
 
-        public StoragePropertyStruct GetVolumeProperty(Dictionary<string, object> mapVolume, string volume)
-        {
-            StoragePropertyStruct properties = new StoragePropertyStruct();
-            if (mapVolume.ContainsKey(volume))
-            {
-                properties.VolumeName = volume;
-                long total = 0, free = 0;
-                GetVolumeSize(mapVolume, volume, out total, out free);
-                properties.VolumeTotalSize = total;
-                properties.VolumeFreeSize = free;
-                properties.VolumeState = GetVolumeState(mapVolume, volume);
-            }
-            return properties;
-        }
+        public abstract StoragePropertyStruct GetVolumeProperty(object volume);
 
         public abstract void Load();
         public abstract void Unload();
-        //public abstract List<string> GetVolumeNameList();
         public abstract Dictionary<string, object> GetVolumeMap();
-        public abstract bool GetVolumeSize(Dictionary<string, object> mapVolume, string volume, out long total_size, out long free_size);
-        public abstract VOLUME_STATE GetVolumeState(Dictionary<string, object> mapVolume, string volume);
 
         public static Dictionary<T1, T2> GetPositiveException<T1, T2>(Dictionary<T1, T2> old_map, Dictionary<T1, T2> new_map)
         {
-            return new_map.Keys.Except(old_map.Keys) as Dictionary<T1, T2>;
+            Dictionary<T1, T2> appended = new Dictionary<T1, T2>();
+            var appendedKeys = new_map.Keys.Except(old_map.Keys);
+            var a = from dict in new_map where appendedKeys.Contains(dict.Key) select dict;
+            foreach (KeyValuePair<T1, T2> p in a)
+            {
+                appended.Add(p.Key, p.Value);
+            }
+            return appended;
         }
 
         public static Dictionary<T1, T2> GetNegativeException<T1, T2>(Dictionary<T1, T2> old_map, Dictionary<T1, T2> new_map)
         {
-            return old_map.Keys.Except(new_map.Keys) as Dictionary<T1, T2>;
+            Dictionary<T1, T2> removed = new Dictionary<T1, T2>();
+            var removedKeys = old_map.Keys.Except(new_map.Keys);
+            var a = from dict in old_map where removedKeys.Contains(dict.Key) select dict;
+            foreach (KeyValuePair<T1, T2> p in a)
+            {
+                removed.Add(p.Key, p.Value);
+            }
+            return removed;
         }
 
         public static List<T1> GetIntersectionKeys<T1, T2>(Dictionary<T1, T2> old_map, Dictionary<T1, T2> new_map)
