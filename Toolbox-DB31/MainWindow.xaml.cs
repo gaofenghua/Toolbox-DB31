@@ -86,9 +86,7 @@ namespace Toolbox_DB31
             Global.g_Storage_List = new List<StorageManager>();
             Global.g_Storage_List.Add(generalStorage);
 
-            navBarItem_Inspect_ImageUpload_Click(null, null);
-           
-          
+            //navBarItem_Inspect_ImageUpload_Click(null, null);
 
         }
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -335,9 +333,8 @@ namespace Toolbox_DB31
             }
 
             //some manual test
-            AVMSEventArgs EV = new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_DISCONNECT, DateTime.Now, 0, null);
-            HandleAVMSEvent(null,EV);
-
+            //AVMSEventArgs EV = new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_DISCONNECT, DateTime.Now, 0, null);
+            //HandleAVMSEvent(null,EV);
             
             //finished manual test
         }

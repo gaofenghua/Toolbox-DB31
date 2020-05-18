@@ -35,6 +35,10 @@ namespace Toolbox_DB31
             Dictionary<string, object> mapVolume = new Dictionary<string, object>();
             foreach (DriveInfo di in DriveInfo.GetDrives())
             {
+                if(di.DriveType == DriveType.CDRom)
+                {
+                    continue;
+                }
                 mapVolume.Add(di.Name, GetVolumeProperty(di));
             }
             return mapVolume;
