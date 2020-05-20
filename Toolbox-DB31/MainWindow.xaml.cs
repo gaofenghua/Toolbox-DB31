@@ -76,7 +76,7 @@ namespace Toolbox_DB31
 
             DeviceSummary.CfgFilePath = @".\Configuration.csv";
             AVMSAdapter adapter = new AVMSAdapter();
-            adapter.Start("192.168.77.211", "admin", "admin");
+            adapter.Start("127.0.0.1", "admin", "admin");
             adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
 
             GeneralStorageManager generalStorage = new GeneralStorageManager();

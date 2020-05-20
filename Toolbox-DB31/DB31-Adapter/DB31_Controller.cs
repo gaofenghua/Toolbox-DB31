@@ -47,7 +47,7 @@ namespace Toolbox_DB31.DB31_Adapter
         public int DVR_State = 0;
         public long Total_Space = 0;
         public long Free_Space = 0;
-        public string Process_Name = "w3logsvc";
+        public string Process_Name = "AI InfoService";
         public ServiceControllerStatus Current_Process_Status = ServiceControllerStatus.Stopped;
 
         public int Seconds_Before_Alarm = 5;
@@ -336,7 +336,17 @@ namespace Toolbox_DB31.DB31_Adapter
             }
             return null;
         }
-
+        private Camera_Model Find_Camera_From_CameraID(int nCameraID)
+        {
+            foreach (Camera_Model cam in Global.g_CameraList)
+            {
+                if (cam.CameraID == nCameraID)
+                {
+                    return cam;
+                }
+            }
+            return null;
+        }
         private void Send_Image(OperationCmd_Type OpType, ArrayList Cameras, string GUID)
         {
             string messageHead="",messageContent="";
@@ -376,8 +386,8 @@ namespace Toolbox_DB31.DB31_Adapter
                 byte[] bNote = Encoding.UTF8.GetBytes("图像上传");
                 string Note = Convert.ToBase64String(bNote);
                 GUID = GUID==null?Guid.NewGuid().ToString():GUID;
-                //string base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(cam.CameraID,TriggerTime,true);
-                string base64image = "xxxxxxxxxxxxxxxxxxxx";
+                string base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(cam.CameraID,TriggerTime,true);
+                //string base64image = "xxxxxxxxxxxxxxxxxxxx";
                 string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
 
                 //Message to the main frame
@@ -466,7 +476,7 @@ namespace Toolbox_DB31.DB31_Adapter
         public void Alarm_Image_Upload(int ChannelID,DateTime AlarmTime)
         {
             //Check the alarm enable flag
-            Camera_Model cam = Find_Camera_From_ChannelNumber(ChannelID);
+            Camera_Model cam = Find_Camera_From_CameraID(ChannelID);
             if (null == cam || cam.AlarmEnable == false)
             {
                 return;
@@ -507,7 +517,7 @@ namespace Toolbox_DB31.DB31_Adapter
                     Thread.Sleep((Seconds_to_Future + 1) * 1000);
                 }
 
-                //base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(Channel, ImageTime, true);
+                base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(Channel, ImageTime, true);
                 xml_content = xml.OperationCmd_Xml(Type, Channel, ImageTime.ToString(), Note, GUID, base64image);
                 Send(xml_content);
 
