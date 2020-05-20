@@ -69,7 +69,11 @@ namespace Toolbox_DB31.DB31_Adapter
             return doc_heartbeat.ToString();
         }
 
-        public string HeartbeatXml(int state,long total_space,long free_space,string process_name)
+        private void SetAgentID(string AgentID)
+        {
+            xml_Agent.SetAttributeValue("ID", AgentID);
+        }
+        public string HeartbeatXml(string AgentID, int state,long total_space,long free_space,string process_name)
         {
            
             xml_DVRHeart.SetAttributeValue("state", state);
@@ -80,12 +84,16 @@ namespace Toolbox_DB31.DB31_Adapter
             xml_Agent.ReplaceNodes(xml_DVRHeart);
 
             xml_Agent.Add(xml_GetTicks);
+
+            SetAgentID(AgentID);
             
             return xml_Declaration.ToString() + xml_Agent.ToString();
         }
 
-        public string OperationCmd_Xml(int Type, int Channel, string TriggerTime, string Note, string GUID, string Base64Image)
+        public string OperationCmd_Xml(string AgentID, int Type, int Channel, string TriggerTime, string Note, string GUID, string Base64Image)
         {
+            SetAgentID(AgentID);
+
             xml_OperationCmd.SetAttributeValue("Type", Type);
             xml_OperationCmd.SetAttributeValue("Channel", Channel);
             xml_OperationCmd.SetAttributeValue("TriggerTime", TriggerTime);

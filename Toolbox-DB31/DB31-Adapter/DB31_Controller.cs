@@ -149,7 +149,9 @@ namespace Toolbox_DB31.DB31_Adapter
 
             GetStoredDiskSpace();
 
-            string xml_content = xml.HeartbeatXml(DVR_State, Total_Space, Free_Space, Process_Name);
+            string sAgent = GetAgentID();
+
+            string xml_content = xml.HeartbeatXml(sAgent,DVR_State, Total_Space, Free_Space, Process_Name);
             Send(xml_content);
 
             string sMsg = "Heartbeat: DVR_State = " + DVR_State;
@@ -265,6 +267,7 @@ namespace Toolbox_DB31.DB31_Adapter
         public string Maintenance_Upload(string sNote)
         {
             //start form the information
+            string sAgent = GetAgentID();
             int Type = (int)OperationCmd_Type.Maintenance_Report;
             int Channel = 0;
             DateTime TriggerTime = DateTime.Now;
@@ -272,7 +275,7 @@ namespace Toolbox_DB31.DB31_Adapter
             string Note = Convert.ToBase64String(bNote);
             string GUID = Guid.NewGuid().ToString();
             string base64image = "";
-            string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
 
             new Task(x =>
             { Send((string)x); }, xml_content).Start();
@@ -282,6 +285,7 @@ namespace Toolbox_DB31.DB31_Adapter
         public string Repair_Upload(string sNote)
         {
             //start form the information
+            string sAgent = GetAgentID();
             int Type = (int)OperationCmd_Type.Repair_Report;
             int Channel = 0;
             DateTime TriggerTime = DateTime.Now;
@@ -289,7 +293,7 @@ namespace Toolbox_DB31.DB31_Adapter
             string Note = Convert.ToBase64String(bNote);
             string GUID = Guid.NewGuid().ToString();
             string base64image = "";
-            string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
 
             new Task(x =>
             { Send((string)x); }, xml_content).Start();
@@ -370,6 +374,7 @@ namespace Toolbox_DB31.DB31_Adapter
                 }
 
                 //start form the information
+                string sAgent = cam.AgentID;
                 int Type = (int)OpType;
                 int Channel = cam.ChannelNumber;
                 DateTime TriggerTime = DateTime.Now;
@@ -378,7 +383,7 @@ namespace Toolbox_DB31.DB31_Adapter
                 GUID = GUID==null?Guid.NewGuid().ToString():GUID;
                 //string base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(cam.CameraID,TriggerTime,true);
                 string base64image = "xxxxxxxxxxxxxxxxxxxx";
-                string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+                string xml_content = xml.OperationCmd_Xml(sAgent,Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
 
                 //Message to the main frame
                 if (null != Working_Message)
@@ -471,9 +476,10 @@ namespace Toolbox_DB31.DB31_Adapter
             {
                 return;
             }
-          
+
 
             //start form the information
+            string sAgent = cam.AgentID;
             int Type = (int)OperationCmd_Type.Alarm_Image_Upload;
             int Channel = ChannelID;
             DateTime TriggerTime = AlarmTime;
@@ -481,7 +487,7 @@ namespace Toolbox_DB31.DB31_Adapter
             string Note = Convert.ToBase64String(bNote);
             string GUID = Guid.NewGuid().ToString();
             string base64image = "";
-            string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
 
             string sMessage = "通道" + Channel +":报警图像上传";
             //Message to the main frame
@@ -508,7 +514,7 @@ namespace Toolbox_DB31.DB31_Adapter
                 }
 
                 //base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(Channel, ImageTime, true);
-                xml_content = xml.OperationCmd_Xml(Type, Channel, ImageTime.ToString(), Note, GUID, base64image);
+                xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, ImageTime.ToString(), Note, GUID, base64image);
                 Send(xml_content);
 
                 //Message to the main frame
@@ -523,6 +529,7 @@ namespace Toolbox_DB31.DB31_Adapter
         private void DVRStarted()
         {
             //start form the information
+            string sAgent = GetAgentID();
             int Type = (int)OperationCmd_Type.DVR_Start;
             int Channel = 0;
             DateTime TriggerTime = DateTime.Now;
@@ -530,7 +537,7 @@ namespace Toolbox_DB31.DB31_Adapter
             string Note = Convert.ToBase64String(bNote);
             string GUID = Guid.NewGuid().ToString();
             string base64image = "";
-            string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
 
             Send(xml_content);
         }
@@ -538,6 +545,7 @@ namespace Toolbox_DB31.DB31_Adapter
         private void DVRExit()
         {
             //start form the information
+            string sAgent = GetAgentID();
             int Type = (int)OperationCmd_Type.DVR_Exit;
             int Channel = 0;
             DateTime TriggerTime = DateTime.Now;
@@ -545,7 +553,7 @@ namespace Toolbox_DB31.DB31_Adapter
             string Note = Convert.ToBase64String(bNote);
             string GUID = Guid.NewGuid().ToString();
             string base64image = "";
-            string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
 
             Send(xml_content);
         }
@@ -553,6 +561,7 @@ namespace Toolbox_DB31.DB31_Adapter
         private void DVRAbnormalQuit()
         {
             //start form the information
+            string sAgent = GetAgentID();
             int Type = (int)OperationCmd_Type.DVR_Abnormal_Quit;
             int Channel = 0;
             DateTime TriggerTime = DateTime.Now;
@@ -560,7 +569,7 @@ namespace Toolbox_DB31.DB31_Adapter
             string Note = Convert.ToBase64String(bNote);
             string GUID = Guid.NewGuid().ToString();
             string base64image = "";
-            string xml_content = xml.OperationCmd_Xml(Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
 
             Send(xml_content);
         }
@@ -595,6 +604,16 @@ namespace Toolbox_DB31.DB31_Adapter
                 sw.Flush();
                 sw.Close();
             }
+        }
+
+        private string GetAgentID()
+        {
+            if(Global.g_CameraList.Count() > 0)
+            {
+                return Global.g_CameraList[0].AgentID;
+            }
+
+            return "Default_AgentID";
         }
     }
 }
