@@ -121,7 +121,7 @@ namespace Toolbox_DB31.AVMS_Adapter
                 if (0 < result.Count)
                 {
                     DeviceConfiguration df = result.First();
-                    Global.g_CameraList.Add(new Camera_Model() { AgentID = df.AgentId, ChannelNumber = (int)(ConvertIpToLong(camIp) - ConvertIpToLong(df.StartIp)), CameraID = (int)item.Key, Name = item.Value.Name, Status = "在线", IsSelected = false });
+                    Global.g_CameraList.Add(new Camera_Model() { AgentID = df.AgentId, ChannelNumber = (int)(ConvertIpToLong(camIp) - ConvertIpToLong(df.StartIp) + 1), CameraID = (int)item.Key, Name = item.Value.Name, Status = "在线", IsSelected = false });
                 }
             }
         }
