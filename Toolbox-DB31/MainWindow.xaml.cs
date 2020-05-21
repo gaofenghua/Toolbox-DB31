@@ -139,7 +139,7 @@ namespace Toolbox_DB31
 
         private void UploadInstantImage()
         {
-            string status = db31.Inspect_Image_Upload();
+            string status = db31.Daily_Image_Upload();
             if (string.Empty != status)
             {
                 //
@@ -234,6 +234,11 @@ namespace Toolbox_DB31
             STORAGE_MANUFACTURER storageOwner = e.StorageOwner;
             STORAGE_EVENT storageEvent = e.StorageEvent;
             StoragePropertyStruct storageProperties = e.StorageProperties;
+
+            if(storageEvent == STORAGE_EVENT.VOLUME_NEW_APPENDED || storageEvent == STORAGE_EVENT.VOLUME_OLD_REMOVED)
+            {
+                db31.Disk_Error_Upload();
+            }
         }
 
         private void Set_Button_Label(bool bVisible)
@@ -298,7 +303,10 @@ namespace Toolbox_DB31
             }
             else if (Current_Menu_Item == Menu_Item.Maintenance_Report)
             {
-                sRet = db31.Maintenance_Upload("");
+                MaintenanceMenu maintenancePage = (MaintenanceMenu)frmMain.Content;
+                string sNote = maintenancePage.Get_Notes();
+
+                sRet = db31.Maintenance_Upload(sNote);
             }
             else if (Current_Menu_Item == Menu_Item.Repair_Report)
             {
@@ -348,8 +356,7 @@ namespace Toolbox_DB31
         }
         private void Button_Click_SignIn(object sender, RoutedEventArgs e)
         {
-            long total, free;
-            DeviceSummary.GetStoredDiskSpace("G://", out total, out free);
+            db31.Sign_In();
         }
 
         private void OnEvent_Login_Finished(object sender,string sRet)

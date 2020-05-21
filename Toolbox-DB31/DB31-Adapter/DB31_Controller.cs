@@ -19,15 +19,17 @@ namespace Toolbox_DB31.DB31_Adapter
         {
             Alarm_Image_Upload = 1,
             Maintenance_Image_Upload = 2,
+            Daily_Image_Upload = 3,
             Test_Image_Upload = 4,
             Requested_Image_Upload = 5,
+            Video_Surveillance_Error = 15,
             DVR_Start = 19,
             DVR_Exit = 20,
             DVR_Abnormal_Quit = 21,
             Repair_Report = 29,
             Maintenance_Report = 30,
-            Inspection_Image_Upload = 33
-            
+            Inspection_Image_Upload = 33,
+            DVR_Disk_Error = 41
         };
 
         public enum Working_Status { Available, Working };
@@ -206,11 +208,6 @@ namespace Toolbox_DB31.DB31_Adapter
         }
         private void Upload_Image(OperationCmd_Type OpeType)
         {
-            // Multithread notes:
-            //dispatcher needed
-            
-            //Global.g_CameraList.Add(new Camera_Model() { AgentID = "11111111", ChannelNumber = 0, Name = "controler upload image", Status = "在线", IsSelected = true });
-
             //Copy all data to local
             Global.g_CameraList_Mutex.WaitOne();
 
@@ -230,6 +227,13 @@ namespace Toolbox_DB31.DB31_Adapter
 
         }
 
+        public string Daily_Image_Upload()
+        {
+            new Task(x =>
+            { Upload_Image((OperationCmd_Type)x); }, OperationCmd_Type.Daily_Image_Upload).Start();
+
+            return "";
+        }
         public string Inspect_Image_Upload()
         {
             if (true == user.Privilege_Check(DB31_User.Enum_Action.Inspect_Image_Upload))
@@ -266,39 +270,54 @@ namespace Toolbox_DB31.DB31_Adapter
 
         public string Maintenance_Upload(string sNote)
         {
-            //start form the information
-            string sAgent = GetAgentID();
             int Type = (int)OperationCmd_Type.Maintenance_Report;
-            int Channel = 0;
-            DateTime TriggerTime = DateTime.Now;
-            byte[] bNote = Encoding.UTF8.GetBytes(sNote);
-            string Note = Convert.ToBase64String(bNote);
-            string GUID = Guid.NewGuid().ToString();
-            string base64image = "";
-            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
 
-            new Task(x =>
-            { Send((string)x); }, xml_content).Start();
+            Note_Upload(Type, sNote);
 
             return "";
         }
         public string Repair_Upload(string sNote)
         {
+            int Type = (int)OperationCmd_Type.Video_Surveillance_Error;
+
+            Note_Upload(Type, sNote);
+
+            return "";
+        }
+
+        public string Sign_In()
+        {
+            int Type = (int)OperationCmd_Type.Maintenance_Report;
+            Note_Upload(Type, "系统维保签到");
+
+            Type = (int)OperationCmd_Type.Repair_Report;
+            Note_Upload(Type, "系统维修签到");
+
+            return "";
+        }
+
+        public string Disk_Error_Upload()
+        {
+            int Type = (int)OperationCmd_Type.DVR_Disk_Error;
+            Note_Upload(Type, "DVR磁盘错误");
+
+            return "";
+        }
+
+        private void Note_Upload(int iType, string sNote)
+        {
             //start form the information
             string sAgent = GetAgentID();
-            int Type = (int)OperationCmd_Type.Repair_Report;
             int Channel = 0;
             DateTime TriggerTime = DateTime.Now;
             byte[] bNote = Encoding.UTF8.GetBytes(sNote);
             string Note = Convert.ToBase64String(bNote);
             string GUID = Guid.NewGuid().ToString();
             string base64image = "";
-            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+            string xml_content = xml.OperationCmd_Xml(sAgent, iType, Channel, TriggerTime.ToString(), Note, GUID, base64image);
 
             new Task(x =>
             { Send((string)x); }, xml_content).Start();
-
-            return "";
         }
 
         private void Respond_To_GetImage(string sChannel, string sGUID)
@@ -478,20 +497,19 @@ namespace Toolbox_DB31.DB31_Adapter
             return true;
         }
 
-        public void Alarm_Image_Upload(int ChannelID,DateTime AlarmTime)
+        public void Alarm_Image_Upload(int CameraID,DateTime AlarmTime)
         {
             //Check the alarm enable flag
-            Camera_Model cam = Find_Camera_From_CameraID(ChannelID);
+            Camera_Model cam = Find_Camera_From_CameraID(CameraID);
             if (null == cam || cam.AlarmEnable == false)
             {
                 return;
             }
 
-
             //start form the information
             string sAgent = cam.AgentID;
             int Type = (int)OperationCmd_Type.Alarm_Image_Upload;
-            int Channel = ChannelID;
+            int Channel = cam.ChannelNumber;
             DateTime TriggerTime = AlarmTime;
             byte[] bNote = Encoding.UTF8.GetBytes("报警图像上传");
             string Note = Convert.ToBase64String(bNote);
@@ -585,6 +603,8 @@ namespace Toolbox_DB31.DB31_Adapter
         }
         private void GetStoredDiskSpace()
         {
+            //AVMS adapter :GetStoredPath
+            //
             DeviceSummary.GetStoredDiskSpace("C://", out Total_Space, out Free_Space);
         }
 

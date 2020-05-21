@@ -37,5 +37,18 @@ namespace Toolbox_DB31
         {
             m_ViewModel.m_Type = MaintenanceType.SPECIAL_MAINTENANCE;
         }
+
+        public string Get_Notes()
+        {
+            string sNote = "";
+            if(m_ViewModel.IsVideoMonitorEnabled == true)
+            {
+                sNote += "视频监控 ";
+            }
+
+            sNote += m_ViewModel.MaintenanceRecords;
+
+            return sNote;
+        }
     }
 }

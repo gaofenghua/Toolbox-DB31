@@ -111,6 +111,7 @@ namespace Toolbox_DB31.AVMS_Adapter
                 return;
             }
 
+            //Global.g_CameraList.Clear();
             foreach (KeyValuePair<uint, CCamera> item in camList)
             {
                 string camIp = item.Value.IPAddress;
