@@ -473,19 +473,18 @@ namespace Toolbox_DB31.DB31_Adapter
             return true;
         }
 
-        public void Alarm_Image_Upload(int ChannelID,DateTime AlarmTime)
+        public void Alarm_Image_Upload(int CameraID,DateTime AlarmTime)
         {
             //Check the alarm enable flag
-            Camera_Model cam = Find_Camera_From_CameraID(ChannelID);
+            Camera_Model cam = Find_Camera_From_CameraID(CameraID);
             if (null == cam || cam.AlarmEnable == false)
             {
                 return;
             }
-          
 
             //start form the information
             int Type = (int)OperationCmd_Type.Alarm_Image_Upload;
-            int Channel = ChannelID;
+            int Channel = cam.ChannelNumber;
             DateTime TriggerTime = AlarmTime;
             byte[] bNote = Encoding.UTF8.GetBytes("报警图像上传");
             string Note = Convert.ToBase64String(bNote);
@@ -576,6 +575,8 @@ namespace Toolbox_DB31.DB31_Adapter
         }
         private void GetStoredDiskSpace()
         {
+            //AVMS adapter :GetStoredPath
+            //
             DeviceSummary.GetStoredDiskSpace("C://", out Total_Space, out Free_Space);
         }
 

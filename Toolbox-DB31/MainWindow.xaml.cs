@@ -138,6 +138,8 @@ namespace Toolbox_DB31
 
         private void UploadInstantImage()
         {
+            //todo 
+            //
             string status = db31.Inspect_Image_Upload();
             if (string.Empty != status)
             {
@@ -226,6 +228,8 @@ namespace Toolbox_DB31
             STORAGE_MANUFACTURER storageOwner = e.StorageOwner;
             STORAGE_EVENT storageEvent = e.StorageEvent;
             StoragePropertyStruct storageProperties = e.StorageProperties;
+
+            //todo
         }
 
         private void Set_Button_Label(bool bVisible)
@@ -340,6 +344,7 @@ namespace Toolbox_DB31
         }
         private void Button_Click_SignIn(object sender, RoutedEventArgs e)
         {
+            //todo
             long total, free;
             DeviceSummary.GetStoredDiskSpace("G://", out total, out free);
         }
