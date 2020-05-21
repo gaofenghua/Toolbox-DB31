@@ -17,6 +17,7 @@ using Seer.SDK;
 using Seer.SDK.NotificationMonitors;
 using Seer.BaseLibCS;
 using Seer.FarmLib;
+using SeerInterfaces;
 using System.Timers;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -341,6 +342,18 @@ namespace Toolbox_DB31.AVMS_Adapter
             AVMS_ALARM alarmType = AVMS_ALARM.AVMS_ALARM_RESTORE;
             AVMSEventArgs args = new AVMSEventArgs(alarmType, serverTime, camId, string.Empty);
             this.OnAVMSTriggered(this, args);
+        }
+
+        public EStates GetCameraStateById(int camId)
+        {
+            if (!m_cameraList.ContainsKey((uint)camId))
+            {
+                PrintLog("Invalid camera number!");
+                return EStates.Unknown;
+            }
+
+            CCamera cam = m_cameraList[(uint)camId];
+            return cam.State;
         }
 
         public string GetEncodedSnapshot(int camId, DateTime dt, bool bSave)
