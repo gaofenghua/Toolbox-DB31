@@ -212,8 +212,15 @@ namespace Toolbox_DB31
 
                 if(Current_Menu_Item == Menu_Item.Inspect_Image_Upload || Current_Menu_Item == Menu_Item.Maintenance_Image_Upload || Current_Menu_Item == Menu_Item.Test_Image_Upload)
                 {
-                    SummaryTable summaryTable = (SummaryTable)frmMain.Content;
-                    summaryTable.GridControl_Summary.RefreshData();
+                    //Dispatcher needed
+                    //SummaryTable summaryTable = (SummaryTable)frmMain.Content;
+                    //summaryTable.GridControl_Summary.RefreshData();
+
+                    App.Current.Dispatcher.BeginInvoke((Action)delegate ()
+                    {
+                        SummaryTable summaryTable = (SummaryTable)frmMain.Content;
+                        summaryTable.GridControl_Summary.RefreshData();
+                    });
                 }
                 
                 return;
