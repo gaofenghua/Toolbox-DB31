@@ -41,7 +41,7 @@ namespace Toolbox_DB31.AVMS_Adapter
     {
         private static string cfgDirectory = string.Empty;
         private static string cfgFileName = string.Empty;
-        private static List<DeviceConfiguration> devList = new List<DeviceConfiguration>();
+        private static List<DeviceConfiguration> m_devList = new List<DeviceConfiguration>();
         private const string FILE_NAME = "Configuration";
         private const string FILE_FORMAT = ".csv";
         private static bool m_bPrintLogEnabled = true;
@@ -94,44 +94,69 @@ namespace Toolbox_DB31.AVMS_Adapter
 
         public static bool ImportConfiguration()
         {
-            if (null == devList)
+            if (null == m_devList)
             {
                 return false;
             }
             //ImportDummyData();
             ImportFromCSV();
-            return devList.Count > 0;
+            return m_devList.Count > 0;
         }
 
         public static void UpdateTable(Dictionary<uint, CCamera> camList)
         {
-            if ((0 == devList.Count) && !ImportConfiguration())
+            if ((0 == m_devList.Count) && !ImportConfiguration())
             {
                 PrintLog("Device configurations are not available!");
                 return;
             }
 
-            //Global.g_CameraList.Clear();
+            Dictionary<int, Camera_Model> mapCamModel = new Dictionary<int, Camera_Model>();
+            foreach (Camera_Model model in Global.g_CameraList)
+            {
+                if (!mapCamModel.ContainsKey(model.CameraID))
+                {
+                    mapCamModel.Add(model.CameraID, model);
+                }
+            }
+            Global.g_CameraList.Clear();
             foreach (KeyValuePair<uint, CCamera> item in camList)
             {
-                string camIp = item.Value.IPAddress;
-                long range = 0;
-                long offset = 0;
-                var result = devList.Where(deviceConfig => ((range = (ConvertIpToLong(deviceConfig.EndIp) - ConvertIpToLong(deviceConfig.StartIp))) >= 0) && (range <= 127)
-                                                    && ((offset = (ConvertIpToLong(camIp) - ConvertIpToLong(deviceConfig.StartIp))) >= 0) && (offset <= range)).ToList();
-                if (0 < result.Count)
+                int camId = (int)item.Key;
+                if (mapCamModel.ContainsKey(camId))
                 {
-                    DeviceConfiguration df = result.First();
-                    Global.g_CameraList.Add(new Camera_Model() { AgentID = df.AgentId, ChannelNumber = (int)(ConvertIpToLong(camIp) - ConvertIpToLong(df.StartIp) + 1), CameraID = (int)item.Key, Name = item.Value.Name, Status = "在线", IsSelected = false });
+                    UpdateCameraList(mapCamModel[camId], item.Value);
+                }
+                else
+                {
+                    UpdateCameraList(null, item.Value);
                 }
             }
         }
 
-        private static void ImportDummyData()
+        private static void UpdateCameraList(Camera_Model model, CCamera cam)
         {
-            devList.Clear();
-            devList.Add(new DeviceConfiguration("0010123033030", "192.168.77.100", "192.168.77.227"));
-            devList.Add(new DeviceConfiguration("0010123033031", "192.168.77.227", "192.168.78.10"));
+            if (null == cam)
+            {
+                return;
+            }
+            string camIp = cam.IPAddress;
+            long range = 0;
+            long offset = 0;
+            var result = m_devList.Where(deviceConfig => ((range = (ConvertIpToLong(deviceConfig.EndIp) - ConvertIpToLong(deviceConfig.StartIp))) >= 0) && (range <= 127)
+                                                && ((offset = (ConvertIpToLong(camIp) - ConvertIpToLong(deviceConfig.StartIp))) >= 0) && (offset <= range)).ToList();
+            if (0 < result.Count)
+            {
+                DeviceConfiguration df = result.First();
+                if (null == model)
+                {
+                    Global.g_CameraList.Add(new Camera_Model() { AgentID = df.AgentId, ChannelNumber = (int)(ConvertIpToLong(camIp) - ConvertIpToLong(df.StartIp) + 1), CameraID = (int)cam.CameraId, Name = cam.Name, Status = "在线", IsSelected = false, AlarmEnable = false });
+                }
+                else
+                {
+                    Global.g_CameraList.Add(new Camera_Model() { AgentID = df.AgentId, ChannelNumber = (int)(ConvertIpToLong(camIp) - ConvertIpToLong(df.StartIp) + 1), CameraID = (int)cam.CameraId, Name = cam.Name, Status = model.Status, IsSelected = model.IsSelected, AlarmEnable = model.AlarmEnable });
+                }
+            }
         }
 
         private static bool ImportFromCSV()
@@ -155,7 +180,7 @@ namespace Toolbox_DB31.AVMS_Adapter
                     return false;
                 }
 
-                devList.Clear();
+                m_devList.Clear();
                 string[] lines = content.Split('\n');
                 foreach (string line in lines)
                 {
@@ -174,10 +199,10 @@ namespace Toolbox_DB31.AVMS_Adapter
                     }
                     else
                     {
-                        var list = devList.Where(dc => dc.AgentId == devConfig.AgentId).ToList();
+                        var list = m_devList.Where(dc => dc.AgentId == devConfig.AgentId).ToList();
                         if (0 == list.Count)
                         {
-                            devList.Add(devConfig);
+                            m_devList.Add(devConfig);
                         }
                     }
                 }

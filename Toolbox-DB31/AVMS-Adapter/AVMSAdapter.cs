@@ -17,6 +17,7 @@ using Seer.SDK;
 using Seer.SDK.NotificationMonitors;
 using Seer.BaseLibCS;
 using Seer.FarmLib;
+using SeerInterfaces;
 using System.Timers;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -41,6 +42,10 @@ namespace Toolbox_DB31.AVMS_Adapter
         private Timer m_timer = null;
         private const int IMPORT_INTERVAL = 65 * 1000;
         private bool m_bPrintLogEnabled = true;
+
+        private const int VIDEO_LOSS_POLICY = 3;
+        private const int VIDEO_MOTION_DETECT_POLICY = 10;
+        private const int HARDWARE_TRIGGER_POLICY = 11;
 
         private SdkFarm m_farm
         {
@@ -316,7 +321,7 @@ namespace Toolbox_DB31.AVMS_Adapter
                 case 0:
                 case 3:
                 case 7:
-                    alarmType = AVMS_ALARM.AVMS_ALARM_OTHER;
+                    alarmType = GetAlarmType(cameraMessageStruct.m_iPolicyId);
                     break;
                 case 8:
                     alarmType = AVMS_ALARM.AVMS_ALARM_DISCONNECT;
@@ -326,11 +331,25 @@ namespace Toolbox_DB31.AVMS_Adapter
             }
             DateTime clientTime = TimeUtils.DateTimeFromUTC(cameraMessageStruct.m_utcTime);
             DateTime serverTime = m_cameraList[camId].Server.ToLocalTime(clientTime);
-            //CCamera cam = m_cameraList[camId];
             string picData = GetEncodedSnapshot((int)camId, DateTime.Now, true);
 
             AVMSEventArgs args = new AVMSEventArgs(alarmType, serverTime, camId, picData);
             this.OnAVMSTriggered(this, args);
+        }
+
+        private AVMS_ALARM GetAlarmType(int policyId)
+        {
+            switch (policyId)
+            {
+                case VIDEO_LOSS_POLICY:
+                    return AVMS_ALARM.AVMS_ALARM_VIDEOLOSS;
+                case VIDEO_MOTION_DETECT_POLICY:
+                    return AVMS_ALARM.AVMS_ALARM_VMD;
+                case HARDWARE_TRIGGER_POLICY:
+                    return AVMS_ALARM.AVMS_ALARM_HARDWARETRIGGER;
+                default:
+                    return AVMS_ALARM.AVMS_ALARM_UNKNOWN;
+            }
         }
 
         private void HandleAlarmMarkedReceived(object sender, AlarmMarkedEventArgs e)
@@ -341,6 +360,18 @@ namespace Toolbox_DB31.AVMS_Adapter
             AVMS_ALARM alarmType = AVMS_ALARM.AVMS_ALARM_RESTORE;
             AVMSEventArgs args = new AVMSEventArgs(alarmType, serverTime, camId, string.Empty);
             this.OnAVMSTriggered(this, args);
+        }
+
+        public EStates GetCameraStateById(int camId)
+        {
+            if (!m_cameraList.ContainsKey((uint)camId))
+            {
+                PrintLog("Invalid camera number!");
+                return EStates.Unknown;
+            }
+
+            CCamera cam = m_cameraList[(uint)camId];
+            return cam.State;
         }
 
         public string GetEncodedSnapshot(int camId, DateTime dt, bool bSave)
@@ -584,6 +615,9 @@ namespace Toolbox_DB31.AVMS_Adapter
         AVMS_ALARM_UNKNOWN = 0,
         AVMS_ALARM_DISCONNECT,
         AVMS_ALARM_RESTORE,
+        AVMS_ALARM_VIDEOLOSS,
+        AVMS_ALARM_VMD,
+        AVMS_ALARM_HARDWARETRIGGER,
         AVMS_ALARM_OTHER,
     }
 
