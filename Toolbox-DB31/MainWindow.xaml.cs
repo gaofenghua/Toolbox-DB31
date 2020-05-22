@@ -202,14 +202,17 @@ namespace Toolbox_DB31
             //Handle disconnect event
             if(alarmType == AVMS_ALARM.AVMS_ALARM_DISCONNECT)
             {
+                //Find the camera
                 foreach (Camera_Model cam in Global.g_CameraList)
                 {
                     if (cam.CameraID == e.m_cameraId)
                     {
                         cam.Status = "离线";
+                        break;
                     }
                 }
 
+                //Update GUI
                 if(Current_Menu_Item == Menu_Item.Inspect_Image_Upload || Current_Menu_Item == Menu_Item.Maintenance_Image_Upload || Current_Menu_Item == Menu_Item.Test_Image_Upload)
                 {
                     //Dispatcher needed
@@ -222,7 +225,10 @@ namespace Toolbox_DB31
                         summaryTable.GridControl_Summary.RefreshData();
                     });
                 }
-                
+
+                //Send alarm
+                db31.DVR_Video_Lost_Upload();
+
                 return;
             }
 
@@ -464,9 +470,22 @@ namespace Toolbox_DB31
         public void UploadEventLog(int camId, string log)
         {
             // db31 method
-            
+
             //参数设置：ConfigurationChange
             //录像回放：CameraHistoryConnect、CameraHistoryDisconnect
+
+            StringReader sLog = new StringReader(log);
+
+            string sLine = "";
+            int iFirst = -1;
+            while((sLine = sLog.ReadLine()) != null)
+            {
+                iFirst = sLine.IndexOf("ConfigurationChange");
+                if(iFirst>0)
+                {
+                    Global.WriteLog(sLine);
+                }
+            }
 
         }
 

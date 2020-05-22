@@ -26,6 +26,7 @@ namespace Toolbox_DB31.DB31_Adapter
             DVR_Start = 19,
             DVR_Exit = 20,
             DVR_Abnormal_Quit = 21,
+            DVR_Video_Lost = 24,
             Repair_Report = 29,
             Maintenance_Report = 30,
             Inspection_Image_Upload = 33,
@@ -304,6 +305,13 @@ namespace Toolbox_DB31.DB31_Adapter
             return "";
         }
 
+        public string DVR_Video_Lost_Upload()
+        {
+            int Type = (int)OperationCmd_Type.DVR_Video_Lost;
+            Note_Upload(Type, "DVR视频丢失");
+
+            return "";
+        }
         private void Note_Upload(int iType, string sNote)
         {
             //start form the information
