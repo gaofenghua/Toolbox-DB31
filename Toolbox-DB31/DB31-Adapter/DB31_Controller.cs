@@ -30,6 +30,11 @@ namespace Toolbox_DB31.DB31_Adapter
             Repair_Report = 29,
             Maintenance_Report = 30,
             Inspection_Image_Upload = 33,
+            Alarm_Image_Upload_No_Recording = 36,
+            Maintenance_Image_Upload_No_Recording = 37,
+            Daily_Image_Upload_No_Recording = 38,
+            Test_Image_Upload_No_Recording = 39,
+            Inspection_Image_Upload_No_Recording = 40,
             DVR_Disk_Error = 41
         };
 
@@ -393,10 +398,15 @@ namespace Toolbox_DB31.DB31_Adapter
             {
                 messageHead = "测试：";
             }
+            else if (OpType == OperationCmd_Type.Daily_Image_Upload)
+            {
+                messageHead = "日常：";
+            }
             else if (OpType == OperationCmd_Type.Requested_Image_Upload)
             {
                 messageHead = "按需上传：";
             }
+       
 
             foreach (Camera_Model cam in Cameras)
             {
@@ -418,8 +428,32 @@ namespace Toolbox_DB31.DB31_Adapter
                 byte[] bNote = Encoding.UTF8.GetBytes("图像上传");
                 string Note = Convert.ToBase64String(bNote);
                 GUID = GUID==null?Guid.NewGuid().ToString():GUID;
-                string base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(cam.CameraID,TriggerTime,true);
-                //string base64image = "xxxxxxxxxxxxxxxxxxxx";
+
+                string base64image = "";
+                if (Global.g_VMS_Adapter.GetCameraStateById(cam.CameraID) == SeerInterfaces.EStates.NoRecord)
+                {
+                    if (OpType == OperationCmd_Type.Daily_Image_Upload)
+                    {
+                        Type = (int)OperationCmd_Type.Daily_Image_Upload_No_Recording;
+                    }
+                    else if (OpType == OperationCmd_Type.Inspection_Image_Upload)
+                    {
+                        Type = (int)OperationCmd_Type.Inspection_Image_Upload_No_Recording;
+                    }
+                    else if (OpType == OperationCmd_Type.Maintenance_Image_Upload)
+                    {
+                        Type = (int)OperationCmd_Type.Maintenance_Image_Upload_No_Recording;
+                    }
+                    else if (OpType == OperationCmd_Type.Test_Image_Upload)
+                    {
+                        Type = (int)OperationCmd_Type.Test_Image_Upload_No_Recording;
+                    }
+                }
+                else
+                {
+                    base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(cam.CameraID, TriggerTime, true);
+                }
+
                 string xml_content = xml.OperationCmd_Xml(sAgent,Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
 
                 //Message to the main frame
