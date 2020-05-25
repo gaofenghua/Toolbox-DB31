@@ -32,7 +32,7 @@ namespace Toolbox_DB31
 
         LoginPage theLoginPage;
 
-        enum Menu_Item { User_Login, Inspect_Image_Upload, Maintenance_Image_Upload, Test_Image_Upload, Maintenance_Report, Repair_Report};
+        enum Menu_Item { User_Login, Inspect_Image_Upload, Maintenance_Image_Upload, Test_Image_Upload, Maintenance_Report, Repair_Report,Setting_Menu,Repair_SignIn,Fault_Repair_Report};
         Menu_Item Current_Menu_Item;
 
         DB31_Controller db31;
@@ -297,6 +297,8 @@ namespace Toolbox_DB31
             myNavBarControl.SelectedItem = navBarGroup_system.Items[0];
 
             Set_Button_Label(false);
+
+            Current_Menu_Item = Menu_Item.User_Login;
         }
         private void myCommandExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -412,6 +414,7 @@ namespace Toolbox_DB31
         {
             frmMain.NavigationService.Navigate(new FaultRepairMenu());
             Set_Button_Label(true);
+            Current_Menu_Item = Menu_Item.Fault_Repair_Report;
         }
         private void navBarItem_Inspect_ImageUpload_Click(object sender, EventArgs e)
         {
@@ -454,6 +457,8 @@ namespace Toolbox_DB31
             Button_Upload.Visibility = Visibility.Hidden;
             Button_Cancel.Visibility = Visibility.Hidden;
             Button_SignIn.Visibility = Visibility.Visible;
+
+            Current_Menu_Item = Menu_Item.Repair_SignIn;
         }
         private void navBarItem_Maintenance_Report_Click(object sender, EventArgs e)
         {
@@ -475,6 +480,8 @@ namespace Toolbox_DB31
         {
             frmMain.NavigationService.Navigate(m_settings);
             Set_Button_Label(false);
+
+            Current_Menu_Item = Menu_Item.Setting_Menu;
         }
 
         public void UploadAlarmLog(int camId, string log)
@@ -498,9 +505,15 @@ namespace Toolbox_DB31
                 iFirst = sLine.IndexOf("ConfigurationChange");
                 if(iFirst>0)
                 {
-                    db31.DVR_Parameter_Set_Upload();
-                    db31.DVR_Parameter_Save_Upload();
-
+                    iFirst = sLine.IndexOf("username");
+                    if(iFirst>0)
+                    {
+                        db31.DVR_Parameter_Set_Upload();
+                    }
+                    else
+                    {
+                        db31.DVR_Parameter_Save_Upload();
+                    }
                     continue;
                 }
 

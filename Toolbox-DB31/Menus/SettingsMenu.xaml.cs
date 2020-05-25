@@ -36,11 +36,13 @@ namespace Toolbox_DB31
         {
             foreach (Camera_Model cam in Global.g_CameraList)
             {
-                if (true == cam.IsSelected)
+                if ("在线" == cam.Status)
                 {
                     int camId = cam.CameraID;
                     string log = m_ViewModel.GetEventLog(camId);
                     m_parent.UploadEventLog(camId, log);
+
+                    break;
                 }
             }
         }

@@ -56,7 +56,7 @@ namespace Toolbox_DB31.DB31_Adapter
                     }
                     break;
                 case Enum_Department.Operator:
-                    if (Input_UserName == "operator" && Input_Password == "operator")
+                    if (Input_UserName == "admin2" && Input_Password == "admin2")
                     {
                         UserName = Input_UserName;
                         Department = Input_Department;
@@ -68,7 +68,7 @@ namespace Toolbox_DB31.DB31_Adapter
                     }
                     break;
                 case Enum_Department.Maintainer:
-                    if (Input_UserName == "maintainer" && Input_Password == "maintainer")
+                    if (Input_UserName == "admin3" && Input_Password == "admin3")
                     {
                         UserName = Input_UserName;
                         Department = Input_Department;

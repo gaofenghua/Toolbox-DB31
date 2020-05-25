@@ -633,6 +633,11 @@ namespace Toolbox_DB31.DB31_Adapter
 
             Send(xml_content);
 
+            if(Alarm_Interval == 0)
+            {
+                return;
+            }
+
             int nCount = (Seconds_After_Alarm + Seconds_Before_Alarm) / Alarm_Interval + 1;
             DateTime ImageTime; 
             for(int i=0;i<nCount;i++)
