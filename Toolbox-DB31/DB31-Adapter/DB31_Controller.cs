@@ -32,6 +32,7 @@ namespace Toolbox_DB31.DB31_Adapter
             DVR_Motion_Detect = 25,
             DVR_External_Trigger = 26,
             System_Alarm_Restore = 27,
+            DVR_Illegal_Exit = 28,
             Repair_Report = 29,
             Maintenance_Report = 30,
             DVR_Local_Playback = 31,
@@ -90,6 +91,7 @@ namespace Toolbox_DB31.DB31_Adapter
             {
                 //report crash event
                 DVRAbnormalQuit();
+                DVR_Illegal_Exit_Upload();
             }
 
             StartHeartbeat();
@@ -368,6 +370,14 @@ namespace Toolbox_DB31.DB31_Adapter
         {
             int Type = (int)OperationCmd_Type.DVR_Parameter_Save;
             Note_Upload(Type, "DVR参数保存");
+
+            return "";
+        }
+
+        public string DVR_Illegal_Exit_Upload()
+        {
+            int Type = (int)OperationCmd_Type.DVR_Illegal_Exit;
+            Note_Upload(Type, "DVR非法退出");
 
             return "";
         }
