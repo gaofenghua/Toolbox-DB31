@@ -225,14 +225,29 @@ namespace Toolbox_DB31
                         summaryTable.GridControl_Summary.RefreshData();
                     });
                 }
-
+            }
+            else if (alarmType == AVMS_ALARM.AVMS_ALARM_VIDEOLOSS)
+            {
                 //Send alarm
                 db31.DVR_Video_Lost_Upload();
-
-                return;
             }
-
-            db31.Alarm_Image_Upload(channelId, alarmTime);
+            else if (alarmType == AVMS_ALARM.AVMS_ALARM_VMD)
+            {
+                db31.DVR_Motion_Detect_Upload();
+            }
+            else if (alarmType == AVMS_ALARM.AVMS_ALARM_HARDWARETRIGGER)
+            {
+                db31.DVR_External_Trigger_Upload();
+            }
+            else if (alarmType == AVMS_ALARM.AVMS_ALARM_RESTORE)
+            {
+                db31.System_Alarm_Restore_Upload();
+            }
+            else
+            {
+                db31.Alarm_Image_Upload(channelId, alarmTime);
+            }
+            
         }
 
         private void HandleStorageEvent(object sender, StorageEventArgs e)
@@ -471,8 +486,8 @@ namespace Toolbox_DB31
         {
             // db31 method
 
-            //参数设置：ConfigurationChange
-            //录像回放：CameraHistoryConnect、CameraHistoryDisconnect
+            //参数设置：ConfigurationChange 参数设置保存/进入设置状态
+            //录像回放：CameraHistoryConnect、CameraHistoryDisconnect 录像回放操作
 
             StringReader sLog = new StringReader(log);
 
@@ -483,7 +498,17 @@ namespace Toolbox_DB31
                 iFirst = sLine.IndexOf("ConfigurationChange");
                 if(iFirst>0)
                 {
-                    Global.WriteLog(sLine);
+                    db31.DVR_Parameter_Set_Upload();
+                    db31.DVR_Parameter_Save_Upload();
+
+                    continue;
+                }
+
+                iFirst = sLine.IndexOf("CameraHistoryConnect");
+                if(iFirst > 0)
+                {
+                    db31.DVR_Local_Playback_Upload();
+                    continue;
                 }
             }
 

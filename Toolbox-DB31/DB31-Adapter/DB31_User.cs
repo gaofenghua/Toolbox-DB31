@@ -14,7 +14,8 @@ namespace Toolbox_DB31.DB31_Adapter
         bool[,] PrivilegeMatrix = new bool[(int)Enum_Department.Max_Num,(int)Enum_Action.Max_Num];
 
         public string UserName;
-        public Enum_Department Department; 
+        public Enum_Department Department;
+        public string UserDisplayName=""; 
 
         public string Input_UserName;
         public string Input_Password;
@@ -47,6 +48,7 @@ namespace Toolbox_DB31.DB31_Adapter
                     {
                         UserName = Input_UserName;
                         Department = Input_Department;
+                        UserDisplayName = "警员001号";
 
                         Reset_Input();
 
@@ -58,6 +60,7 @@ namespace Toolbox_DB31.DB31_Adapter
                     {
                         UserName = Input_UserName;
                         Department = Input_Department;
+                        UserDisplayName = "操作员01号";
 
                         Reset_Input();
 
@@ -69,6 +72,7 @@ namespace Toolbox_DB31.DB31_Adapter
                     {
                         UserName = Input_UserName;
                         Department = Input_Department;
+                        UserDisplayName = "维保人员01号";
 
                         Reset_Input();
 

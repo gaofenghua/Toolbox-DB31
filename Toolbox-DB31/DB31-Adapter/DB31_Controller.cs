@@ -26,9 +26,15 @@ namespace Toolbox_DB31.DB31_Adapter
             DVR_Start = 19,
             DVR_Exit = 20,
             DVR_Abnormal_Quit = 21,
+            DVR_Parameter_Set = 22,
+            DVR_Parameter_Save = 23,
             DVR_Video_Lost = 24,
+            DVR_Motion_Detect = 25,
+            DVR_External_Trigger = 26,
+            System_Alarm_Restore = 27,
             Repair_Report = 29,
             Maintenance_Report = 30,
+            DVR_Local_Playback = 31,
             Inspection_Image_Upload = 33,
             Alarm_Image_Upload_No_Recording = 36,
             Maintenance_Image_Upload_No_Recording = 37,
@@ -140,7 +146,7 @@ namespace Toolbox_DB31.DB31_Adapter
         {
             if(heartbeat_timer == null)
             {
-                heartbeat_timer = new Timer(HeartBeat, null, 0, Timeout.Infinite);
+                heartbeat_timer = new Timer(HeartBeat, null, 20000, Timeout.Infinite);
             }
             else 
             {
@@ -317,6 +323,54 @@ namespace Toolbox_DB31.DB31_Adapter
 
             return "";
         }
+
+        public string DVR_Motion_Detect_Upload()
+        {
+            int Type = (int)OperationCmd_Type.DVR_Motion_Detect;
+            Note_Upload(Type, "DVR移动侦测");
+
+            return "";
+        }
+
+        public string DVR_External_Trigger_Upload()
+        {
+            int Type = (int)OperationCmd_Type.DVR_External_Trigger;
+            Note_Upload(Type, "DVR外部触发");
+
+            return "";
+        }
+
+        public string System_Alarm_Restore_Upload()
+        {
+            int Type = (int)OperationCmd_Type.System_Alarm_Restore;
+            Note_Upload(Type, "系统报警恢复");
+
+            return "";
+        }
+
+        public string DVR_Local_Playback_Upload()
+        {
+            int Type = (int)OperationCmd_Type.DVR_Local_Playback;
+            Note_Upload(Type, "DVR本地回放");
+
+            return "";
+        }
+
+        public string DVR_Parameter_Set_Upload()
+        {
+            int Type = (int)OperationCmd_Type.DVR_Parameter_Set;
+            Note_Upload(Type, "DVR参数设置");
+
+            return "";
+        }
+
+        public string DVR_Parameter_Save_Upload()
+        {
+            int Type = (int)OperationCmd_Type.DVR_Parameter_Save;
+            Note_Upload(Type, "DVR参数保存");
+
+            return "";
+        }
         private void Note_Upload(int iType, string sNote)
         {
             //start form the information
@@ -425,7 +479,7 @@ namespace Toolbox_DB31.DB31_Adapter
                 int Type = (int)OpType;
                 int Channel = cam.ChannelNumber;
                 DateTime TriggerTime = DateTime.Now;
-                byte[] bNote = Encoding.UTF8.GetBytes("图像上传");
+                byte[] bNote = Encoding.UTF8.GetBytes("图像上传 " + Global.g_User.UserDisplayName);
                 string Note = Convert.ToBase64String(bNote);
                 GUID = GUID==null?Guid.NewGuid().ToString():GUID;
 
@@ -647,7 +701,7 @@ namespace Toolbox_DB31.DB31_Adapter
         {
             //AVMS adapter :GetStoredPath
             //
-            DeviceSummary.GetStoredDiskSpace("C://", out Total_Space, out Free_Space);
+            DeviceSummary.GetStoredDiskSpace(Global.g_VMS_Adapter.GetStoredPath(), out Total_Space, out Free_Space);
         }
 
         private bool Crash_Last_Time()

@@ -614,10 +614,10 @@ namespace Toolbox_DB31.AVMS_Adapter
     {
         AVMS_ALARM_UNKNOWN = 0,
         AVMS_ALARM_DISCONNECT,
-        AVMS_ALARM_RESTORE,
-        AVMS_ALARM_VIDEOLOSS,
-        AVMS_ALARM_VMD,
-        AVMS_ALARM_HARDWARETRIGGER,
+        AVMS_ALARM_RESTORE, //报警信息恢复
+        AVMS_ALARM_VIDEOLOSS,//视频丢失报警
+        AVMS_ALARM_VMD,//移动侦测报警
+        AVMS_ALARM_HARDWARETRIGGER,//硬件触发报警
         AVMS_ALARM_OTHER,
     }
 
