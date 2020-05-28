@@ -44,7 +44,7 @@ namespace Toolbox_DB31.AVMS_Adapter
         private bool m_bPrintLogEnabled = true;
 
         private const int VIDEO_LOSS_POLICY = 3;
-        private const int VIDEO_MOTION_DETECT_POLICY = 10;
+        private const int VIDEO_MOTION_DETECT_POLICY = 14;
         private const int HARDWARE_TRIGGER_POLICY = 11;
 
         private SdkFarm m_farm

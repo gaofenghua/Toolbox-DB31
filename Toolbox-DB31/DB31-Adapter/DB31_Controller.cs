@@ -286,7 +286,7 @@ namespace Toolbox_DB31.DB31_Adapter
         {
             int Type = (int)OperationCmd_Type.Maintenance_Report;
 
-            Note_Upload(Type, sNote);
+            Note_Upload(Type, sNote,DateTime.Now);
 
             return "";
         }
@@ -294,7 +294,7 @@ namespace Toolbox_DB31.DB31_Adapter
         {
             int Type = (int)OperationCmd_Type.Video_Surveillance_Error;
 
-            Note_Upload(Type, sNote);
+            Note_Upload(Type, sNote,DateTime.Now);
 
             return "";
         }
@@ -302,10 +302,10 @@ namespace Toolbox_DB31.DB31_Adapter
         public string Sign_In()
         {
             int Type = (int)OperationCmd_Type.Maintenance_Report;
-            Note_Upload(Type, "系统维保签到");
+            Note_Upload(Type, "系统维保签到",DateTime.Now);
 
             Type = (int)OperationCmd_Type.Repair_Report;
-            Note_Upload(Type, "系统维修签到");
+            Note_Upload(Type, "系统维修签到",DateTime.Now);
 
             return "";
         }
@@ -313,39 +313,39 @@ namespace Toolbox_DB31.DB31_Adapter
         public string Disk_Error_Upload()
         {
             int Type = (int)OperationCmd_Type.DVR_Disk_Error;
-            Note_Upload(Type, "DVR磁盘错误");
+            Note_Upload(Type, "DVR磁盘错误",DateTime.Now);
 
             return "";
         }
 
-        public string DVR_Video_Lost_Upload()
+        public string DVR_Video_Lost_Upload(DateTime AlarmTime)
         {
             int Type = (int)OperationCmd_Type.DVR_Video_Lost;
-            Note_Upload(Type, "DVR视频丢失");
+            Note_Upload(Type, "DVR视频丢失",AlarmTime);
 
             return "";
         }
 
-        public string DVR_Motion_Detect_Upload()
+        public string DVR_Motion_Detect_Upload(DateTime AlarmTime)
         {
             int Type = (int)OperationCmd_Type.DVR_Motion_Detect;
-            Note_Upload(Type, "DVR移动侦测");
+            Note_Upload(Type, "DVR移动侦测",AlarmTime);
 
             return "";
         }
 
-        public string DVR_External_Trigger_Upload()
+        public string DVR_External_Trigger_Upload(DateTime AlarmTime)
         {
             int Type = (int)OperationCmd_Type.DVR_External_Trigger;
-            Note_Upload(Type, "DVR外部触发");
+            Note_Upload(Type, "DVR外部触发",AlarmTime);
 
             return "";
         }
 
-        public string System_Alarm_Restore_Upload()
+        public string System_Alarm_Restore_Upload(DateTime AlarmTime)
         {
             int Type = (int)OperationCmd_Type.System_Alarm_Restore;
-            Note_Upload(Type, "系统报警恢复");
+            Note_Upload(Type, "系统报警恢复",AlarmTime);
 
             return "";
         }
@@ -353,7 +353,7 @@ namespace Toolbox_DB31.DB31_Adapter
         public string DVR_Local_Playback_Upload()
         {
             int Type = (int)OperationCmd_Type.DVR_Local_Playback;
-            Note_Upload(Type, "DVR本地回放");
+            Note_Upload(Type, "DVR本地回放",DateTime.Now);
 
             return "";
         }
@@ -361,7 +361,7 @@ namespace Toolbox_DB31.DB31_Adapter
         public string DVR_Parameter_Set_Upload()
         {
             int Type = (int)OperationCmd_Type.DVR_Parameter_Set;
-            Note_Upload(Type, "DVR参数设置");
+            Note_Upload(Type, "DVR参数设置",DateTime.Now);
 
             return "";
         }
@@ -369,7 +369,7 @@ namespace Toolbox_DB31.DB31_Adapter
         public string DVR_Parameter_Save_Upload()
         {
             int Type = (int)OperationCmd_Type.DVR_Parameter_Save;
-            Note_Upload(Type, "DVR参数保存");
+            Note_Upload(Type, "DVR参数保存",DateTime.Now);
 
             return "";
         }
@@ -377,16 +377,16 @@ namespace Toolbox_DB31.DB31_Adapter
         public string DVR_Illegal_Exit_Upload()
         {
             int Type = (int)OperationCmd_Type.DVR_Illegal_Exit;
-            Note_Upload(Type, "DVR非法退出");
+            Note_Upload(Type, "DVR非法退出",DateTime.Now);
 
             return "";
         }
-        private void Note_Upload(int iType, string sNote)
+        private void Note_Upload(int iType, string sNote, DateTime AlarmTime)
         {
             //start form the information
             string sAgent = GetAgentID();
             int Channel = 0;
-            DateTime TriggerTime = DateTime.Now;
+            DateTime TriggerTime = AlarmTime;
             byte[] bNote = Encoding.UTF8.GetBytes(sNote);
             string Note = Convert.ToBase64String(bNote);
             string GUID = Guid.NewGuid().ToString();
@@ -645,6 +645,7 @@ namespace Toolbox_DB31.DB31_Adapter
                 ImageTime = TriggerTime.AddSeconds(-Seconds_Before_Alarm + (Alarm_Interval*i));
 
                 TimeSpan span = ImageTime.Subtract(DateTime.Now);
+                
                 int Seconds_to_Future = span.Seconds;
                 //Trace.WriteLine("\r\n=================================" + Seconds_to_Future.ToString());
                 if(Seconds_to_Future > 0)

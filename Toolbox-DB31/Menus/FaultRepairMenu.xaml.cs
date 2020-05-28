@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Toolbox_DB31.Classes;
 
 namespace Toolbox_DB31
 {
@@ -20,9 +21,25 @@ namespace Toolbox_DB31
     /// </summary>
     public partial class FaultRepairMenu : Page
     {
+        public FaultRepairMenuViewModel m_ViewModel = new FaultRepairMenuViewModel();
+
         public FaultRepairMenu()
         {
             InitializeComponent();
+            m_ViewModel = (FaultRepairMenuViewModel)DataContext;
+        }
+
+        public string Get_Notes()
+        {
+            string sNote = "";
+            if (m_ViewModel.IsMatrixVideoFailureEnabled == true)
+            {
+                sNote += "视频监控 ";
+            }
+
+            sNote += m_ViewModel.VideoMonitorRecords;
+
+            return sNote;
         }
     }
 }

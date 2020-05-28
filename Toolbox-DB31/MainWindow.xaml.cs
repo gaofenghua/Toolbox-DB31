@@ -76,8 +76,8 @@ namespace Toolbox_DB31
 
             DeviceSummary.CfgFilePath = @".\Configuration.csv";
             AVMSAdapter adapter = new AVMSAdapter();
-            //adapter.Start("127.0.0.1", "admin", "admin"); 
-            adapter.Start("192.168.77.211", "admin", "admin");
+            adapter.Start("127.0.0.1", "admin", "admin"); 
+            //adapter.Start("192.168.77.211", "admin", "admin");
             adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
 
             GeneralStorageManager generalStorage = new GeneralStorageManager();
@@ -229,19 +229,27 @@ namespace Toolbox_DB31
             else if (alarmType == AVMS_ALARM.AVMS_ALARM_VIDEOLOSS)
             {
                 //Send alarm
-                db31.DVR_Video_Lost_Upload();
+                db31.DVR_Video_Lost_Upload(alarmTime);
+
+                db31.Alarm_Image_Upload(channelId, alarmTime);
             }
             else if (alarmType == AVMS_ALARM.AVMS_ALARM_VMD)
             {
-                db31.DVR_Motion_Detect_Upload();
+                db31.DVR_Motion_Detect_Upload(alarmTime);
+
+                db31.Alarm_Image_Upload(channelId, alarmTime);
             }
             else if (alarmType == AVMS_ALARM.AVMS_ALARM_HARDWARETRIGGER)
             {
-                db31.DVR_External_Trigger_Upload();
+                db31.DVR_External_Trigger_Upload(alarmTime);
+
+                db31.Alarm_Image_Upload(channelId, alarmTime);
             }
             else if (alarmType == AVMS_ALARM.AVMS_ALARM_RESTORE)
             {
-                db31.System_Alarm_Restore_Upload();
+                db31.System_Alarm_Restore_Upload(alarmTime);
+
+                db31.Alarm_Image_Upload(channelId, alarmTime);
             }
             else
             {
@@ -328,6 +336,13 @@ namespace Toolbox_DB31
             {
                 MaintenanceMenu maintenancePage = (MaintenanceMenu)frmMain.Content;
                 string sNote = maintenancePage.Get_Notes();
+
+                sRet = db31.Maintenance_Upload(sNote);
+            }
+            else if (Current_Menu_Item == Menu_Item.Fault_Repair_Report)
+            {
+                FaultRepairMenu faultRepairMenu = (FaultRepairMenu)frmMain.Content;
+                string sNote = faultRepairMenu.Get_Notes();
 
                 sRet = db31.Maintenance_Upload(sNote);
             }
@@ -496,6 +511,10 @@ namespace Toolbox_DB31
             //参数设置：ConfigurationChange 参数设置保存/进入设置状态
             //录像回放：CameraHistoryConnect、CameraHistoryDisconnect 录像回放操作
 
+            if(null == log)
+            {
+                return;
+            }
             StringReader sLog = new StringReader(log);
 
             string sLine = "";
