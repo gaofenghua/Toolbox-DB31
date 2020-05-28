@@ -31,10 +31,10 @@ namespace Toolbox_DB31
 
         public string Get_Notes()
         {
-            string sNote = "";
+            string sNote = "视频监控故障：";
             if (m_ViewModel.IsMatrixVideoFailureEnabled == true)
             {
-                sNote += "视频监控 ";
+                //sNote += "视频丢失 ";
             }
 
             sNote += m_ViewModel.VideoMonitorRecords;

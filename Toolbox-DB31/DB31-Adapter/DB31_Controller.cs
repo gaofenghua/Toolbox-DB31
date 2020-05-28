@@ -59,6 +59,7 @@ namespace Toolbox_DB31.DB31_Adapter
         DB31_Socket socket;
         DB31_Xml xml;
 
+        public string Default_AgentID = "000000000000"; //Should be 12 characters
         public int DVR_State = 0;
         public long Total_Space = 0;
         public long Free_Space = 0;
@@ -79,6 +80,8 @@ namespace Toolbox_DB31.DB31_Adapter
 
         public DB31_Controller(DB31_User db31_user, string ip, int port)
         {
+            Get_Default_AgentID();
+
             user = db31_user;
 
             socket = new DB31_Socket(ip, port);
@@ -87,23 +90,28 @@ namespace Toolbox_DB31.DB31_Adapter
 
             xml = new DB31_Xml();
 
+        }
+
+        ~DB31_Controller()
+        {
+            File.Delete(Temp_File);
+        }
+
+        public void Start()
+        {
+            //Need Global.g_VMS_Adapter to be ready
+
+            StartHeartbeat();
+
+            StartSelfCheck();
+
             if (true == Crash_Last_Time())
             {
                 //report crash event
                 DVRAbnormalQuit();
                 DVR_Illegal_Exit_Upload();
             }
-
-            StartHeartbeat();
-
-            StartSelfCheck();
-            //test code
-            //Alarm_Image_Upload(1,DateTime.Now);
-        }
-
-        ~DB31_Controller()
-        {
-            File.Delete(Temp_File);
+            Write_Temp_File();
         }
         private void OnEvent_Receive_Socket_Message(object sender, SocketWorkingEventArgs e)
         {
@@ -148,7 +156,7 @@ namespace Toolbox_DB31.DB31_Adapter
         {
             if(heartbeat_timer == null)
             {
-                heartbeat_timer = new Timer(HeartBeat, null, 20000, Timeout.Infinite);
+                heartbeat_timer = new Timer(HeartBeat, null, 0, Timeout.Infinite);
             }
             else 
             {
@@ -161,7 +169,7 @@ namespace Toolbox_DB31.DB31_Adapter
 
         public void HeartBeat(object obj)
         {
-            Write_Temp_File();
+            //Write_Temp_File();
 
             GetStoredDiskSpace();
 
@@ -716,8 +724,11 @@ namespace Toolbox_DB31.DB31_Adapter
         private void GetStoredDiskSpace()
         {
             //AVMS adapter :GetStoredPath
+            // GetStoredPath will return null at the first time
             //
-            DeviceSummary.GetStoredDiskSpace(Global.g_VMS_Adapter.GetStoredPath(), out Total_Space, out Free_Space);
+            string storedPath = Global.g_VMS_Adapter.GetStoredPath();
+            storedPath = storedPath==null?"C:\\": storedPath;
+            DeviceSummary.GetStoredDiskSpace(storedPath, out Total_Space, out Free_Space);
         }
 
         private bool Crash_Last_Time()
@@ -748,14 +759,51 @@ namespace Toolbox_DB31.DB31_Adapter
             }
         }
 
+        public void Delete_Temp_File()
+        {
+            File.Delete(Temp_File);
+        }
         private string GetAgentID()
         {
-            if(Global.g_CameraList.Count() > 0)
+            return Default_AgentID;
+        }
+
+        private void Get_Default_AgentID()
+        {
+            string firstLine = null;
+
+            string file = System.Windows.Forms.Application.StartupPath.ToString() + @"\" + "Configuration.csv";
+            if (File.Exists(file) == false)
             {
-                return Global.g_CameraList[0].AgentID;
+                return;
             }
 
-            return "Default_AgentID";
+            try
+            {
+                using (StreamReader sr = new StreamReader(file))
+                {
+                    firstLine = sr.ReadLine();
+                    sr.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Global.WriteLog("Error read file " + file + " " + e.Message);
+            }
+            
+            if(firstLine == null)
+            {
+                return;
+            }
+
+            string[] info = firstLine.Trim().Split(',');
+            if(info.Length < 1)
+            {
+                return;
+            }
+
+            Default_AgentID = info[0];
+
         }
     }
 }

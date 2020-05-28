@@ -39,6 +39,10 @@ namespace Toolbox_DB31
         string DB31_IP = null;
         int DB31_Port = 0;
 
+        string AVMS_IP = null;
+        string AVMS_UserName = null;
+        string AVMS_Password = null;
+
         private System.Timers.Timer m_timer = null;
         private SettingsMenu m_settings = null;
         private DateTime m_LastUploadDT = new DateTime();
@@ -76,8 +80,7 @@ namespace Toolbox_DB31
 
             DeviceSummary.CfgFilePath = @".\Configuration.csv";
             AVMSAdapter adapter = new AVMSAdapter();
-            adapter.Start("127.0.0.1", "admin", "admin"); 
-            //adapter.Start("192.168.77.211", "admin", "admin");
+            adapter.Start(AVMS_IP, AVMS_UserName, AVMS_Password); 
             adapter.AVMSTriggered += new AVMSAdapter.AVMSTriggeredHandler(HandleAVMSEvent);
 
             GeneralStorageManager generalStorage = new GeneralStorageManager();
@@ -87,13 +90,13 @@ namespace Toolbox_DB31
             Global.g_Storage_List = new List<StorageManager>();
             Global.g_Storage_List.Add(generalStorage);
 
-            //navBarItem_Inspect_ImageUpload_Click(null, null);
-
+            db31.Start();
         }
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             db31.DVR_State = 1;
             db31.HeartBeat(null);
+            db31.Delete_Temp_File();
 
             if (0 != Global.g_Storage_List.Count)
             {
@@ -188,6 +191,20 @@ namespace Toolbox_DB31
                 item = query.First();
                 string sPort = item.Value;
                 int.TryParse(sPort, out DB31_Port);
+            }
+
+            // AVMS server info
+            query = from s in xd.Descendants()
+                    where s.Name.LocalName == "Server" && s.Parent.Name.LocalName == "AVMS"
+                    select s;
+
+            nQuery = query.Count();
+            if (nQuery == 1)
+            {
+                item = query.First();
+                AVMS_IP = item.Value;
+                AVMS_UserName = item.Attribute("UserName") == null ? "admin" : item.Attribute("UserName").Value;
+                AVMS_Password = item.Attribute("Password") == null ? "admin" : item.Attribute("Password").Value;
             }
         }
 
@@ -344,7 +361,7 @@ namespace Toolbox_DB31
                 FaultRepairMenu faultRepairMenu = (FaultRepairMenu)frmMain.Content;
                 string sNote = faultRepairMenu.Get_Notes();
 
-                sRet = db31.Maintenance_Upload(sNote);
+                sRet = db31.Repair_Upload(sNote);
             }
             else if (Current_Menu_Item == Menu_Item.Repair_Report)
             {
