@@ -21,6 +21,10 @@ using SeerInterfaces;
 using System.Timers;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Collections.Specialized;
+using System.Configuration;
+using System.Xml;
+using System.Linq;
 
 
 namespace Toolbox_DB31.AVMS_Adapter
@@ -43,9 +47,9 @@ namespace Toolbox_DB31.AVMS_Adapter
         private const int IMPORT_INTERVAL = 65 * 1000;
         private bool m_bPrintLogEnabled = true;
 
-        private const int VIDEO_LOSS_POLICY = 3;
-        private const int VIDEO_MOTION_DETECT_POLICY = 14;
-        private const int HARDWARE_TRIGGER_POLICY = 11;
+        private const string VIDEO_LOSS_POLICY = "VideoLossPolicy";
+        private const string VIDEO_MOTION_DETECT_POLICY = "VMDPolicy";
+        private const string HARDWARE_TRIGGER_POLICY = "HWTriggerPolicy";
 
         private SdkFarm m_farm
         {
@@ -339,16 +343,29 @@ namespace Toolbox_DB31.AVMS_Adapter
 
         private AVMS_ALARM GetAlarmType(int policyId)
         {
-            switch (policyId)
+            try
             {
-                case VIDEO_LOSS_POLICY:
+                PolicyConfigSection policies = ConfigurationManager.GetSection("policyConfig") as PolicyConfigSection;
+                if (policies.PolicyConfig[VIDEO_LOSS_POLICY].PolicyId == policyId)
+                {
                     return AVMS_ALARM.AVMS_ALARM_VIDEOLOSS;
-                case VIDEO_MOTION_DETECT_POLICY:
+                }
+                else if (policies.PolicyConfig[VIDEO_MOTION_DETECT_POLICY].PolicyId == policyId)
+                {
                     return AVMS_ALARM.AVMS_ALARM_VMD;
-                case HARDWARE_TRIGGER_POLICY:
+                }
+                else if (policies.PolicyConfig[HARDWARE_TRIGGER_POLICY].PolicyId == policyId)
+                {
                     return AVMS_ALARM.AVMS_ALARM_HARDWARETRIGGER;
-                default:
+                }
+                else
+                {
                     return AVMS_ALARM.AVMS_ALARM_UNKNOWN;
+                }
+            }
+            catch
+            {
+                return AVMS_ALARM.AVMS_ALARM_UNKNOWN;
             }
         }
 
@@ -634,6 +651,65 @@ namespace Toolbox_DB31.AVMS_Adapter
             this.m_alarmTime = time;
             this.m_cameraId = id;
             this.m_pictureData = data;
+        }
+    }
+
+    public class PolicyConfigSection : ConfigurationSection
+    {
+        [ConfigurationProperty("", IsDefaultCollection = true)]
+        public PolicyInfoCollection PolicyConfig
+        {
+            get { return (PolicyInfoCollection)base[""]; }
+        }
+    }
+
+    public class PolicyInfoCollection : ConfigurationElementCollection
+    {
+        protected override ConfigurationElement CreateNewElement()
+        {
+            return new PolicyInfo();
+        }
+
+        protected override object GetElementKey(ConfigurationElement element)
+        {
+            return ((PolicyInfo)element).PolicyName;
+        }
+
+        public override ConfigurationElementCollectionType CollectionType
+        {
+            get { return ConfigurationElementCollectionType.BasicMap; }
+        }
+
+        protected override string ElementName
+        {
+            get { return "policy"; }
+        }
+
+        public PolicyInfo this[int index]
+        {
+            get { return BaseGet(index) as PolicyInfo; }
+        }
+
+        public new PolicyInfo this[string name]
+        {
+            get { return BaseGet(name) as PolicyInfo; }
+        }
+    }
+
+    public class PolicyInfo : ConfigurationElement
+    {
+        [ConfigurationProperty("key", IsRequired = true)]
+        public string PolicyName
+        {
+            get { return (string)this["key"]; }
+            set { this["key"] = value; }
+        }
+
+        [ConfigurationProperty("value", IsRequired = true)]
+        public int PolicyId
+        {
+            get { return (int)this["value"]; }
+            set { this["value"] = value; }
         }
     }
 }
