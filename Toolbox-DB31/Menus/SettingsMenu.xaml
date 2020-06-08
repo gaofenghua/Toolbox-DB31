@@ -58,13 +58,13 @@
                         <TextBlock Grid.Row="0" Grid.Column="1" Text="过去（小时）" VerticalAlignment="Center" Margin="0,0,0,0" />
                         <dxe:TextEdit Grid.Row="0" Grid.Column="2" MaskType="Numeric" Mask="d" EditValue="{Binding Path=LogUpdateDuration, Mode=TwoWay}" VerticalAlignment="Center" Margin="0,0,0,0" />
                         <dx:SimpleButton Grid.Row="0" Grid.Column="3" x:Name="btnUploadData" VerticalAlignment="Center" Margin="5,0,5,0" Click="btnUploadData_Click" Content="上传日志、参数信息" />
-                        <dx:SimpleButton Grid.Row="0" Grid.Column="4" x:Name="btnUploadAlarm" VerticalAlignment="Center" Margin="5,0,5,0" Click="btnUploadAlarm_Click" Content="上传报警信息" />
+                        <dx:SimpleButton Grid.Row="0" Grid.Column="4" x:Name="btnUploadAlarm" VerticalAlignment="Center" Margin="5,0,5,0" Visibility="Hidden" Click="btnUploadAlarm_Click" Content="上传报警信息" />
                     </Grid>
                 </GroupBox>
                 <GroupBox Grid.Row="1" Grid.Column="1" Header="每日定时上传" Height="70" Margin="0,80,0,0" VerticalAlignment="Top" Foreground="#BFFFFFFF">
                     <dxlc:LayoutGroup Orientation="Horizontal" Margin="10,10,10,0">
                         <dxlc:LayoutItem>
-                            <dxe:TextEdit x:Name="editDailyUpdateDateTime" VerticalAlignment="Center" MaskType="DateTime" Mask="f" MaskUseAsDisplayFormat="True" EditValue="{Binding Path=DailyUpdateDateTime, Mode=TwoWay}" />
+                            <dxe:TextEdit x:Name="editDailyUpdateDateTime" VerticalAlignment="Center" MaskType="DateTime" Mask="HH:mm" MaskUseAsDisplayFormat="True" EditValue="{Binding Path=DailyUpdateDateTime, Mode=TwoWay}" />
                         </dxlc:LayoutItem>
                         <dxlc:LayoutItem>
                             <dxe:CheckEdit Content="开启" EditValue="{Binding Path=IsDailyTimerEnabled, Mode=TwoWay}" EditValueChanged="CheckEdit_EditValueChanged" />
