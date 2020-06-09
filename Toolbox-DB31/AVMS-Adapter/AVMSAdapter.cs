@@ -335,7 +335,7 @@ namespace Toolbox_DB31.AVMS_Adapter
             }
             DateTime clientTime = TimeUtils.DateTimeFromUTC(cameraMessageStruct.m_utcTime);
             DateTime serverTime = m_cameraList[camId].Server.ToLocalTime(clientTime);
-            string picData = GetEncodedSnapshot((int)camId, DateTime.Now, true);
+            string picData = GetEncodedSnapshot((int)camId, DateTime.Now, false);
 
             AVMSEventArgs args = new AVMSEventArgs(alarmType, serverTime, camId, picData);
             this.OnAVMSTriggered(this, args);

@@ -523,7 +523,7 @@ namespace Toolbox_DB31.DB31_Adapter
                 }
                 else
                 {
-                    base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(cam.CameraID, TriggerTime, true);
+                    base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(cam.CameraID, TriggerTime, false);
                 }
 
                 string xml_content = xml.OperationCmd_Xml(sAgent,Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
@@ -661,7 +661,7 @@ namespace Toolbox_DB31.DB31_Adapter
                     Thread.Sleep((Seconds_to_Future + 1) * 1000);
                 }
 
-                base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(Channel, ImageTime, true);
+                base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(Channel, ImageTime, false);
                 xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, ImageTime.ToString(), Note, GUID, base64image);
                 Send(xml_content);
 
