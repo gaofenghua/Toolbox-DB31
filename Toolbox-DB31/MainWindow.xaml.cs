@@ -216,8 +216,15 @@ namespace Toolbox_DB31
             int.TryParse(e.m_cameraId.ToString(), out channelId);
             string picData = e.m_pictureData;
 
-            //Handle disconnect event
-            if(alarmType == AVMS_ALARM.AVMS_ALARM_DISCONNECT)
+            if (AVMS_ALARM.AVMS_ALARM_CONNECTED == alarmType)
+            {
+                ((AVMSAdapter)sender).ShowCameraList();
+            }
+            else if (AVMS_ALARM.AVMS_ALARM_CONNECTIONLOST == alarmType)
+            {
+                ((AVMSAdapter)sender).HideCameraList();
+            }
+            else if (alarmType == AVMS_ALARM.AVMS_ALARM_DEVICELOST)
             {
                 //Find the camera
                 foreach (Camera_Model cam in Global.g_CameraList)
@@ -404,7 +411,7 @@ namespace Toolbox_DB31
             }
 
             //some manual test
-            //AVMSEventArgs EV = new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_DISCONNECT, DateTime.Now, 0, null);
+            //AVMSEventArgs EV = new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_DEVICELOST, DateTime.Now, 0, null);
             //HandleAVMSEvent(null,EV);
             
             //finished manual test

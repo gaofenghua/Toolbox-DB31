@@ -17,6 +17,7 @@ using Seer.SDK;
 using Seer.SDK.NotificationMonitors;
 using Seer.BaseLibCS;
 using Seer.FarmLib;
+using Seer.FarmLib.Client;
 using SeerInterfaces;
 using System.Timers;
 using System.Runtime.Serialization;
@@ -24,7 +25,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.Xml;
-using System.Linq;
 
 
 namespace Toolbox_DB31.AVMS_Adapter
@@ -33,6 +33,7 @@ namespace Toolbox_DB31.AVMS_Adapter
     {
         private AVMSCom m_avms = null;
         private bool m_bConnectedToAVMSServer = false;
+        private bool m_bFarmStateEventHandlerAdded = false;
         private bool m_bDeviceModelEventHandlerAdded = false;
         private bool m_bAVMSListenerEventHandlerAdded = false;
         public bool IsAVMSListeningEnabled { get { return m_bAVMSListenerEventHandlerAdded; } }
@@ -87,11 +88,21 @@ namespace Toolbox_DB31.AVMS_Adapter
             }
         }
 
-        private void UpdateCameraList()
+        public void ShowCameraList()
+        {
+            UpdateCameraList(m_cameraList);
+        }
+
+        public void HideCameraList()
+        {
+            UpdateCameraList(new Dictionary<uint, CCamera>());
+        }
+
+        private void UpdateCameraList(Dictionary<uint, CCamera> list)
         {
             App.Current.Dispatcher.BeginInvoke((Action)delegate ()
             {
-                DeviceSummary.UpdateTable(m_cameraList);
+                DeviceSummary.UpdateTable(list);
             });
         }
 
@@ -126,6 +137,7 @@ namespace Toolbox_DB31.AVMS_Adapter
             {
                 if (null != m_avms)
                 {
+                    DeleteFarmStateEventHandler(m_farm, ref m_bFarmStateEventHandlerAdded);
                     DeleteDeviceModelEventHandler(m_deviceManager, ref m_bDeviceModelEventHandlerAdded);
                     StopAVMSListener();
                     if (m_bAVMSMessageSend)
@@ -159,7 +171,7 @@ namespace Toolbox_DB31.AVMS_Adapter
                 int diff = (checkDT - cam.LastStateUpdateTime).Seconds;
                 if (isTimedOut || (diff > 65))
                 {
-                    AVMSEventArgs etArgs = new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_DISCONNECT, checkDT, cam.CameraId, null);
+                    AVMSEventArgs etArgs = new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_DEVICELOST, checkDT, cam.CameraId, null);
                     this.OnAVMSTriggered(this, etArgs);
                 }
             }
@@ -200,12 +212,32 @@ namespace Toolbox_DB31.AVMS_Adapter
             }
         }
 
+        private void Farm_StateChangedEvent(object sender, ValueChangedEventArgs<CFarm.FarmState> e)
+        {
+            try
+            {
+                if ((CFarm.FarmState.Connected == e.PreviousValue) && (CFarm.FarmState.Connected != e.NewValue))
+                {
+                    this.OnAVMSTriggered(this, new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_CONNECTIONLOST, DateTime.Now, 0, null));
+                }
+
+                if ((CFarm.FarmState.Connected != e.PreviousValue) && (CFarm.FarmState.Connected == e.NewValue))
+                {
+                    this.OnAVMSTriggered(this, new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_CONNECTED, DateTime.Now, 0, null));
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         private void DeviceManager_DataLoadedEvent(object sender, EventArgs e)
         {
             try
             {
                 PopulateCameraList();
-                UpdateCameraList();
+                ShowCameraList();
             }
             catch (Exception ex)
             {
@@ -247,6 +279,23 @@ namespace Toolbox_DB31.AVMS_Adapter
                 uint camId = cam.CameraId;
                 m_cameraList.Add(camId, cam);
                 PrintLog(String.Format("m_cameraList[cameraId={0}, camera={1}]", camId, m_cameraList[camId]));
+            }
+        }
+
+        private void AddFarmStateEventHandler(SdkFarm farm, ref bool bHandleAdded)
+        {
+            if ((null != farm) && (!bHandleAdded))
+            {
+                farm.StateChanged += new EventHandler<ValueChangedEventArgs<CFarm.FarmState>>(Farm_StateChangedEvent);
+                bHandleAdded = true;
+            }
+        }
+        private void DeleteFarmStateEventHandler(SdkFarm farm, ref bool bHandleAdded)
+        {
+            if ((null != farm) && bHandleAdded)
+            {
+                farm.StateChanged -= new EventHandler<ValueChangedEventArgs<CFarm.FarmState>>(Farm_StateChangedEvent);
+                bHandleAdded = false;
             }
         }
 
@@ -328,7 +377,7 @@ namespace Toolbox_DB31.AVMS_Adapter
                     alarmType = GetAlarmType(cameraMessageStruct.m_iPolicyId);
                     break;
                 case 8:
-                    alarmType = AVMS_ALARM.AVMS_ALARM_DISCONNECT;
+                    alarmType = AVMS_ALARM.AVMS_ALARM_DEVICELOST;
                     break;
                 default:
                     break;
@@ -594,6 +643,8 @@ namespace Toolbox_DB31.AVMS_Adapter
                     if (m_bConnectedToAVMSServer)
                     {
                         PrintLog(string.Format("{0} - AVMSCom_MessageSend : AVMS connection has been established.", time));
+                        this.OnAVMSTriggered(this, new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_CONNECTED, DateTime.Now, 0, null));
+                        AddFarmStateEventHandler(m_farm, ref m_bFarmStateEventHandlerAdded);
                         RefreshServerManager();
                         RefreshDeviceManager();
                     }
@@ -630,11 +681,13 @@ namespace Toolbox_DB31.AVMS_Adapter
     public enum AVMS_ALARM
     {
         AVMS_ALARM_UNKNOWN = 0,
-        AVMS_ALARM_DISCONNECT,
-        AVMS_ALARM_RESTORE, //报警信息恢复
-        AVMS_ALARM_VIDEOLOSS,//视频丢失报警
-        AVMS_ALARM_VMD,//移动侦测报警
-        AVMS_ALARM_HARDWARETRIGGER,//硬件触发报警
+        AVMS_ALARM_CONNECTED,       // AVMS连接建立
+        AVMS_ALARM_CONNECTIONLOST,  // AVMS连接丢失
+        AVMS_ALARM_DEVICELOST,      // 设备丢失
+        AVMS_ALARM_RESTORE,         // 报警信息恢复
+        AVMS_ALARM_VIDEOLOSS,       // 视频丢失报警
+        AVMS_ALARM_VMD,             // 移动侦测报警
+        AVMS_ALARM_HARDWARETRIGGER, // 硬件触发报警
         AVMS_ALARM_OTHER,
     }
 
