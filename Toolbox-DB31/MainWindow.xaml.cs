@@ -224,6 +224,18 @@ namespace Toolbox_DB31
             {
                 ((AVMSAdapter)sender).HideCameraList();
             }
+            else if (AVMS_ALARM.AVMS_ALARM_DEVICERESTORE == alarmType)
+            {
+                App.Current.Dispatcher.BeginInvoke((Action)delegate ()
+                {
+                    DeviceSummary.UpdateDeviceState(e.m_cameraId, true);
+                    if (Current_Menu_Item == Menu_Item.Inspect_Image_Upload || Current_Menu_Item == Menu_Item.Maintenance_Image_Upload || Current_Menu_Item == Menu_Item.Test_Image_Upload)
+                    {
+                        SummaryTable summaryTable = (SummaryTable)frmMain.Content;
+                        summaryTable.GridControl_Summary.RefreshData();
+                    }
+                });
+            }
             else if (alarmType == AVMS_ALARM.AVMS_ALARM_DEVICELOST)
             {
                 //Find the camera
