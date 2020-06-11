@@ -661,7 +661,7 @@ namespace Toolbox_DB31.DB31_Adapter
                     Thread.Sleep((Seconds_to_Future + 1) * 1000);
                 }
 
-                base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(Channel, ImageTime, false);
+                base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(CameraID, ImageTime, false);
                 xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, ImageTime.ToString(), Note, GUID, base64image);
                 Send(xml_content);
 
