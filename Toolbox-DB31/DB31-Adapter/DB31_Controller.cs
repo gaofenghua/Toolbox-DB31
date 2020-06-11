@@ -546,7 +546,7 @@ namespace Toolbox_DB31.DB31_Adapter
         private bool Send(string xml_content)
         {
             bool bGetAvailable = false;
-            for (int i = 0; i < 10;i++ )
+            for (int i = 0; i < 20;i++ )
             {
                 Status_Mutex.WaitOne();
                 if(WorkingStatus == Working_Status.Working)
@@ -579,7 +579,7 @@ namespace Toolbox_DB31.DB31_Adapter
             if (true == bRet)
             {
                 // Waiting for return message "OK_NowTime"
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 20; i++)
                 {
                     Status_Mutex.WaitOne();
                     if (WorkingStatus == Working_Status.Working)
