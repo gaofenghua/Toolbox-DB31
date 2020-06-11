@@ -42,6 +42,7 @@ namespace Toolbox_DB31.AVMS_Adapter
         private bool m_bAVMSMessageSend = false;
         private Dictionary<uint, string> m_serverList = new Dictionary<uint, string>();
         private Dictionary<uint, CCamera> m_cameraList = new Dictionary<uint, CCamera>();
+        private Dictionary<uint, bool> m_stateList = new Dictionary<uint, bool>();
         private AlarmMonitor m_alarmMonitor = null;
         private AlarmMarkedMonitor m_alarmMarkedMonitor = null;
         private Timer m_timer = null;
@@ -164,15 +165,23 @@ namespace Toolbox_DB31.AVMS_Adapter
         private void HeartBeat(Object obj, ElapsedEventArgs args)
         {
             DateTime checkDT = args.SignalTime;
+            var list = Global.g_CameraList;
             foreach (KeyValuePair<uint, CCamera> item in m_cameraList)
             {
                 CCamera cam = item.Value;
-                bool isTimedOut = cam.TimedOut;
-                int diff = (checkDT - cam.LastStateUpdateTime).Seconds;
-                if (isTimedOut || (diff > 65))
+                // cam.TimedOut or (checkDT - cam.LastStateUpdateTime).Seconds > 65
+                bool isOnline = cam.State == EStates.Off ? false : true;
+                if (isOnline != m_stateList[cam.CameraId])
                 {
-                    AVMSEventArgs etArgs = new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_DEVICELOST, checkDT, cam.CameraId, null);
-                    this.OnAVMSTriggered(this, etArgs);
+                    if (!isOnline)
+                    {
+                        this.OnAVMSTriggered(this, new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_DEVICELOST, checkDT, cam.CameraId, null));
+                    }
+                    else
+                    {
+                        this.OnAVMSTriggered(this, new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_DEVICERESTORE, checkDT, cam.CameraId, null));
+                    }
+                    m_stateList[cam.CameraId] = isOnline;
                 }
             }
         }
@@ -273,11 +282,13 @@ namespace Toolbox_DB31.AVMS_Adapter
             }
 
             m_cameraList.Clear();
+            m_stateList.Clear();
             List<CCamera> cameras = m_deviceManager.GetAllCameras();
             foreach (CCamera cam in cameras)
             {
                 uint camId = cam.CameraId;
                 m_cameraList.Add(camId, cam);
+                m_stateList.Add(camId, cam.State == EStates.Off ? false : true);
                 PrintLog(String.Format("m_cameraList[cameraId={0}, camera={1}]", camId, m_cameraList[camId]));
             }
         }
@@ -684,6 +695,7 @@ namespace Toolbox_DB31.AVMS_Adapter
         AVMS_ALARM_CONNECTED,       // AVMS连接建立
         AVMS_ALARM_CONNECTIONLOST,  // AVMS连接丢失
         AVMS_ALARM_DEVICELOST,      // 设备丢失
+        AVMS_ALARM_DEVICERESTORE,      // 设备连接恢复
         AVMS_ALARM_RESTORE,         // 报警信息恢复
         AVMS_ALARM_VIDEOLOSS,       // 视频丢失报警
         AVMS_ALARM_VMD,             // 移动侦测报警

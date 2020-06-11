@@ -98,9 +98,17 @@ namespace Toolbox_DB31.AVMS_Adapter
             {
                 return false;
             }
-            //ImportDummyData();
             ImportFromCSV();
             return m_devList.Count > 0;
+        }
+
+        public static void UpdateDeviceState(uint devId, bool isOnline)
+        {
+            var item = Global.g_CameraList.FirstOrDefault(dev => dev.CameraID == (int)devId);
+            if (null != item)
+            {
+                item.Status = isOnline ? "在线" : "离线";
+            }
         }
 
         public static void UpdateTable(Dictionary<uint, CCamera> camList)
