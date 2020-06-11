@@ -542,12 +542,18 @@ namespace Toolbox_DB31
 
         public void UploadEventLog(int camId, string log)
         {
+            new Task(x =>
+            { ParseAndSendEventLog((string)x); }, log).Start();
+        }
+
+        private void ParseAndSendEventLog(string log)
+        {
             // db31 method
 
             //参数设置：ConfigurationChange 参数设置保存/进入设置状态
             //录像回放：CameraHistoryConnect、CameraHistoryDisconnect 录像回放操作
 
-            if(null == log)
+            if (null == log)
             {
                 return;
             }
@@ -555,13 +561,13 @@ namespace Toolbox_DB31
 
             string sLine = "";
             int iFirst = -1;
-            while((sLine = sLog.ReadLine()) != null)
+            while ((sLine = sLog.ReadLine()) != null)
             {
                 iFirst = sLine.IndexOf("ConfigurationChange");
-                if(iFirst>0)
+                if (iFirst > 0)
                 {
                     iFirst = sLine.IndexOf("username");
-                    if(iFirst>0)
+                    if (iFirst > 0)
                     {
                         db31.DVR_Parameter_Set_Upload();
                     }
@@ -569,19 +575,18 @@ namespace Toolbox_DB31
                     {
                         db31.DVR_Parameter_Save_Upload();
                     }
+                    Thread.Sleep(5000);
                     continue;
                 }
 
                 iFirst = sLine.IndexOf("CameraHistoryConnect");
-                if(iFirst > 0)
+                if (iFirst > 0)
                 {
                     db31.DVR_Local_Playback_Upload();
+                    Thread.Sleep(5000);
                     continue;
                 }
             }
-
         }
-
-
     }
 }
