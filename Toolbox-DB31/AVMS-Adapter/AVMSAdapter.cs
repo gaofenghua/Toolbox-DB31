@@ -169,18 +169,11 @@ namespace Toolbox_DB31.AVMS_Adapter
             foreach (KeyValuePair<uint, CCamera> item in m_cameraList)
             {
                 CCamera cam = item.Value;
-                // cam.TimedOut or (checkDT - cam.LastStateUpdateTime).Seconds > 65
-                bool isOnline = cam.State == EStates.Off ? false : true;
-                if (isOnline != m_stateList[cam.CameraId])
+                bool isOnline;
+                if (m_stateList[cam.CameraId] != (isOnline = IsOnline(cam)))
                 {
-                    if (!isOnline)
-                    {
-                        this.OnAVMSTriggered(this, new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_DEVICELOST, checkDT, cam.CameraId, null));
-                    }
-                    else
-                    {
-                        this.OnAVMSTriggered(this, new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_DEVICERESTORE, checkDT, cam.CameraId, null));
-                    }
+                    AVMS_ALARM type = isOnline ? AVMS_ALARM.AVMS_ALARM_DEVICERESTORE : AVMS_ALARM.AVMS_ALARM_DEVICELOST;
+                    this.OnAVMSTriggered(this, new AVMSEventArgs(type, checkDT, cam.CameraId, null));
                     m_stateList[cam.CameraId] = isOnline;
                 }
             }
@@ -288,7 +281,7 @@ namespace Toolbox_DB31.AVMS_Adapter
             {
                 uint camId = cam.CameraId;
                 m_cameraList.Add(camId, cam);
-                m_stateList.Add(camId, cam.State == EStates.Off ? false : true);
+                m_stateList.Add(camId, IsOnline(cam));
                 PrintLog(String.Format("m_cameraList[cameraId={0}, camera={1}]", camId, m_cameraList[camId]));
             }
         }
@@ -686,6 +679,11 @@ namespace Toolbox_DB31.AVMS_Adapter
             {
                 Trace.WriteLine(text);
             }
+        }
+
+        public static bool IsOnline(CCamera cam)
+        {
+            return cam.State == EStates.Off ? false : true;
         }
     }
 
