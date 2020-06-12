@@ -15,7 +15,7 @@
     Width="700"
     Height="500"
     mc:Ignorable="d"
-    Title="安讯士-上海地标DB31">
+    Title="安讯士-上海地标DB31" Icon="axis.ico">
 
     <dx:ThemedWindow.CommandBindings>
         <CommandBinding
