@@ -224,6 +224,10 @@ namespace Toolbox_DB31
             {
                 ((AVMSAdapter)sender).HideCameraList();
             }
+            else if (AVMS_ALARM.AVMS_ALARM_DEVICELOADED == alarmType)
+            {
+                db31.GetStoredDiskSpace();
+            }
             else if (AVMS_ALARM.AVMS_ALARM_DEVICERESTORE == alarmType)
             {
                 App.Current.Dispatcher.BeginInvoke((Action)delegate ()
