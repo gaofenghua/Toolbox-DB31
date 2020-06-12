@@ -358,26 +358,26 @@ namespace Toolbox_DB31.DB31_Adapter
             return "";
         }
 
-        public string DVR_Local_Playback_Upload()
+        public string DVR_Local_Playback_Upload(DateTime EventTime)
         {
             int Type = (int)OperationCmd_Type.DVR_Local_Playback;
-            Note_Upload(Type, "DVR本地回放",DateTime.Now);
+            Note_Upload(Type, "DVR本地回放",EventTime);
 
             return "";
         }
 
-        public string DVR_Parameter_Set_Upload()
+        public string DVR_Parameter_Set_Upload(DateTime EventTime)
         {
             int Type = (int)OperationCmd_Type.DVR_Parameter_Set;
-            Note_Upload(Type, "DVR参数设置",DateTime.Now);
+            Note_Upload(Type, "DVR参数设置",EventTime);
 
             return "";
         }
 
-        public string DVR_Parameter_Save_Upload()
+        public string DVR_Parameter_Save_Upload(DateTime EventTime)
         {
             int Type = (int)OperationCmd_Type.DVR_Parameter_Save;
-            Note_Upload(Type, "DVR参数保存",DateTime.Now);
+            Note_Upload(Type, "DVR参数保存",EventTime);
 
             return "";
         }

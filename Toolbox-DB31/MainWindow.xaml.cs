@@ -559,6 +559,7 @@ namespace Toolbox_DB31
             }
             StringReader sLog = new StringReader(log);
 
+            DateTime EventTime;
             string sLine = "";
             int iFirst = -1;
             while ((sLine = sLog.ReadLine()) != null)
@@ -566,14 +567,15 @@ namespace Toolbox_DB31
                 iFirst = sLine.IndexOf("ConfigurationChange");
                 if (iFirst > 0)
                 {
+                    EventTime = GetEventTime(sLine);
                     iFirst = sLine.IndexOf("username");
                     if (iFirst > 0)
                     {
-                        db31.DVR_Parameter_Set_Upload();
+                        db31.DVR_Parameter_Set_Upload(EventTime);
                     }
                     else
                     {
-                        db31.DVR_Parameter_Save_Upload();
+                        db31.DVR_Parameter_Save_Upload(EventTime);
                     }
                     Thread.Sleep(5000);
                     continue;
@@ -582,11 +584,25 @@ namespace Toolbox_DB31
                 iFirst = sLine.IndexOf("CameraHistoryConnect");
                 if (iFirst > 0)
                 {
-                    db31.DVR_Local_Playback_Upload();
+                    EventTime = GetEventTime(sLine);
+                    db31.DVR_Local_Playback_Upload(EventTime);
                     Thread.Sleep(5000);
                     continue;
                 }
             }
+        }
+
+        DateTime GetEventTime(string sLine)
+        {
+            DateTime EventTime = DateTime.Now;
+
+            string[] info = sLine.Trim().Split(',');
+            if (info.Length >= 1)
+            {
+                DateTime.TryParse(info[0], out EventTime);
+            }
+
+            return EventTime;
         }
     }
 }
