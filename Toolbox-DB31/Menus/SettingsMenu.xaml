@@ -102,5 +102,6 @@
                 </GroupBox>
             </Grid>
         </GroupBox>
+        <Label x:Name="label_Version" Content="{Binding FileVersion}" Grid.Column="1" HorizontalAlignment="Left" Margin="10,310,0,0" Grid.Row="1" VerticalAlignment="Top" Width="209"/>
     </Grid>
 </Page>

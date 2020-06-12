@@ -14,6 +14,8 @@ namespace Toolbox_DB31.Classes
         public long AlarmUpdateAfter { get; set; }
         public long AlarmUpdateDuration { get; set; }
 
+        public string FileVersion { get; set; }
+
         public SettingsMenuViewModel()
         {
             LogUpdateDuration = 0;
@@ -22,6 +24,9 @@ namespace Toolbox_DB31.Classes
             AlarmUpdateBefore = 0;
             AlarmUpdateAfter = 0;
             AlarmUpdateDuration = 0;
+
+            FileVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            FileVersion = "程序版本： V" + FileVersion;
         }
 
         public bool IsAlarmListeningEnabled()
