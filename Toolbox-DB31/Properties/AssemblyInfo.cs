@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("Toolbox-DB31")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Axis")]
 [assembly: AssemblyProduct("Toolbox-DB31")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]

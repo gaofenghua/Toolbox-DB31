@@ -727,8 +727,16 @@ namespace Toolbox_DB31.DB31_Adapter
             // GetStoredPath will return null at the first time
             //
             string storedPath = Global.g_VMS_Adapter.GetStoredPath();
-            storedPath = storedPath==null?"C:\\": storedPath;
-            DeviceSummary.GetStoredDiskSpace(storedPath, out Total_Space, out Free_Space);
+            //storedPath = storedPath==null?"C:\\": storedPath;
+            if(storedPath == null)
+            {
+                Total_Space = 0;
+                Free_Space = 0;
+            }
+            else
+            {
+                DeviceSummary.GetStoredDiskSpace(storedPath, out Total_Space, out Free_Space);
+            }
         }
 
         private bool Crash_Last_Time()
