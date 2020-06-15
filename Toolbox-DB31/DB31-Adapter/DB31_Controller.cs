@@ -568,6 +568,8 @@ namespace Toolbox_DB31.DB31_Adapter
             {
                 string messageContent = "发送超时。";
                 Send_Message_Out(messageContent);
+
+                Global.WriteLog(messageContent + xml_content);
                 return false;
             }
 
