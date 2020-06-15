@@ -8,11 +8,11 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Toolbox-DB31")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Tool for AVMS integrated with DB31")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Axis")]
 [assembly: AssemblyProduct("Toolbox-DB31")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

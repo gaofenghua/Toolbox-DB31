@@ -239,6 +239,7 @@ namespace Toolbox_DB31.AVMS_Adapter
             try
             {
                 PopulateCameraList();
+                this.OnAVMSTriggered(this, new AVMSEventArgs(AVMS_ALARM.AVMS_ALARM_DEVICELOADED, DateTime.Now, 0, null));
                 ShowCameraList();
             }
             catch (Exception ex)
@@ -690,15 +691,15 @@ namespace Toolbox_DB31.AVMS_Adapter
     public enum AVMS_ALARM
     {
         AVMS_ALARM_UNKNOWN = 0,
-        AVMS_ALARM_CONNECTED,       // AVMS连接建立
+        AVMS_ALARM_CONNECTED,       // AVMS已连接
         AVMS_ALARM_CONNECTIONLOST,  // AVMS连接丢失
         AVMS_ALARM_DEVICELOST,      // 设备丢失
-        AVMS_ALARM_DEVICERESTORE,      // 设备连接恢复
+        AVMS_ALARM_DEVICERESTORE,   // 设备连接恢复
+        AVMS_ALARM_DEVICELOADED,    // 设备已加载
         AVMS_ALARM_RESTORE,         // 报警信息恢复
         AVMS_ALARM_VIDEOLOSS,       // 视频丢失报警
         AVMS_ALARM_VMD,             // 移动侦测报警
         AVMS_ALARM_HARDWARETRIGGER, // 硬件触发报警
-        AVMS_ALARM_OTHER,
     }
 
     public class AVMSEventArgs : EventArgs

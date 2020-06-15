@@ -723,7 +723,7 @@ namespace Toolbox_DB31.DB31_Adapter
 
             Send(xml_content);
         }
-        private void GetStoredDiskSpace()
+        public void GetStoredDiskSpace()
         {
             //AVMS adapter :GetStoredPath
             // GetStoredPath will return null at the first time
