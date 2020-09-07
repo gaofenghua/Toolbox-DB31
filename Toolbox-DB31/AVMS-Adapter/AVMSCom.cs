@@ -30,6 +30,8 @@ namespace Toolbox_DB31.AVMS_Adapter
         private SdkFarm m_farm = null;
         private string[] m_servers = null;
 
+        private const int CAMERA_VIEW_DECORATION = 0;   // CameraViewSettings.DECOR_DEFAULT
+
         private CNetworkAddress ServerAddress
         {
             get { return new CNetworkAddress(IpAddress); }
@@ -266,7 +268,7 @@ namespace Toolbox_DB31.AVMS_Adapter
                     return false;
                 }
 
-                int iStuffedDecoration = CameraViewSettings.DECOR_DEFAULT + Utils.GetViewPrivateVideoDecoration(bViewPrivateVideo);
+                int iStuffedDecoration = CAMERA_VIEW_DECORATION + Utils.GetViewPrivateVideoDecoration(bViewPrivateVideo);
                 result = signals.GetJPEGImage3(Username, EncodePassword,
                     cam.CameraId,
                     dtJpgTime,
