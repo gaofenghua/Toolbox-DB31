@@ -496,10 +496,11 @@ namespace Toolbox_DB31.DB31_Adapter
                 string sAgent = cam.AgentID;
                 int Type = (int)OpType;
                 int Channel = cam.ChannelNumber;
-                DateTime TriggerTime = DateTime.Now;
-                byte[] bNote = Encoding.UTF8.GetBytes("图像上传 " + Global.g_User.UserDisplayName);
+                DateTime TriggerTime = DateTime.Now;//2020-09-02 15:22:11
+                //byte[] bNote = Encoding.UTF8.GetBytes("图像上传 " + Global.g_User.UserDisplayName);
+                byte[] bNote = Encoding.GetEncoding("gb2312").GetBytes("GB2312:图像上传");
                 string Note = Convert.ToBase64String(bNote);
-                GUID = GUID==null?Guid.NewGuid().ToString():GUID;
+                GUID = GUID==null?Guid.NewGuid().ToString("N").ToUpper():GUID;
 
                 string base64image = "";
                 if (Global.g_VMS_Adapter.GetCameraStateById(cam.CameraID) == SeerInterfaces.EStates.NoRecord)
@@ -524,9 +525,15 @@ namespace Toolbox_DB31.DB31_Adapter
                 else
                 {
                     base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(cam.CameraID, TriggerTime, false);
+
+                    //string sfilePath = "d:\\a.jpg";
+                    //FileStream fs = File.OpenRead(sfilePath);
+                    //byte[] imagebu = new byte[fs.Length];
+                    //fs.Read(imagebu, 0, imagebu.Length);
+                    //base64image = Convert.ToBase64String(imagebu);
                 }
 
-                string xml_content = xml.OperationCmd_Xml(sAgent,Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+                string xml_content = xml.OperationCmd_Xml(sAgent,Type, Channel, TriggerTime.ToString("yyyy-MM-dd HH:mm:ss"), Note, GUID, base64image);
 
                 //Message to the main frame
                 if (null != Working_Message)
