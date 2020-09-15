@@ -48,7 +48,7 @@ namespace Toolbox_DB31.DB31_Adapter
                     {
                         UserName = Input_UserName;
                         Department = Input_Department;
-                        UserDisplayName = "警员001号";
+                        UserDisplayName = "警官号001密码admin";
 
                         Reset_Input();
 

@@ -395,11 +395,12 @@ namespace Toolbox_DB31.DB31_Adapter
             string sAgent = GetAgentID();
             int Channel = 0;
             DateTime TriggerTime = AlarmTime;
-            byte[] bNote = Encoding.UTF8.GetBytes(sNote);
+            //byte[] bNote = Encoding.UTF8.GetBytes(sNote);
+            byte[] bNote = Encoding.GetEncoding("gb2312").GetBytes("GB2312:" + sNote);
             string Note = Convert.ToBase64String(bNote);
-            string GUID = Guid.NewGuid().ToString();
+            string GUID = Guid.NewGuid().ToString("N").ToUpper();
             string base64image = "";
-            string xml_content = xml.OperationCmd_Xml(sAgent, iType, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+            string xml_content = xml.OperationCmd_Xml(sAgent, iType, Channel, TriggerTime.ToString("yyyy-MM-dd HH:mm:ss"), Note, GUID, base64image);
 
             new Task(x =>
             { Send((string)x); }, xml_content).Start();
@@ -498,7 +499,7 @@ namespace Toolbox_DB31.DB31_Adapter
                 int Channel = cam.ChannelNumber;
                 DateTime TriggerTime = DateTime.Now;//2020-09-02 15:22:11
                 //byte[] bNote = Encoding.UTF8.GetBytes("图像上传 " + Global.g_User.UserDisplayName);
-                byte[] bNote = Encoding.GetEncoding("gb2312").GetBytes("GB2312:图像上传");
+                byte[] bNote = Encoding.GetEncoding("gb2312").GetBytes("GB2312:图像上传" + Global.g_User.UserDisplayName);
                 string Note = Convert.ToBase64String(bNote);
                 GUID = GUID==null?Guid.NewGuid().ToString("N").ToUpper():GUID;
 
@@ -634,11 +635,12 @@ namespace Toolbox_DB31.DB31_Adapter
             int Type = (int)OperationCmd_Type.Alarm_Image_Upload;
             int Channel = cam.ChannelNumber;
             DateTime TriggerTime = AlarmTime;
-            byte[] bNote = Encoding.UTF8.GetBytes("报警图像上传");
+            //byte[] bNote = Encoding.UTF8.GetBytes("报警图像上传");
+            byte[] bNote = Encoding.GetEncoding("gb2312").GetBytes("GB2312:报警图像上传");
             string Note = Convert.ToBase64String(bNote);
-            string GUID = Guid.NewGuid().ToString();
+            string GUID = Guid.NewGuid().ToString("N").ToUpper();
             string base64image = "";
-            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString("yyyy-MM-dd HH:mm:ss"), Note, GUID, base64image);
 
             string sMessage = "通道" + Channel +":报警图像上传";
             //Message to the main frame
@@ -671,7 +673,7 @@ namespace Toolbox_DB31.DB31_Adapter
                 }
 
                 base64image = Global.g_VMS_Adapter.GetEncodedSnapshot(CameraID, ImageTime, false);
-                xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, ImageTime.ToString(), Note, GUID, base64image);
+                xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, ImageTime.ToString("yyyy-MM-dd HH:mm:ss"), Note, GUID, base64image);
                 Send(xml_content);
 
                 //Message to the main frame
@@ -690,11 +692,12 @@ namespace Toolbox_DB31.DB31_Adapter
             int Type = (int)OperationCmd_Type.DVR_Start;
             int Channel = 0;
             DateTime TriggerTime = DateTime.Now;
-            byte[] bNote = Encoding.UTF8.GetBytes("DVR系统启动");
+            //byte[] bNote = Encoding.UTF8.GetBytes("DVR系统启动");
+            byte[] bNote = Encoding.GetEncoding("gb2312").GetBytes("GB2312:DVR系统启动");
             string Note = Convert.ToBase64String(bNote);
-            string GUID = Guid.NewGuid().ToString();
+            string GUID = Guid.NewGuid().ToString("N").ToUpper();
             string base64image = "";
-            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString("yyyy-MM-dd HH:mm:ss"), Note, GUID, base64image);
 
             Send(xml_content);
         }
@@ -706,11 +709,12 @@ namespace Toolbox_DB31.DB31_Adapter
             int Type = (int)OperationCmd_Type.DVR_Exit;
             int Channel = 0;
             DateTime TriggerTime = DateTime.Now;
-            byte[] bNote = Encoding.UTF8.GetBytes("DVR系统退出");
+            //byte[] bNote = Encoding.UTF8.GetBytes("DVR系统退出");
+            byte[] bNote = Encoding.GetEncoding("gb2312").GetBytes("GB2312:DVR系统退出");
             string Note = Convert.ToBase64String(bNote);
-            string GUID = Guid.NewGuid().ToString();
+            string GUID = Guid.NewGuid().ToString("N").ToUpper();
             string base64image = "";
-            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString("yyyy-MM-dd HH:mm:ss"), Note, GUID, base64image);
 
             Send(xml_content);
         }
@@ -722,11 +726,11 @@ namespace Toolbox_DB31.DB31_Adapter
             int Type = (int)OperationCmd_Type.DVR_Abnormal_Quit;
             int Channel = 0;
             DateTime TriggerTime = DateTime.Now;
-            byte[] bNote = Encoding.UTF8.GetBytes("DVR异常退出");
+            byte[] bNote = Encoding.GetEncoding("gb2312").GetBytes("GB2312:DVR异常退出");
             string Note = Convert.ToBase64String(bNote);
-            string GUID = Guid.NewGuid().ToString();
+            string GUID = Guid.NewGuid().ToString("N").ToUpper();
             string base64image = "";
-            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString(), Note, GUID, base64image);
+            string xml_content = xml.OperationCmd_Xml(sAgent, Type, Channel, TriggerTime.ToString("yyyy-MM-dd HH:mm:ss"), Note, GUID, base64image);
 
             Send(xml_content);
         }
