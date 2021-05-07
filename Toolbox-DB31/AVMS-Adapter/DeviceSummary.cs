@@ -17,6 +17,8 @@ namespace Toolbox_DB31.AVMS_Adapter
         public string StartIp { get; private set; }
         public string EndIp { get; private set; }
 
+        public int ChannelOffset = 0;
+
         public DeviceConfiguration()
         {
             AgentId = string.Empty;
@@ -158,11 +160,13 @@ namespace Toolbox_DB31.AVMS_Adapter
                 DeviceConfiguration df = result.First();
                 if (null == model)
                 {
-                    Global.g_CameraList.Add(new Camera_Model() { AgentID = df.AgentId, ChannelNumber = (int)(ConvertIpToLong(camIp) - ConvertIpToLong(df.StartIp) + 1), CameraID = (int)cam.CameraId, Name = cam.Name, Status = AVMSAdapter.IsOnline(cam) ? "在线" : "离线", IsSelected = false, AlarmEnable = false });
+                    //Global.g_CameraList.Add(new Camera_Model() { AgentID = df.AgentId, ChannelNumber = (int)(ConvertIpToLong(camIp) - ConvertIpToLong(df.StartIp) + 1), CameraID = (int)cam.CameraId, Name = cam.Name, Status = AVMSAdapter.IsOnline(cam) ? "在线" : "离线", IsSelected = false, AlarmEnable = false });
+                    Global.g_CameraList.Add(new Camera_Model() { AgentID = df.AgentId, ChannelNumber = (int)(ConvertIpToLong(camIp) - ConvertIpToLong(df.StartIp) + 1) + df.ChannelOffset, CameraID = (int)cam.CameraId, Name = cam.Name, Status = AVMSAdapter.IsOnline(cam) ? "在线" : "离线", IsSelected = false, AlarmEnable = false });
                 }
                 else
                 {
-                    Global.g_CameraList.Add(new Camera_Model() { AgentID = df.AgentId, ChannelNumber = (int)(ConvertIpToLong(camIp) - ConvertIpToLong(df.StartIp) + 1), CameraID = (int)cam.CameraId, Name = cam.Name, Status = model.Status, IsSelected = model.IsSelected, AlarmEnable = model.AlarmEnable });
+                    //Global.g_CameraList.Add(new Camera_Model() { AgentID = df.AgentId, ChannelNumber = (int)(ConvertIpToLong(camIp) - ConvertIpToLong(df.StartIp) + 1), CameraID = (int)cam.CameraId, Name = cam.Name, Status = model.Status, IsSelected = model.IsSelected, AlarmEnable = model.AlarmEnable });
+                    Global.g_CameraList.Add(new Camera_Model() { AgentID = df.AgentId, ChannelNumber = (int)(ConvertIpToLong(camIp) - ConvertIpToLong(df.StartIp) + 1) + df.ChannelOffset, CameraID = (int)cam.CameraId, Name = cam.Name, Status = model.Status, IsSelected = model.IsSelected, AlarmEnable = model.AlarmEnable });
                 }
             }
         }
@@ -210,6 +214,17 @@ namespace Toolbox_DB31.AVMS_Adapter
                         var list = m_devList.Where(dc => dc.AgentId == devConfig.AgentId).ToList();
                         if (0 == list.Count)
                         {
+                            devConfig.ChannelOffset = 0;
+                            m_devList.Add(devConfig);
+                        }
+                        else
+                        {
+                            int existChannel = 0;
+                            foreach(DeviceConfiguration dcItem in list)
+                            {
+                                existChannel = existChannel + (int)(ConvertIpToLong(dcItem.EndIp) - ConvertIpToLong(dcItem.StartIp)) + 1 ;
+                            }
+                            devConfig.ChannelOffset = existChannel;
                             m_devList.Add(devConfig);
                         }
                     }
